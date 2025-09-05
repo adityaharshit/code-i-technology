@@ -1,0 +1,2 @@
+-- Create tables as defined in the Prisma schema
+-- This will be generated automatically by Prisma

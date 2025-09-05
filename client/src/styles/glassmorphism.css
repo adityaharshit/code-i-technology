@@ -1,0 +1,28 @@
+/*
+  A reusable utility class to apply a glassmorphism effect.
+  This can be added to cards, modals, navbars, etc.
+  Example: <div class="glass-card">...</div>
+*/
+.glass-card {
+  /* Semi-transparent background */
+  background: rgba(30, 41, 59, 0.6); /* Corresponds to dark-800 with 60% opacity */
+  
+  /* Frosted glass effect */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px); /* For Safari support */
+  
+  /* Subtle border to catch light */
+  border: 1px solid rgba(51, 65, 85, 0.5); /* Corresponds to dark-700 with 50% opacity */
+
+  /* Rounded corners */
+  @apply rounded-xl;
+
+  /* Smooth transition for hover effects */
+  transition: background 0.3s ease, border 0.3s ease;
+}
+
+/* Optional: Add a subtle hover effect to lift the card */
+.glass-card:hover {
+  background: rgba(51, 65, 85, 0.7); /* Corresponds to dark-700 with 70% opacity */
+  border: 1px solid rgba(71, 85, 105, 0.6); /* Corresponds to dark-600 with 60% opacity */
+}

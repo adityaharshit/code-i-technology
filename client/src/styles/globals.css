@@ -1,0 +1,64 @@
+/* Importing Tailwind's base styles, components, and utilities.
+  This allows us to build upon Tailwind's foundation.
+*/
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/*
+  Defining CSS custom properties (variables) for the color palette.
+  This makes it easy to maintain a consistent theme throughout the app.
+*/
+:root {
+  --primary: #003049;
+  --secondary: #669BBC;
+  --ternary1: #C1121F;
+  --ternary2: #780000;
+  --ternary3: #FDF0D5;
+  --dark-900: #0F172A;
+  --dark-800: #1E293B;
+  --dark-700: #334155;
+  --dark-600: #475569;
+  --text-light: #F8FAFC;
+  --text-dark: #CBD5E1;
+}
+
+/*
+  Base styles for the entire application.
+*/
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-dark-900 text-text-light font-sans antialiased;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/*
+  Custom scrollbar styling to match the dark theme.
+*/
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--dark-800);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--dark-700);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--dark-600);
+}
+
+/*
+  Custom utility class for a main container with consistent padding.
+*/
+.main-container {
+  @apply container mx-auto px-4 py-8;
+}
