@@ -24,34 +24,109 @@ const getCourseStatus = (course) => {
   }
 };
 
-const getAllCourses = async (req, res) => {
+
+const getCourseDetailsForAdmin = async (req, res) => {
   try {
-    const coursesFromDb = await prisma.course.findMany({
-      orderBy: { createdAt: 'desc' }
-    });
+    const courseId = parseInt(req.params.id);
+    const { search, status } = req.query; // Accept status from query
 
-    let courses = coursesFromDb.map(course => ({
-      ...course,
-      status: getCourseStatus(course)
-    }));
-
-    // If a user is logged in, check their enrollment status for each course
-    if (req.session && req.session.userId) {
-      const studentId = parseInt(req.session.userId, 10);
-      const enrollments = await prisma.enrollment.findMany({
-        where: { studentId },
-        select: { courseId: true }
-      });
-      const enrolledCourseIds = new Set(enrollments.map(e => e.courseId));
-
-      courses = courses.map(course => ({
-        ...course,
-        isEnrolled: enrolledCourseIds.has(course.id)
-      }));
+    const course = await prisma.course.findUnique({ where: { id: courseId } });
+    if (!course) {
+      return res.status(404).json({ error: 'Course not found' });
     }
 
+    const enrollments = await prisma.enrollment.findMany({
+      where: { courseId },
+      include: { student: { select: { id: true, fullName: true, rollNumber: true } } },
+    });
+
+    const transactionWhere = { courseId };
+    if (search) {
+      transactionWhere.OR = [
+        { billNo: { contains: search, mode: 'insensitive' } },
+        { modeOfPayment: { contains: search, mode: 'insensitive' } },
+        {
+          student: {
+            OR: [
+              { fullName: { contains: search, mode: 'insensitive' } },
+              { email: { contains: search, mode: 'insensitive' } },
+            ],
+          },
+        },
+      ];
+    }
+
+    // Add status filter if it's provided and not 'all'
+    if (status && status !== 'all') {
+      transactionWhere.status = status;
+    }
+
+    const transactions = await prisma.transaction.findMany({
+      where: transactionWhere,
+      include: { student: { select: { id: true, fullName: true, rollNumber: true, email: true } } },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const totalStudents = enrollments.length;
+
+    const revenueResult = await prisma.transaction.aggregate({
+      _sum: { netPayable: true },
+      where: { courseId, status: 'paid' },
+    });
+    const totalRevenue = revenueResult._sum.netPayable || 0;
+
+    const enrolledStudents = await Promise.all(
+      enrollments.map(async (enrollment) => {
+        const paidTransactions = await prisma.transaction.findMany({
+          where: { studentId: enrollment.studentId, courseId, status: 'paid' },
+        });
+        const monthsPaid = paidTransactions.reduce((sum, tx) => sum + tx.months, 0);
+        return {
+          ...enrollment.student,
+          monthsPaid,
+        };
+      })
+    );
+
+    res.json({ course, totalStudents, totalRevenue, enrolledStudents, transactions });
+  } catch (error) {
+    console.error('Failed to get course details for admin:', error);
+    res.status(500).json({ error: 'Failed to fetch course details' });
+  }
+};
+
+const getAllCourses = async (req, res) => {
+  try {
+    let courses = await prisma.course.findMany({
+      orderBy: {
+        startDate: 'desc', // Sort by start date
+      },
+    });
+
+    const studentId = req.session.userId;
+
+    if (studentId) {
+      const enrollments = await prisma.enrollment.findMany({
+        where: { studentId: parseInt(studentId) },
+        select: { courseId: true },
+      });
+      const enrolledCourseIds = new Set(enrollments.map(e => e.courseId));
+      courses = courses.map(course => ({
+        ...course,
+        status: getCourseStatus(course),
+        isEnrolled: enrolledCourseIds.has(course.id),
+      }));
+    } else {
+      courses = courses.map(course => ({
+        ...course,
+        status: getCourseStatus(course),
+        isEnrolled: false,
+      }));
+    }
+    
     res.json(courses);
   } catch (error) {
+    console.error('Failed to fetch courses:', error);
     res.status(500).json({ error: 'Failed to fetch courses' });
   }
 };
@@ -227,6 +302,7 @@ module.exports = {
   updateCourse,
   deleteCourse,
   enrollInCourse,
-  getStudentCourses
+  getStudentCourses,
+  getCourseDetailsForAdmin,
 };
 

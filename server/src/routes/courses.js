@@ -9,6 +9,9 @@ const upload = require('../middleware/upload');
 // Public routes
 router.get('/', courseController.getAllCourses);
 
+// Admin-specific detailed view
+router.get('/:id/details', requireAdmin, courseController.getCourseDetailsForAdmin);
+
 // Student routes (specific routes first)
 router.get('/my-courses', requireAuth, requireStudent, courseController.getStudentCourses);
 router.post('/enroll', requireAuth, requireStudent, courseController.enrollInCourse);
@@ -16,10 +19,11 @@ router.post('/enroll', requireAuth, requireStudent, courseController.enrollInCou
 // Public route for specific course (must be after other specific GET routes)
 router.get('/:id', courseController.getCourseById);
 
-// Admin routes
+// Admin routes for CUD operations
 router.post('/', requireAdmin, upload.single('qrCode'), validateCourse, courseController.createCourse);
 router.put('/:id', requireAdmin, upload.single('qrCode'), validateCourse, courseController.updateCourse);
 router.delete('/:id', requireAdmin, courseController.deleteCourse);
 
 
 module.exports = router;
+

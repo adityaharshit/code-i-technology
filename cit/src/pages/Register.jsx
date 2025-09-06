@@ -58,7 +58,6 @@ const Register = () => {
 
   const debouncedUsername = useDebounce(formData.username, 500);
 
-  // Callback to check username availability
   const checkUsernameAvailability = useCallback(async (username) => {
     if (!username || username.length < 3) {
       setUsernameStatus({ loading: false, available: true, message: '' });
@@ -77,7 +76,6 @@ const Register = () => {
     }
   }, []);
 
-  // Effect to trigger username check
   useEffect(() => {
     checkUsernameAvailability(debouncedUsername);
   }, [debouncedUsername, checkUsernameAvailability]);
@@ -112,9 +110,9 @@ const Register = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 500 * 1024) { // 500KB check
+      if (file.size > 500 * 1024) {
         toast.error('File is too large! Maximum size is 500KB.');
-        e.target.value = null; // Clear the input
+        e.target.value = null;
         return;
       }
       setSelectedFile(file);
@@ -167,15 +165,17 @@ const Register = () => {
       const submitData = {
         ...formData,
         photoUrl,
-        permanentAddress: JSON.stringify(formData.permanentAddress),
-        localAddress: JSON.stringify(formData.localAddress)
+        // FIX: Send the address as a JavaScript object, not a string
+        permanentAddress: formData.permanentAddress,
+        localAddress: formData.localAddress,
       };
 
       await register(submitData);
       toast.success('Registration successful! Please check your email to verify your account.');
       navigate('/login');
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Registration failed.');
+      const errorMessage = error.response?.data?.errors?.[0]?.msg || error.response?.data?.error || 'Registration failed.';
+      toast.error(errorMessage);
     }
   };
 
@@ -576,4 +576,3 @@ const Register = () => {
 };
 
 export default Register;
-

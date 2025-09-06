@@ -1,3 +1,4 @@
+// cit/src/services/courses.js
 import api from './api';
 
 export const coursesAPI = {
@@ -8,6 +9,8 @@ export const coursesAPI = {
   delete: (id) => api.delete(`/courses/${id}`),
   enroll: (courseId) => api.post('/courses/enroll', { courseId }),
   getMyCourses: () => api.get('/courses/my-courses'),
+  getCourseDetailsForAdmin: (id, search = '', status = 'all') => api.get(`/courses/${id}/details`, { params: { search, status } }),
   getEnrolledStudents: (courseId) => api.get(`/courses/${courseId}/students`),
   getCourseTransactions: (courseId) => api.get(`/courses/${courseId}/transactions`)
 };
+

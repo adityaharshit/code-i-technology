@@ -1,3 +1,4 @@
+// cit/src/AppRoutes.jsx
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './components/layout/ProtectedRoute';
@@ -12,6 +13,7 @@ import Payment from './pages/Payment';
 import Profile from './pages/Profile';
 import Transactions from './pages/Transactions';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminCourseDetail from './pages/AdminCourseDetail'; // Import the new page
 import VerifyEmail from './pages/VerifyEmail';
 import Contact from './pages/Contact';
 import About from './pages/About';
@@ -28,30 +30,16 @@ const AppRoutes = () => {
       <Route path="/contact" element={<Contact />} />
       <Route path="/about" element={<About />} />
 
-      <Route
-        path="/dashboard"
-        element={<ProtectedRoute><Dashboard /></ProtectedRoute>}
-      />
-      <Route
-        path="/my-courses"
-        element={<ProtectedRoute><MyCourses /></ProtectedRoute>}
-      />
-      <Route
-        path="/payment/:courseId"
-        element={<ProtectedRoute><Payment /></ProtectedRoute>}
-      />
-      <Route
-        path="/profile"
-        element={<ProtectedRoute><Profile /></ProtectedRoute>}
-      />
-      <Route
-        path="/transactions"
-        element={<ProtectedRoute><Transactions /></ProtectedRoute>}
-      />
-      <Route
-        path="/admin-dashboard"
-        element={<ProtectedRoute adminOnly={true}><AdminDashboard /></ProtectedRoute>}
-      />
+      {/* Student Protected Routes */}
+      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      <Route path="/my-courses" element={<ProtectedRoute><MyCourses /></ProtectedRoute>} />
+      <Route path="/payment/:courseId" element={<ProtectedRoute><Payment /></ProtectedRoute>} />
+      <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+      <Route path="/transactions" element={<ProtectedRoute><Transactions /></ProtectedRoute>} />
+      
+      {/* Admin Protected Routes */}
+      <Route path="/admin-dashboard" element={<ProtectedRoute adminOnly={true}><AdminDashboard /></ProtectedRoute>} />
+      <Route path="/admin/courses/:id" element={<ProtectedRoute adminOnly={true}><AdminCourseDetail /></ProtectedRoute>} /> {/* Add new route */}
     </Routes>
   );
 };

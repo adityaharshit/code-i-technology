@@ -1,6 +1,8 @@
 // server/src/controllers/paymentController.js
 const prisma = require('../config/database');
 const { generateBillNumber } = require('../utils/generators');
+const { generateInvoiceHTML } = require('../utils/invoiceUtils');
+
 
 const createTransaction = async (req, res) => {
   try {
@@ -69,7 +71,33 @@ const getStudentTransactions = async (req, res) => {
 
 const getAllTransactions = async (req, res) => {
   try {
+    const { search, status } = req.query;
+
+    const where = {};
+
+    if (search) {
+      where.OR = [
+        { billNo: { contains: search, mode: 'insensitive' } },
+        { modeOfPayment: { contains: search, mode: 'insensitive' } },
+        {
+          student: {
+            OR: [
+              { fullName: { contains: search, mode: 'insensitive' } },
+              { email: { contains: search, mode: 'insensitive' } },
+              { username: { contains: search, mode: 'insensitive' } },
+            ],
+          },
+        },
+        { course: { title: { contains: search, mode: 'insensitive' } } },
+      ];
+    }
+
+    if (status && status !== 'all') {
+      where.status = status;
+    }
+
     const transactions = await prisma.transaction.findMany({
+      where,
       include: {
         course: true,
         student: {
@@ -86,9 +114,11 @@ const getAllTransactions = async (req, res) => {
     
     res.json(transactions);
   } catch (error) {
+    console.error('Error fetching all transactions:', error);
     res.status(500).json({ error: 'Failed to fetch transactions' });
   }
 };
+
 
 const updateTransactionStatus = async (req, res) => {
   try {

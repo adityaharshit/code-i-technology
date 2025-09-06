@@ -1,13 +1,16 @@
 // cit/src/components/admin/CourseManagement.jsx
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { coursesAPI } from '../../services/courses';
 import Button from '../ui/Button';
 import Card from '../ui/Card';
 import Input from '../ui/Input';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import Modal from '../ui/Modal';
+import { Eye } from 'lucide-react';
 
 const CourseManagement = () => {
+  const navigate = useNavigate(); // Initialize navigate
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -108,39 +111,42 @@ const CourseManagement = () => {
       </div>
 
       {error && (
-        <Card className="p-4 mb-6 bg-ternary2 bg-opacity-20 border border-ternary1">
-          <p className="text-ternary1">{error}</p>
+        <Card className="p-4 mb-6 bg-red-500 bg-opacity-20 border border-red-400">
+          <p className="text-red-400">{error}</p>
         </Card>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {courses.map((course) => (
-          <Card key={course.id} className="p-6">
-            <div className="flex items-start justify-between mb-4">
-              <h3 className="text-xl font-semibold text-white">{course.title}</h3>
-              <span className={`px-2 py-1 rounded-full text-xs ${
-                course.status === 'live' 
-                  ? 'bg-green-500 bg-opacity-20 text-green-400' 
-                  : course.status === 'upcoming'
-                  ? 'bg-blue-500 bg-opacity-20 text-blue-400'
-                  : 'bg-gray-500 bg-opacity-20 text-gray-400'
-              }`}>
-                {course.status}
-              </span>
-            </div>
-            
-            <p className="text-gray-400 mb-4 line-clamp-3">{course.description}</p>
-            
-            <div className="space-y-2 text-sm text-gray-400 mb-4">
-              <p>Duration: {course.duration} months</p>
-              <p>Fee: ₹{course.feePerMonth}/month</p>
-              {course.discountPercentage > 0 && <p>Discount: {course.discountPercentage}% (full payment)</p>}
-              {course.startDate && (
-                <p>Starts: {new Date(course.startDate).toLocaleDateString()}</p>
-              )}
+          <Card key={course.id} className="p-6 flex flex-col justify-between">
+            <div>
+              <div className="flex items-start justify-between mb-4">
+                <h3 className="text-xl font-semibold text-white">{course.title}</h3>
+                <span className={`px-2 py-1 rounded-full text-xs ${
+                  course.status === 'Live' 
+                    ? 'bg-green-500 bg-opacity-20 text-green-400' 
+                    : course.status === 'Upcoming'
+                    ? 'bg-blue-500 bg-opacity-20 text-blue-400'
+                    : 'bg-gray-500 bg-opacity-20 text-gray-400'
+                }`}>
+                  {course.status}
+                </span>
+              </div>
+              
+              <p className="text-gray-400 mb-4 line-clamp-3 h-20">{course.description}</p>
+              
+              <div className="space-y-2 text-sm text-gray-400 mb-4">
+                <p>Duration: {course.duration} months</p>
+                <p>Fee: ₹{course.feePerMonth}/month</p>
+                <p>Discount: {course.discountPercentage}%</p>
+              </div>
             </div>
 
             <div className="flex space-x-2">
+              <Button variant="primary" size="sm" onClick={() => navigate(`/admin/courses/${course.id}`)}>
+                <Eye size={16} className="mr-2"/>
+                Details
+              </Button>
               <Button variant="outline" size="sm" onClick={() => handleEdit(course)}>
                 Edit
               </Button>

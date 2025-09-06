@@ -1,3 +1,4 @@
+// server/src/routes/admin.js
 const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
@@ -8,6 +9,7 @@ router.get('/dashboard', requireAdmin, adminController.getDashboardStats);
 
 // Student management
 router.get('/students', requireAdmin, adminController.getAllStudents);
+router.get('/students/:id/details', requireAdmin, adminController.getStudentDetails); // New route for details
 router.delete('/students/:id', requireAdmin, adminController.deleteStudent);
 
 // Course management (handled in courses.js but protected here)
