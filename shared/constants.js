@@ -3,6 +3,7 @@
  */
 
 export const APP_NAME = 'Code i Technology';
+export const APP_VERSION = '1.0.0';
 
 export const COURSE_STATUS = {
   UPCOMING: 'upcoming',
@@ -55,3 +56,5 @@ export const OCCUPATION_OPTIONS = [
   { value: 'unemployed', label: 'Unemployed' },
   { value: 'other', label: 'Other' }
 ];
+
+export const DISCOUNT_PERCENTAGE = 10; // 10% discount for full payment

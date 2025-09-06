@@ -1,4 +1,4 @@
-const { cloudinary } = require('../config/cloudinary');
+const cloudinary = require('../config/cloudinary');  // ✅ no destructuring
 const streamifier = require('streamifier');
 
 const uploadToCloudinary = (file, folder = 'cit') => {
@@ -29,5 +29,5 @@ const deleteFromCloudinary = async (publicId) => {
 
 module.exports = {
   uploadToCloudinary,
-  deleteFromCloudinary
+  deleteFromCloudinary,
 };

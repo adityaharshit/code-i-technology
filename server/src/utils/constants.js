@@ -1,25 +1,14 @@
-const COURSE_STATUS = {
-  UPCOMING: 'upcoming',
-  LIVE: 'live',
-  COMPLETED: 'completed'
-};
-
-const PAYMENT_STATUS = {
-  PENDING_APPROVAL: 'pending approval',
-  PAID: 'paid',
-  REJECTED: 'rejected'
-};
-
-const PAYMENT_MODE = {
-  ONLINE: 'online',
-  OFFLINE: 'offline'
-};
-
-const DISCOUNT_PERCENTAGE = 10; // 10% discount for full payment
+// Re-export shared constants for server-side use
+const {
+  COURSE_STATUS,
+  PAYMENT_STATUS,
+  PAYMENT_MODES,
+  DISCOUNT_PERCENTAGE
+} = require('../../shared/constants.js');
 
 module.exports = {
   COURSE_STATUS,
   PAYMENT_STATUS,
-  PAYMENT_MODE,
+  PAYMENT_MODE: PAYMENT_MODES, // Keep backward compatibility
   DISCOUNT_PERCENTAGE
 };

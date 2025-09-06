@@ -1,24 +1,53 @@
+const express = require('express');
 const multer = require('multer');
-const path = require('path');
+const { uploadToCloudinary, deleteFromCloudinary } = require('../services/uploadService');
 
+// Use memory storage so we can stream directly to Cloudinary
 const storage = multer.memoryStorage();
+const router = express.Router();
+const upload = multer({storage }); // memory storage (buffer) for cloudinary streaming
 
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = /jpeg|jpg|png|gif/;
-  const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = allowedTypes.test(file.mimetype);
+// Upload file
+router.post('/', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
 
-  if (mimetype && extname) {
-    return cb(null, true);
-  } else {
-    cb(new Error('Only image files are allowed'));
+    const folder = req.body.folder || 'uploads';
+    const result = await uploadToCloudinary(req.file, folder);
+
+    return res.json({
+      url: result.secure_url,
+      publicId: result.public_id,
+    });
+  } catch (error) {
+    console.error('Upload error:', error);
+    return res.status(500).json({
+      error: 'Upload failed',
+      details: error.message,
+    });
   }
-};
+});
 
-const upload = multer({
-  storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
-  fileFilter
+// Delete file
+router.delete('/:publicId', async (req, res) => {
+  try {
+    const { publicId } = req.params;
+    if (!publicId) {
+      return res.status(400).json({ error: 'No publicId provided' });
+    }
+
+    const result = await deleteFromCloudinary(publicId);
+
+    return res.json({ result });
+  } catch (error) {
+    console.error('Delete error:', error);
+    return res.status(500).json({
+      error: 'Delete failed',
+      details: error.message,
+    });
+  }
 });
 
 module.exports = upload;

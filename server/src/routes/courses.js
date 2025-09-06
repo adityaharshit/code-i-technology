@@ -11,7 +11,7 @@ router.get('/:id', courseController.getCourseById);
 
 // Student routes
 router.post('/enroll', requireAuth, requireStudent, courseController.enrollInCourse);
-router.get('/student/my-courses', requireAuth, requireStudent, courseController.getStudentCourses);
+router.get('/my-courses', requireAuth, requireStudent, courseController.getStudentCourses);
 
 // Admin routes (protected in admin controller)
 router.post('/', upload.single('qrCode'), validateCourse, courseController.createCourse);

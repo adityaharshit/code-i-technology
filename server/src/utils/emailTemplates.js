@@ -87,7 +87,11 @@ const paymentApprovalEmailTemplate = (name, courseName, amount) => {
   `;
 };
 
+// Alias for backward compatibility
+const verificationEmail = verificationEmailTemplate;
+
 module.exports = {
   verificationEmailTemplate,
+  verificationEmail,
   paymentApprovalEmailTemplate
 };

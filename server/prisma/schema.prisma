@@ -97,10 +97,10 @@ model Transaction {
 }
 
 model Session {
-  sid    String   @id
-  sess   Json
-  expire DateTime
+  sid        String   @id
+  sess       Json
+  expiresAt  DateTime
 
   @@map("session")
-  @@index([expire])
+  @@index([expiresAt])
 }

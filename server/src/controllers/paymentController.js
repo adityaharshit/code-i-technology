@@ -22,7 +22,7 @@ const createTransaction = async (req, res) => {
     }
     
     const netPayable = amount - discount;
-    const billNo = await generateBillNumber(prisma);
+    const billNo = generateBillNumber();
     
     const transaction = await prisma.transaction.create({
       data: {

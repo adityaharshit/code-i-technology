@@ -10,7 +10,9 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: 
+    process.env.FRONTEND_URL
+  ,
   credentials: true,
 }));
 app.use(express.json());
@@ -23,17 +25,21 @@ app.use(
     resave: false,
     saveUninitialized: false,
     store: new PrismaSessionStore(prisma, {
-      checkPeriod: 2 * 60 * 1000, // 2 minutes
+      checkPeriod: 2 * 60 * 1000,
       dbRecordIdIsSessionId: true,
-      dbRecordIdFunction: undefined,
     }),
     cookie: {
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      secure: process.env.NODE_ENV === 'production', // true only in production (HTTPS)
       httpOnly: true,
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // <-- important
+      maxAge: 24 * 60 * 60 * 1000,
     },
   })
 );
+
+
+const uploadRoutes = require('./routes/upload');
+app.use('/api/upload', uploadRoutes);
 
 // Routes
 app.use('/api', routes);

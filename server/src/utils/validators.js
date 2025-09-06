@@ -1,29 +1,38 @@
-const isEmail = (email) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
+// Re-export shared validators for server-side use
+const {
+  validateEmail,
+  validateMobile,
+  validatePassword,
+  validateStrongPassword,
+  validateUsername,
+  validatePincode,
+  validateAddress,
+  validateRegistration,
+  validateLogin,
+  validateCourse,
+  validatePayment
+} = require('../../shared/validators.js');
 
-const isMobile = (mobile) => {
-  const mobileRegex = /^[6-9]\d{9}$/;
-  return mobileRegex.test(mobile);
-};
-
-const isStrongPassword = (password) => {
-  // At least 8 characters, one uppercase, one lowercase, one number
-  const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-  return strongPasswordRegex.test(password);
-};
-
-const validateAddress = (address) => {
-  if (!address || typeof address !== 'object') return false;
-  
-  const requiredFields = ['flatHouseNo', 'street', 'po', 'ps', 'district', 'state', 'pincode'];
-  return requiredFields.every(field => address[field] && address[field].trim() !== '');
-};
+// Keep backward compatibility with old function names
+const isEmail = validateEmail;
+const isMobile = validateMobile;
+const isStrongPassword = validateStrongPassword;
 
 module.exports = {
+  // New standardized names
+  validateEmail,
+  validateMobile,
+  validatePassword,
+  validateStrongPassword,
+  validateUsername,
+  validatePincode,
+  validateAddress,
+  validateRegistration,
+  validateLogin,
+  validateCourse,
+  validatePayment,
+  // Backward compatibility
   isEmail,
   isMobile,
-  isStrongPassword,
-  validateAddress
+  isStrongPassword
 };

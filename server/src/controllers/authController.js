@@ -24,10 +24,26 @@ const register = async (req, res) => {
       return res.status(400).json({ error: 'User already exists' });
     }
 
+    async function generateUniqueRollNumber() {
+      let rollNumber;
+      let exists = true;
+    
+      while (exists) {
+        rollNumber = generateRollNumber();
+        const existing = await prisma.student.findUnique({
+          where: { rollNumber }
+        });
+        exists = !!existing;
+      }
+    
+      return rollNumber;
+    }
+    
+
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
     const verificationToken = generateVerificationToken();
-    const rollNumber = await generateRollNumber(prisma);
+    const rollNumber = await generateUniqueRollNumber();
 
     // Create student
     const student = await prisma.student.create({
@@ -164,6 +180,11 @@ const logout = (req, res) => {
 
 const getCurrentUser = async (req, res) => {
   try {
+    // Check if user is authenticated
+    if (!req.session.userId || !req.session.userType) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
     let user;
     
     if (req.session.userType === 'student') {
@@ -178,7 +199,7 @@ const getCurrentUser = async (req, res) => {
           photoUrl: true
         }
       });
-    } else {
+    } else if (req.session.userType === 'admin') {
       user = await prisma.admin.findUnique({
         where: { id: req.session.userId },
         select: {
@@ -188,6 +209,8 @@ const getCurrentUser = async (req, res) => {
           username: true
         }
       });
+    } else {
+      return res.status(400).json({ error: 'Invalid user type' });
     }
 
     if (!user) {
@@ -196,6 +219,7 @@ const getCurrentUser = async (req, res) => {
 
     res.json({ user: { ...user, type: req.session.userType } });
   } catch (error) {
+    console.error('Get current user error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };

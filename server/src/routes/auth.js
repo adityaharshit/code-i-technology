@@ -1,26 +1,23 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
-const { validateStudentRegistration } = require('../middleware/validation');
+const { validateRegistration, validateLogin } = require('../middleware/validation'); // Assuming you have these
 const upload = require('../middleware/upload');
 const { authLimiter } = require('../middleware/rateLimit');
 
 // Student registration
-router.post('/register', authLimiter, upload.single('photo'), validateStudentRegistration, authController.register);
+router.post('/register', authLimiter, upload.single('photo'), validateRegistration, authController.register);
 
-// Login
-router.post('/login', authLimiter, authController.login);
+// Login for both students and admins
+router.post('/login', authLimiter, validateLogin, authController.login);
 
 // Logout
 router.post('/logout', authController.logout);
 
-// Verify email
-router.get('/verify-email', authController.verifyEmail);
+// Verify email via token
+router.post('/verify-email', authController.verifyEmail);
 
-// Resend verification email
-router.post('/resend-verification', authLimiter, authController.resendVerification);
-
-// Check authentication status
-router.get('/check', authController.checkAuth);
+// Get current user's basic info for session check
+router.get('/me', authController.getCurrentUser); // ADDED THIS ROUTE
 
 module.exports = router;
