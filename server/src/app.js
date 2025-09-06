@@ -1,8 +1,8 @@
+// server/src/app.js
+
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
-const { PrismaSessionStore } = require('@quixo3/prisma-session-store');
-const prisma = require('./config/database');
 const errorHandler = require('./middleware/errorHandler');
 const routes = require('./routes');
 
@@ -10,9 +10,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: 
-    process.env.FRONTEND_URL
-  ,
+  origin: process.env.FRONTEND_URL,
   credentials: true,
 }));
 app.use(express.json());
@@ -24,10 +22,6 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    store: new PrismaSessionStore(prisma, {
-      checkPeriod: 2 * 60 * 1000,
-      dbRecordIdIsSessionId: true,
-    }),
     cookie: {
       secure: process.env.NODE_ENV === 'production', // true only in production (HTTPS)
       httpOnly: true,
@@ -36,7 +30,6 @@ app.use(
     },
   })
 );
-
 
 const uploadRoutes = require('./routes/upload');
 app.use('/api/upload', uploadRoutes);

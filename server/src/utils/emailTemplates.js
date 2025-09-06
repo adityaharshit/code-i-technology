@@ -29,7 +29,7 @@ const verificationEmailTemplate = (name, token) => {
         <p>If the button doesn't work, you can also copy and paste the following link into your browser:</p>
         <p>${verificationLink}</p>
         
-        <p>This verification link will expire in 1 hour.</p>
+        <p>This verification link will expire in 24 hours.</p>
         
         <p>If you didn't create an account with us, please ignore this email.</p>
         
@@ -87,11 +87,8 @@ const paymentApprovalEmailTemplate = (name, courseName, amount) => {
   `;
 };
 
-// Alias for backward compatibility
-const verificationEmail = verificationEmailTemplate;
-
+// Main export
 module.exports = {
   verificationEmailTemplate,
-  verificationEmail,
   paymentApprovalEmailTemplate
 };

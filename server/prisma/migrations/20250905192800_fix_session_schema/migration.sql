@@ -6,11 +6,11 @@
 
 */
 -- DropIndex
-DROP INDEX "session_expire_idx";
+-- DROP INDEX "session_expire_idx";
 
 -- AlterTable
-ALTER TABLE "session" DROP COLUMN "expire",
-ADD COLUMN     "expiresAt" TIMESTAMP(3) NOT NULL;
+-- ALTER TABLE "session" DROP COLUMN "expire",
+-- ADD COLUMN     "expiresAt" TIMESTAMP(3) NOT NULL;
 
--- CreateIndex
-CREATE INDEX "session_expiresAt_idx" ON "session"("expiresAt");
+-- -- CreateIndex
+-- CREATE INDEX "session_expiresAt_idx" ON "session"("expiresAt");

@@ -1,10 +1,55 @@
+// server/src/controllers/courseController.js
 const prisma = require('../config/database');
+
+/**
+ * Determines the status of a course based on its start date and duration.
+ * @param {object} course - The course object from the database.
+ * @returns {string} The calculated status ('live', 'upcoming', or 'completed').
+ */
+const getCourseStatus = (course) => {
+  if (!course.startDate) {
+    return 'upcoming';
+  }
+  const now = new Date();
+  const startDate = new Date(course.startDate);
+  const endDate = new Date(startDate);
+  endDate.setMonth(endDate.getMonth() + course.duration);
+
+  if (now < startDate) {
+    return 'upcoming';
+  } else if (now >= startDate && now <= endDate) {
+    return 'live';
+  } else {
+    return 'completed';
+  }
+};
 
 const getAllCourses = async (req, res) => {
   try {
-    const courses = await prisma.course.findMany({
+    const coursesFromDb = await prisma.course.findMany({
       orderBy: { createdAt: 'desc' }
     });
+
+    let courses = coursesFromDb.map(course => ({
+      ...course,
+      status: getCourseStatus(course)
+    }));
+
+    // If a user is logged in, check their enrollment status for each course
+    if (req.session && req.session.userId) {
+      const studentId = parseInt(req.session.userId, 10);
+      const enrollments = await prisma.enrollment.findMany({
+        where: { studentId },
+        select: { courseId: true }
+      });
+      const enrolledCourseIds = new Set(enrollments.map(e => e.courseId));
+
+      courses = courses.map(course => ({
+        ...course,
+        isEnrolled: enrolledCourseIds.has(course.id)
+      }));
+    }
+
     res.json(courses);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch courses' });
@@ -13,23 +58,52 @@ const getAllCourses = async (req, res) => {
 
 const getCourseById = async (req, res) => {
   try {
-    const course = await prisma.course.findUnique({
+    const courseFromDb = await prisma.course.findUnique({
       where: { id: parseInt(req.params.id) }
     });
     
-    if (!course) {
+    if (!courseFromDb) {
       return res.status(404).json({ error: 'Course not found' });
     }
     
-    res.json(course);
+    let courseWithDetails = {
+      ...courseFromDb,
+      status: getCourseStatus(courseFromDb),
+      monthsPaid: 0,
+      isEnrolled: false
+    };
+
+    // If a user is logged in, find out their enrollment and payment status
+    if (req.session && req.session.userId) {
+        const studentId = parseInt(req.session.userId, 10);
+        const courseId = parseInt(req.params.id, 10);
+
+        // Check for enrollment
+        const enrollment = await prisma.enrollment.findUnique({
+            where: { studentId_courseId: { studentId, courseId } }
+        });
+        courseWithDetails.isEnrolled = !!enrollment;
+
+        // Calculate months paid if enrolled
+        if (courseWithDetails.isEnrolled) {
+            const paidTransactions = await prisma.transaction.findMany({
+                where: { studentId, courseId, status: 'paid' },
+                select: { months: true }
+            });
+            courseWithDetails.monthsPaid = paidTransactions.reduce((acc, tx) => acc + tx.months, 0);
+        }
+    }
+    
+    res.json(courseWithDetails);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch course' });
+    console.error("Error fetching course by ID:", error);
+    res.status(500).json({ error: 'Failed to fetch course details' });
   }
 };
 
 const createCourse = async (req, res) => {
   try {
-    const { title, description, duration, startDate, feePerMonth, qrCodeUrl, status } = req.body;
+    const { title, description, duration, startDate, feePerMonth, qrCodeUrl, discountPercentage } = req.body;
     
     const course = await prisma.course.create({
       data: {
@@ -39,7 +113,7 @@ const createCourse = async (req, res) => {
         startDate: startDate ? new Date(startDate) : null,
         feePerMonth: parseFloat(feePerMonth),
         qrCodeUrl,
-        status
+        discountPercentage: parseFloat(discountPercentage) || 0,
       }
     });
     
@@ -51,7 +125,7 @@ const createCourse = async (req, res) => {
 
 const updateCourse = async (req, res) => {
   try {
-    const { title, description, duration, startDate, feePerMonth, qrCodeUrl, status } = req.body;
+    const { title, description, duration, startDate, feePerMonth, qrCodeUrl, discountPercentage } = req.body;
     
     const course = await prisma.course.update({
       where: { id: parseInt(req.params.id) },
@@ -62,7 +136,7 @@ const updateCourse = async (req, res) => {
         startDate: startDate ? new Date(startDate) : null,
         feePerMonth: parseFloat(feePerMonth),
         qrCodeUrl,
-        status
+        discountPercentage: parseFloat(discountPercentage) || 0,
       }
     });
     
@@ -90,7 +164,7 @@ const enrollInCourse = async (req, res) => {
     
     const enrollment = await prisma.enrollment.create({
       data: {
-        studentId: req.session.userId,
+        studentId: parseInt(req.session.userId, 10),
         courseId: parseInt(courseId)
       },
       include: {
@@ -109,15 +183,39 @@ const enrollInCourse = async (req, res) => {
 
 const getStudentCourses = async (req, res) => {
   try {
+    const studentId = parseInt(req.session.userId, 10);
+
     const enrollments = await prisma.enrollment.findMany({
-      where: { studentId: req.session.userId },
-      include: {
-        course: true
-      }
+      where: { studentId },
+      include: { course: true }
     });
-    
-    res.json(enrollments.map(enrollment => enrollment.course));
+
+    if (!enrollments.length) {
+      return res.json([]);
+    }
+
+    const paidTransactions = await prisma.transaction.findMany({
+      where: { studentId, status: 'paid' },
+      select: { courseId: true, months: true }
+    });
+
+    const monthsPaidMap = paidTransactions.reduce((acc, tx) => {
+      acc[tx.courseId] = (acc[tx.courseId] || 0) + tx.months;
+      return acc;
+    }, {});
+
+    const coursesWithDetails = enrollments.map(({ course }) => {
+      const monthsPaid = monthsPaidMap[course.id] || 0;
+      return {
+        ...course,
+        status: getCourseStatus(course),
+        monthsPaid,
+      };
+    });
+
+    res.json(coursesWithDetails);
   } catch (error) {
+    console.error("Error fetching student courses:", error);
     res.status(500).json({ error: 'Failed to fetch student courses' });
   }
 };
@@ -131,3 +229,4 @@ module.exports = {
   enrollInCourse,
   getStudentCourses
 };
+

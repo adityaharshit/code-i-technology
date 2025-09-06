@@ -12,10 +12,9 @@ const TransactionTable = ({ transactions, isLoading }) => {
 
   const handleDownloadInvoice = async (transaction) => {
     try {
+      // The API now returns the full HTML content
       const response = await paymentsAPI.getInvoice(transaction.tid);
-      const { transaction: txData, student, course } = response.data;
-      
-      const invoiceHTML = generateInvoiceHTML(txData, student, course);
+      const invoiceHTML = response.data;
       
       const printWindow = window.open('', '_blank', 'height=600,width=800');
       printWindow.document.write(invoiceHTML);

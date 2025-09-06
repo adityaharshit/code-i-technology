@@ -1,8 +1,7 @@
 const bcrypt = require('bcryptjs');
 const prisma = require('../config/database');
 const { generateRollNumber, generateVerificationToken } = require('../utils/generators');
-const transporter = require('../config/email');
-const { verificationEmail } = require('../utils/emailTemplates');
+const { sendVerificationEmail } = require('../services/emailService');
 
 const register = async (req, res) => {
   try {
@@ -21,29 +20,13 @@ const register = async (req, res) => {
     });
 
     if (existingUser) {
-      return res.status(400).json({ error: 'User already exists' });
-    }
-
-    async function generateUniqueRollNumber() {
-      let rollNumber;
-      let exists = true;
-    
-      while (exists) {
-        rollNumber = generateRollNumber();
-        const existing = await prisma.student.findUnique({
-          where: { rollNumber }
-        });
-        exists = !!existing;
-      }
-    
-      return rollNumber;
+      return res.status(400).json({ error: 'User with this email or username already exists' });
     }
     
-
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
     const verificationToken = generateVerificationToken();
-    const rollNumber = await generateUniqueRollNumber();
+    const rollNumber = await generateRollNumber();
 
     // Create student
     const student = await prisma.student.create({
@@ -57,7 +40,7 @@ const register = async (req, res) => {
         studentMobile,
         parentMobile,
         occupation,
-        dob: new Date(dob),
+        dob: dob ? new Date(dob) : null,
         collegeName,
         bloodGroup,
         gender,
@@ -70,16 +53,7 @@ const register = async (req, res) => {
     });
 
     // Send verification email
-    try {
-      await transporter.sendMail({
-        from: process.env.EMAIL_FROM,
-        to: email,
-        subject: 'Verify Your Email - Code i Technology',
-        html: verificationEmail(verificationToken, username)
-      });
-    } catch (emailError) {
-      console.error('Email sending failed:', emailError);
-    }
+    await sendVerificationEmail(email, fullName, verificationToken);
 
     res.status(201).json({
       message: 'Registration successful. Please check your email for verification.',
@@ -88,7 +62,29 @@ const register = async (req, res) => {
 
   } catch (error) {
     console.error('Registration error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal server error during registration.' });
+  }
+};
+
+
+const checkUsername = async (req, res) => {
+  try {
+    const { username } = req.body;
+    if (!username) {
+      return res.status(400).json({ error: 'Username is required' });
+    }
+
+    const student = await prisma.student.findUnique({ where: { username } });
+    const admin = await prisma.admin.findUnique({ where: { username } });
+
+    if (student || admin) {
+      return res.json({ isAvailable: false });
+    }
+
+    return res.json({ isAvailable: true });
+  } catch (error) {
+    console.error('Error checking username:', error);
+    res.status(500).json({ error: 'Server error while checking username' });
   }
 };
 
@@ -101,7 +97,7 @@ const verifyEmail = async (req, res) => {
     });
 
     if (!student) {
-      return res.status(400).json({ error: 'Invalid verification token' });
+      return res.status(400).json({ error: 'Invalid or expired verification token' });
     }
 
     await prisma.student.update({
@@ -122,7 +118,7 @@ const login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    // Check if user exists
+    // Check if user exists (student or admin)
     const user = await prisma.student.findFirst({
       where: {
         OR: [{ email: username }, { username }]
@@ -134,18 +130,18 @@ const login = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(400).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     // Check password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(400).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     // Check if student is verified
     if (user.hasOwnProperty('isVerified') && !user.isVerified) {
-      return res.status(400).json({ error: 'Please verify your email first' });
+      return res.status(403).json({ error: 'Please verify your email before logging in.' });
     }
 
     // Set session
@@ -173,55 +169,45 @@ const logout = (req, res) => {
     if (err) {
       return res.status(500).json({ error: 'Logout failed' });
     }
-    res.clearCookie('connect.sid');
-    res.json({ message: 'Logout successful' });
+    res.clearCookie('connect.sid'); // Ensure the session cookie is cleared
+    res.status(200).json({ message: 'Logout successful' });
   });
 };
 
 const getCurrentUser = async (req, res) => {
   try {
-    // Check if user is authenticated
     if (!req.session.userId || !req.session.userType) {
       return res.status(401).json({ error: 'Not authenticated' });
     }
 
     let user;
+    const userType = req.session.userType;
     
-    if (req.session.userType === 'student') {
+    if (userType === 'student') {
       user = await prisma.student.findUnique({
         where: { id: req.session.userId },
-        select: {
-          id: true,
-          rollNumber: true,
-          fullName: true,
-          email: true,
-          username: true,
-          photoUrl: true
-        }
+        select: { id: true, fullName: true, email: true, username: true }
       });
-    } else if (req.session.userType === 'admin') {
+    } else if (userType === 'admin') {
       user = await prisma.admin.findUnique({
         where: { id: req.session.userId },
-        select: {
-          id: true,
-          fullName: true,
-          email: true,
-          username: true
-        }
+        select: { id: true, fullName: true, email: true, username: true }
       });
-    } else {
-      return res.status(400).json({ error: 'Invalid user type' });
     }
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      // If user not found, destroy the invalid session
+      req.session.destroy();
+      res.clearCookie('connect.sid');
+      return res.status(401).json({ error: 'User not found, session cleared.' });
     }
 
-    res.json({ user: { ...user, type: req.session.userType } });
+    res.json({ user: { ...user, type: userType } });
   } catch (error) {
     console.error('Get current user error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
 
-module.exports = { register, verifyEmail, login, logout, getCurrentUser };
+
+module.exports = { register, verifyEmail, login, logout, getCurrentUser, checkUsername };

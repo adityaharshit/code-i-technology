@@ -1,11 +1,28 @@
+// cit/src/components/payments/PaymentSummary.jsx
 import React, { useMemo } from 'react';
-import { calculatePayment, formatCurrency } from '../../utils/formatters';
+import { formatCurrency } from '../../utils/formatters';
 
-const PaymentSummary = ({ feePerMonth, months, courseDuration }) => {
-  const { amount, discount, netPayable } = useMemo(
-    () => calculatePayment(feePerMonth, months, courseDuration),
-    [feePerMonth, months, courseDuration]
-  );
+const PaymentSummary = ({ feePerMonth, months, courseDuration, discountPercentage }) => {
+  const { amount, discount, netPayable } = useMemo(() => {
+    const calculatedAmount = feePerMonth * months;
+    let calculatedDiscount = 0;
+
+    // Safely handle discount percentage, defaulting to 0 if it's not a valid number
+    const actualDiscountPercentage = Number(discountPercentage) || 0;
+
+    // Apply discount only if paying for the full course duration in one go
+    if (months === courseDuration && actualDiscountPercentage > 0) {
+      calculatedDiscount = calculatedAmount * (actualDiscountPercentage / 100);
+    }
+    
+    const calculatedNetPayable = calculatedAmount - calculatedDiscount;
+
+    return { 
+        amount: calculatedAmount, 
+        discount: calculatedDiscount, 
+        netPayable: calculatedNetPayable 
+    };
+  }, [feePerMonth, months, courseDuration, discountPercentage]);
 
   return (
     <div className="p-6 bg-gray-800 rounded-lg border border-gray-700 space-y-4">
@@ -16,7 +33,7 @@ const PaymentSummary = ({ feePerMonth, months, courseDuration }) => {
       </div>
       {discount > 0 && (
         <div className="flex justify-between items-center text-green-400">
-          <span>Full Payment Discount</span>
+          <span>Full Payment Discount ({discountPercentage}%)</span>
           <span className="font-medium">-{formatCurrency(discount)}</span>
         </div>
       )}
@@ -30,3 +47,4 @@ const PaymentSummary = ({ feePerMonth, months, courseDuration }) => {
 };
 
 export default PaymentSummary;
+

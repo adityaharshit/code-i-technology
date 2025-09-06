@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+// cit/src/pages/Register.jsx
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import useUpload from '../hooks/useUpload';
+import useDebounce from '../hooks/useDebounce';
+import { authAPI } from '../services/auth';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Card from '../components/ui/Card';
@@ -47,9 +50,38 @@ const Register = () => {
   const [sameAddress, setSameAddress] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
+  const [usernameStatus, setUsernameStatus] = useState({ loading: false, available: true, message: '' });
+
   const { register, loading } = useAuth();
   const { uploadFile, uploading } = useUpload();
   const navigate = useNavigate();
+
+  const debouncedUsername = useDebounce(formData.username, 500);
+
+  // Callback to check username availability
+  const checkUsernameAvailability = useCallback(async (username) => {
+    if (!username || username.length < 3) {
+      setUsernameStatus({ loading: false, available: true, message: '' });
+      return;
+    }
+    setUsernameStatus({ loading: true, available: false, message: '' });
+    try {
+      const { data } = await authAPI.checkUsername(username);
+      if (data.isAvailable) {
+        setUsernameStatus({ loading: false, available: true, message: 'Username is available!' });
+      } else {
+        setUsernameStatus({ loading: false, available: false, message: 'Username is already taken.' });
+      }
+    } catch (error) {
+      setUsernameStatus({ loading: false, available: false, message: 'Could not check username.' });
+    }
+  }, []);
+
+  // Effect to trigger username check
+  useEffect(() => {
+    checkUsernameAvailability(debouncedUsername);
+  }, [debouncedUsername, checkUsernameAvailability]);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -80,6 +112,11 @@ const Register = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      if (file.size > 500 * 1024) { // 500KB check
+        toast.error('File is too large! Maximum size is 500KB.');
+        e.target.value = null; // Clear the input
+        return;
+      }
       setSelectedFile(file);
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
@@ -111,6 +148,11 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!usernameStatus.available && formData.username) {
+        toast.error('Please choose an available username.');
+        return;
+    }
     
     try {
       let photoUrl = '';
@@ -178,13 +220,22 @@ const Register = () => {
                 onChange={handleChange}
                 required
               />
-              <Input
-                label="Username *"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                required
-              />
+              <div>
+                <Input
+                  label="Username *"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  maxLength="20"
+                  required
+                />
+                {usernameStatus.loading && <p className="text-xs text-gray-400 mt-1">Checking...</p>}
+                {usernameStatus.message && (
+                  <p className={`text-xs mt-1 ${usernameStatus.available ? 'text-green-400' : 'text-red-400'}`}>
+                    {usernameStatus.message}
+                  </p>
+                )}
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -198,14 +249,13 @@ const Register = () => {
               />
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Photo *
+                  Photo
                 </label>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleFileChange}
                   className="block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-secondary file:text-white hover:file:bg-secondary/80"
-                  required
                 />
                 {previewUrl && (
                   <div className="mt-2">
@@ -221,6 +271,9 @@ const Register = () => {
                 name="studentMobile"
                 value={formData.studentMobile}
                 onChange={handleChange}
+                maxLength="10"
+                pattern="\d{10}"
+                title="Please enter a 10-digit mobile number"
                 required
               />
               <Input
@@ -228,6 +281,9 @@ const Register = () => {
                 name="parentMobile"
                 value={formData.parentMobile}
                 onChange={handleChange}
+                maxLength="10"
+                pattern="\d{10}"
+                title="Please enter a 10-digit mobile number"
                 required
               />
             </div>
@@ -520,3 +576,4 @@ const Register = () => {
 };
 
 export default Register;
+

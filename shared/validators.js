@@ -10,7 +10,7 @@ export const validateEmail = (email) => {
 
 export const validateMobile = (mobile) => {
   if (!mobile || typeof mobile !== 'string') return false;
-  const mobileRegex = /^[6-9]\d{9}$/;
+  const mobileRegex = /^[6-9]\d{9}$/; // Validates a 10-digit Indian mobile number
   return mobileRegex.test(mobile);
 };
 
@@ -28,8 +28,8 @@ export const validateStrongPassword = (password) => {
 
 export const validateUsername = (username) => {
   if (!username || typeof username !== 'string') return false;
-  // 3-20 characters, letters, numbers, underscores only
-  const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+  // 3-20 characters, letters, numbers, underscores, and periods
+  const usernameRegex = /^[a-zA-Z0-9_.]{3,20}$/;
   return usernameRegex.test(username);
 };
 
@@ -63,7 +63,7 @@ export const validateRegistration = (formData) => {
   if (!formData.username?.trim()) {
     errors.username = 'Username is required';
   } else if (!validateUsername(formData.username)) {
-    errors.username = 'Username must be 3-20 characters (letters, numbers, underscores only)';
+    errors.username = 'Username must be 3-20 characters and can only contain letters, numbers, underscores (_), and periods (.).';
   }
 
   if (!formData.password) {
@@ -73,11 +73,11 @@ export const validateRegistration = (formData) => {
   }
 
   if (formData.studentMobile && !validateMobile(formData.studentMobile)) {
-    errors.studentMobile = 'Invalid mobile number';
+    errors.studentMobile = 'Please enter a valid 10-digit mobile number.';
   }
 
   if (formData.parentMobile && !validateMobile(formData.parentMobile)) {
-    errors.parentMobile = 'Invalid mobile number';
+    errors.parentMobile = 'Please enter a valid 10-digit mobile number.';
   }
 
   // Address validation

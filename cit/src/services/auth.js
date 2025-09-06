@@ -8,6 +8,9 @@ export const authAPI = {
   logout: () => api.post('/auth/logout'),
   getCurrentUser: () => api.get('/auth/me'),
   register: (data) => api.post('/auth/register', data),
+  verifyEmail: (token) => api.post('/auth/verify-email', { token }),
+  resendVerification: (email) => api.post('/auth/resend-verification', { email }),
+  checkUsername: (username) => api.post('/auth/check-username', { username }),
 };
 
 

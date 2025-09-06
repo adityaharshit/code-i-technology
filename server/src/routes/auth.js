@@ -8,6 +8,10 @@ const { authLimiter } = require('../middleware/rateLimit');
 // Student registration
 router.post('/register', authLimiter, upload.single('photo'), validateRegistration, authController.register);
 
+
+// Check if username is available
+router.post('/check-username', authController.checkUsername);
+
 // Login for both students and admins
 router.post('/login', authLimiter, validateLogin, authController.login);
 

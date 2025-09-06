@@ -1,3 +1,4 @@
+// server/src/middleware/validation.js
 const { body, validationResult } = require('express-validator');
 
 // Handle validation errors
@@ -12,14 +13,23 @@ const handleValidationErrors = (req, res, next) => {
 // Validation for registration
 const validateRegistration = [
   body('fullName').notEmpty().withMessage('Full name is required'),
-  body('fatherName').notEmpty().withMessage('Father\'s name is required'),
+  body('fatherName').notEmpty().withMessage("Father's name is required"),
   body('email').isEmail().withMessage('Valid email is required'),
-  body('username').isLength({ min: 3 }).withMessage('Username must be at least 3 characters'),
+  body('username')
+    .isLength({ min: 3, max: 20 })
+    .withMessage('Username must be between 3 and 20 characters')
+    .matches(/^[a-zA-Z0-9._]+$/)
+    .withMessage('Username can only contain letters, numbers, periods, and underscores'),
   body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
-  body('studentMobile').isMobilePhone('en-IN').withMessage('Valid student mobile number is required'),
-  body('parentMobile').isMobilePhone('en-IN').withMessage('Valid parent mobile number is required'),
+  body('studentMobile')
+    .isLength({ min: 10, max: 10 }).withMessage('Student mobile must be 10 digits')
+    .isMobilePhone('en-IN').withMessage('Valid student mobile number is required'),
+  body('parentMobile')
+    .isLength({ min: 10, max: 10 }).withMessage('Parent mobile must be 10 digits')
+    .isMobilePhone('en-IN').withMessage('Valid parent mobile number is required'),
   body('dob').isISO8601().withMessage('Valid date of birth is required'),
   body('gender').isIn(['Male', 'Female', 'Other']).withMessage('Gender must be Male, Female, or Other'),
+  // Address validation can remain complex, as it handles JSON
   body('permanentAddress').custom((value) => {
     try {
       const address = typeof value === 'string' ? JSON.parse(value) : value;

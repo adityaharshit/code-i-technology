@@ -56,7 +56,7 @@ model Course {
   startDate    DateTime?
   feePerMonth  Float
   qrCodeUrl    String?        @db.VarChar(500)
-  status       String         @default("upcoming") // upcoming, live, completed
+  discountPercentage Float         @default(0)
   enrollments  Enrollment[]
   transactions Transaction[]
   createdAt    DateTime       @default(now())
@@ -96,11 +96,12 @@ model Transaction {
   @@map("transactions")
 }
 
-model Session {
-  sid        String   @id
-  sess       Json
-  expiresAt  DateTime
+model RollNumberSequence {
+  year    Int @id
+  lastId  Int
+}
 
-  @@map("session")
-  @@index([expiresAt])
+model BillNumberSequence {
+  id     String @id // Format: "YYYY-MM"
+  lastId Int
 }

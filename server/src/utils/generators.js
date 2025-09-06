@@ -1,24 +1,32 @@
-const generateRollNumber = (year, lastRollNumber) => {
+// server/src/utils/generators.js
+const prisma = require('../config/database');
+
+const generateRollNumber = async (year) => {
   const currentYear = year || new Date().getFullYear();
-  let sequenceNumber = 5001;
-  
-  if (lastRollNumber) {
-    const lastSequence = parseInt(lastRollNumber.slice(-4));
-    sequenceNumber = lastSequence + 1;
-  }
-  
-  return `${currentYear}CIT${sequenceNumber.toString().padStart(4, '0')}`;
+
+  const sequence = await prisma.rollNumberSequence.upsert({
+    where: { year: currentYear },
+    update: { lastId: { increment: 1 } },
+    create: { year: currentYear, lastId: 5001 },
+  });
+
+  return `${currentYear}CIT${sequence.lastId.toString().padStart(4, '0')}`;
 };
 
-const generateBillNumber = (lastBillNumber) => {
-  let sequenceNumber = 5001;
-  
-  if (lastBillNumber) {
-    const lastSequence = parseInt(lastBillNumber.split('/')[1]);
-    sequenceNumber = lastSequence + 1;
-  }
-  
-  return `CIT/${sequenceNumber.toString().padStart(4, '0')}`;
+const generateBillNumber = async () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = (now.getMonth() + 1).toString().padStart(2, '0');
+  const sequenceId = `${year}-${month}`;
+
+  const sequence = await prisma.billNumberSequence.upsert({
+    where: { id: sequenceId },
+    update: { lastId: { increment: 1 } },
+    create: { id: sequenceId, lastId: 1 },
+  });
+
+  // Format: CIT/YYYY/MM/NNNN
+  return `CIT/${year}/${month}/${sequence.lastId.toString().padStart(4, '0')}`;
 };
 
 const generateVerificationToken = () => {
@@ -30,13 +38,13 @@ const calculatePayment = (feePerMonth, months, duration, discountPercentage = 0)
   let discount = 0;
   
   if (months === duration) {
-    discount = feePerMonth * (discountPercentage / 100);
+    discount = totalFee * (discountPercentage / 100);
   }
   
   const netPayable = totalFee - discount;
   
   return {
-    totalFee,
+    amount: totalFee,
     discount,
     netPayable
   };

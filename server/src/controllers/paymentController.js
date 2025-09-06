@@ -1,9 +1,11 @@
+// server/src/controllers/paymentController.js
 const prisma = require('../config/database');
 const { generateBillNumber } = require('../utils/generators');
 
 const createTransaction = async (req, res) => {
   try {
     const { courseId, months, modeOfPayment, paymentProofUrl } = req.body;
+    const studentId = parseInt(req.session.userId, 10);
     
     const course = await prisma.course.findUnique({
       where: { id: parseInt(courseId) }
@@ -16,18 +18,18 @@ const createTransaction = async (req, res) => {
     const amount = course.feePerMonth * parseInt(months);
     let discount = 0;
     
-    // Apply discount if paying for full duration
-    if (parseInt(months) === course.duration) {
-      discount = amount * (process.env.DISCOUNT_PERCENTAGE / 100);
+    // Apply discount only if paying for the full duration in one single transaction
+    if (parseInt(months, 10) === course.duration) {
+      discount = amount * (course.discountPercentage / 100);
     }
     
     const netPayable = amount - discount;
-    const billNo = generateBillNumber();
+    const billNo = await generateBillNumber();
     
     const transaction = await prisma.transaction.create({
       data: {
         billNo,
-        studentId: req.session.userId,
+        studentId: studentId,
         courseId: parseInt(courseId),
         months: parseInt(months),
         amount,
@@ -44,6 +46,7 @@ const createTransaction = async (req, res) => {
     
     res.status(201).json(transaction);
   } catch (error) {
+    console.error("Transaction creation error:", error);
     res.status(500).json({ error: 'Failed to create transaction' });
   }
 };
@@ -51,7 +54,7 @@ const createTransaction = async (req, res) => {
 const getStudentTransactions = async (req, res) => {
   try {
     const transactions = await prisma.transaction.findMany({
-      where: { studentId: req.session.userId },
+      where: { studentId: parseInt(req.session.userId, 10) },
       include: {
         course: true
       },
@@ -103,23 +106,28 @@ const updateTransactionStatus = async (req, res) => {
 };
 
 const getTransactionInvoice = async (req, res) => {
-  try {
-    const transaction = await prisma.transaction.findUnique({
-      where: { tid: parseInt(req.params.id) },
-      include: {
-        course: true,
-        student: true
-      }
-    });
-    
-    if (!transaction) {
-      return res.status(404).json({ error: 'Transaction not found' });
+    try {
+        const { generateInvoiceHTML } = require('../utils/invoiceUtils');
+        const transaction = await prisma.transaction.findUnique({
+            where: { tid: parseInt(req.params.id) },
+            include: {
+                course: true,
+                student: true
+            }
+        });
+        
+        if (!transaction) {
+            return res.status(404).json({ error: 'Transaction not found' });
+        }
+        
+        const html = generateInvoiceHTML(transaction, transaction.student, transaction.course);
+        res.header('Content-Type', 'text/html');
+        res.send(html);
+        
+    } catch (error) {
+        console.error(`Failed to get invoice for transaction ${req.params.id}`, error);
+        res.status(500).json({ error: 'Failed to fetch invoice data' });
     }
-    
-    res.json(transaction);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch invoice data' });
-  }
 };
 
 module.exports = {
@@ -129,3 +137,4 @@ module.exports = {
   updateTransactionStatus,
   getTransactionInvoice
 };
+

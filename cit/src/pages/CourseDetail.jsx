@@ -1,5 +1,6 @@
+// cit/src/pages/CourseDetail.jsx
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { coursesAPI } from '../services/courses';
 import { useAuth } from '../contexts/AuthContext';
 import Card from '../components/ui/Card';
@@ -37,8 +38,8 @@ const CourseDetail = () => {
     }
     try {
       await coursesAPI.enroll(id);
-      toast.success('Enrolled successfully!');
-      navigate('/my-courses');
+      toast.success('Enrolled successfully! Redirecting to payment...');
+      navigate(`/payment/${id}`);
     } catch (error) {
       toast.error(error.response?.data?.error || 'Failed to enroll.');
     }
@@ -51,6 +52,37 @@ const CourseDetail = () => {
   if (!course) {
     return <div className="text-center text-2xl">Course not found.</div>;
   }
+
+  const isFullyPaid = course.isEnrolled && course.monthsPaid >= course.duration;
+
+  const renderActionButtons = () => {
+    if (course.status === 'completed') {
+      return <Button size="lg" disabled>Course Completed</Button>;
+    }
+
+    if (course.isEnrolled) {
+      return (
+        <div className="flex items-center space-x-4">
+          <Button size="lg" disabled>Already Enrolled</Button>
+          {!isFullyPaid && (
+            <Link to={`/payment/${course.id}`}>
+              <Button size="lg" variant="secondary">Pay Fees</Button>
+            </Link>
+          )}
+        </div>
+      );
+    }
+    
+    if (course.status === 'live' || course.status === 'upcoming') {
+      return (
+        <Button onClick={handleEnroll} size="lg">
+          Enroll Now
+        </Button>
+      );
+    }
+
+    return null;
+  };
 
   return (
     <Card className="p-8 max-w-4xl mx-auto">
@@ -67,20 +99,17 @@ const CourseDetail = () => {
         </div>
         <div>
           <h3 className="font-bold">Start Date</h3>
-          <p>{new Date(course.startDate).toLocaleDateString()}</p>
+          <p>{course.startDate ? new Date(course.startDate).toLocaleDateString() : 'TBA'}</p>
         </div>
         <div>
           <h3 className="font-bold">Status</h3>
           <p className="capitalize">{course.status}</p>
         </div>
       </div>
-      {(course.status === 'live' || course.status === 'upcoming') && (
-        <Button onClick={handleEnroll} size="lg">
-          Enroll Now
-        </Button>
-      )}
+      {renderActionButtons()}
     </Card>
   );
 };
 
 export default CourseDetail;
+

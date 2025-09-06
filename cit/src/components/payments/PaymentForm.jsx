@@ -1,10 +1,10 @@
+// cit/src/components/payments/PaymentForm.jsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import useForm from '../../hooks/useForm';
-import { useToast } from '../../hooks/useToast';
+import { useToast } from '../../contexts/ToastContext';
 import { paymentsAPI } from '../../services/payments';
 import { validatePayment } from '../../utils/validators';
-import Input from '../ui/Input';
 import Button from '../ui/Button';
 import PaymentSummary from './PaymentSummary';
 import { UploadCloud } from 'lucide-react';
@@ -22,12 +22,20 @@ const PaymentForm = ({ course }) => {
   const { showSuccess, showError } = useToast();
   const navigate = useNavigate();
 
+  const monthsPaid = course.monthsPaid || 0;
+  const monthsRemaining = course.duration - monthsPaid;
+
+  const monthOptions = Array.from({ length: monthsRemaining }, (_, i) => ({
+    value: i + 1,
+    label: `${i + 1} month${i > 0 ? 's' : ''}`
+  }));
+
   const handleMonthsChange = (e) => {
     let newMonths = parseInt(e.target.value, 10);
     if (isNaN(newMonths) || newMonths < 1) {
       newMonths = 1;
-    } else if (newMonths > course.duration) {
-      newMonths = course.duration;
+    } else if (newMonths > monthsRemaining) {
+      newMonths = monthsRemaining;
     }
     setValues(prev => ({ ...prev, months: newMonths }));
   };
@@ -47,24 +55,34 @@ const PaymentForm = ({ course }) => {
       showSuccess('Payment submitted for approval!');
       navigate('/transactions');
     } catch (error) {
-      showError(error.message || 'Payment submission failed.');
+      showError(error.response?.data?.error || 'Payment submission failed.');
     }
   };
 
   return (
     <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Input
-          label="Number of Months to Pay"
-          name="months"
-          type="number"
-          value={values.months}
-          onChange={handleMonthsChange}
-          min="1"
-          max={course?.duration}
-          error={errors.months}
-          required
-        />
+        <div>
+          <label htmlFor="months" className="block text-sm font-medium text-gray-300 mb-1">
+            Number of Months to Pay
+          </label>
+          <select
+            id="months"
+            name="months"
+            value={values.months}
+            onChange={handleMonthsChange}
+            className="input-field"
+            disabled={monthsRemaining <= 0}
+          >
+            {monthsRemaining > 0 ? (
+              monthOptions.map(option => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))
+            ) : (
+              <option>Fully Paid</option>
+            )}
+          </select>
+        </div>
         <div>
           <label htmlFor="modeOfPayment" className="block text-sm font-medium text-gray-300 mb-1">
             Mode of Payment
@@ -84,8 +102,9 @@ const PaymentForm = ({ course }) => {
       
       <PaymentSummary
         feePerMonth={course.feePerMonth}
-        months={values.months}
-        courseDuration={course.duration}
+        months={parseInt(values.months, 10)}
+        courseDuration={course.duration} 
+        discountPercentage={course.discountPercentage} 
       />
 
       {values.modeOfPayment === 'online' && (
@@ -108,7 +127,7 @@ const PaymentForm = ({ course }) => {
         </div>
       )}
 
-      <Button type="submit" loading={isSubmitting} className="w-full" size="lg">
+      <Button type="submit" loading={isSubmitting} className="w-full" size="lg" disabled={monthsRemaining <= 0}>
         Submit Payment
       </Button>
     </form>
@@ -116,3 +135,4 @@ const PaymentForm = ({ course }) => {
 };
 
 export default PaymentForm;
+

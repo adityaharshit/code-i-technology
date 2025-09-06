@@ -5,7 +5,19 @@ const { uploadToCloudinary, deleteFromCloudinary } = require('../services/upload
 // Use memory storage so we can stream directly to Cloudinary
 const storage = multer.memoryStorage();
 const router = express.Router();
-const upload = multer({storage }); // memory storage (buffer) for cloudinary streaming
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 500 * 1024 // 500 KB limit
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'), false);
+    }
+  }
+});
 
 // Upload file
 router.post('/', upload.single('file'), async (req, res) => {

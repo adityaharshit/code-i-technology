@@ -1,178 +1,309 @@
+// server/src/utils/invoiceUtils.js
 const generateInvoiceHTML = (transaction, student, course) => {
-  const invoiceDate = new Date(transaction.createdAt).toLocaleDateString('en-IN');
+  const receiptDate = new Date(transaction.createdAt).toLocaleDateString('en-IN');
   
+  const studentAddress = student.localAddress && typeof student.localAddress === 'object'
+    ? `${student.localAddress.flatHouseNo || ''}, ${student.localAddress.street || ''}, ${student.localAddress.po || ''}, ${student.localAddress.ps || ''}, ${student.localAddress.district || ''}, ${student.localAddress.state || ''} - ${student.localAddress.pinCode || ''}`
+    : 'Address not available';
+
+  const formatCurrency = (amount) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount);
+
+  // Simple check for UPI based on mode of payment. You might want a more robust check.
+  const isUpi = transaction.modeOfPayment.toLowerCase().includes('upi') || transaction.modeOfPayment.toLowerCase().includes('online');
+  const isCash = transaction.modeOfPayment.toLowerCase().includes('cash') || transaction.modeOfPayment.toLowerCase().includes('offline');
+
   return `
     <!DOCTYPE html>
-    <html>
+    <html lang="en">
     <head>
-      <meta charset="utf-8">
-      <title>Invoice - ${transaction.billNo}</title>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Receipt - ${transaction.billNo}</title>
       <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
         body {
-          font-family: Arial, sans-serif;
-          line-height: 1.6;
-          color: #333;
-          max-width: 800px;
-          margin: 0 auto;
+          font-family: 'Roboto', Arial, sans-serif;
+          margin: 0;
           padding: 20px;
+          background-color: #f4f4f4;
+          color: #333;
+        }
+        .receipt-container {
+          max-width: 800px;
+          margin: 20px auto;
+          background-color: #fff;
+          border: 2px solid #000;
+          padding: 25px;
+          position: relative;
         }
         .header {
-          text-align: center;
-          margin-bottom: 30px;
-          border-bottom: 2px solid #003049;
-          padding-bottom: 20px;
-        }
-        .header h1 {
-          color: #003049;
-          margin: 0;
-        }
-        .header p {
-          margin: 5px 0;
-          color: #666;
-        }
-        .invoice-details {
           display: flex;
           justify-content: space-between;
-          margin-bottom: 30px;
+          align-items: flex-start;
+          border-bottom: 2px solid #000;
+          padding-bottom: 15px;
+          margin-bottom: 15px;
         }
-        .student-details, .invoice-info {
-          width: 48%;
+        .company-details {
+          flex: 1;
         }
-        .section {
-          margin-bottom: 20px;
-        }
-        .section h3 {
-          color: #003049;
-          border-bottom: 1px solid #ddd;
-          padding-bottom: 5px;
+        .company-details img {
+          max-width: 180px;
           margin-bottom: 10px;
         }
-        table {
+        .company-details p {
+          margin: 2px 0;
+          font-size: 14px;
+        }
+        .receipt-title-section {
+          text-align: right;
+        }
+        .receipt-title {
+          font-size: 48px;
+          font-weight: 700;
+          margin: 0;
+          letter-spacing: 2px;
+        }
+        .receipt-info {
+          font-size: 14px;
+          margin-top: 10px;
+        }
+        .receipt-info table {
           width: 100%;
           border-collapse: collapse;
+        }
+        .receipt-info td {
+          padding: 2px 0;
+        }
+        .student-details {
+          border: 1px solid #000;
+          padding: 10px;
           margin-bottom: 20px;
         }
-        table th, table td {
-          border: 1px solid #ddd;
+        .student-details table {
+          width: 100%;
+          font-size: 15px;
+        }
+        .student-details td {
+          padding: 3px 5px;
+        }
+        .items-table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-bottom: 0;
+        }
+        .items-table th, .items-table td {
+          border: 1px solid #000;
           padding: 10px;
+          text-align: center;
+          font-size: 14px;
+        }
+        .items-table th {
+          background-color: #f2f2f2;
+          font-weight: 500;
+        }
+        .items-table .course-name {
           text-align: left;
         }
-        table th {
-          background-color: #f8f9fa;
+        .payment-summary {
+          display: flex;
+          justify-content: space-between;
         }
-        .total-row {
-          font-weight: bold;
-          background-color: #f8f9fa;
+        .payment-mode, .payment-totals {
+          width: 49.5%;
         }
-        .terms {
-          margin-top: 30px;
-          padding: 15px;
-          background-color: #f8f9fa;
-          border-radius: 5px;
+        .payment-mode {
+          border: 1px solid #000;
+          border-top: none;
+          padding: 10px;
+          font-size: 14px;
         }
-        .terms h4 {
-          margin-top: 0;
-          color: #003049;
+        .payment-mode-options {
+          margin-top: 10px;
+        }
+        .payment-totals table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+        .payment-totals td {
+          border: 1px solid #000;
+          padding: 10px;
+          font-size: 14px;
+        }
+        .payment-totals td:first-child {
+          font-weight: 500;
+          width: 40%;
         }
         .footer {
-          text-align: center;
-          margin-top: 40px;
-          padding-top: 20px;
-          border-top: 1px solid #ddd;
-          color: #666;
+          margin-top: 30px;
+        }
+        .terms {
+          border: 1px solid #000;
+          padding: 5px 10px;
+          margin-bottom: 30px;
+        }
+        .terms p {
+          font-weight: bold;
+          font-size: 12px;
+          margin: 0;
+        }
+        .terms ul {
+          margin: 5px 0 5px 20px;
+          padding: 0;
+          list-style-type: square;
           font-size: 12px;
         }
+        .signature {
+          text-align: right;
+          margin-bottom: 20px;
+          border-top: 1px solid #000;
+          padding-top: 5px;
+          font-weight: 500;
+        }
+        .thank-you {
+          text-align: center;
+          font-weight: 500;
+        }
+        .print-button {
+            display: block;
+            width: 150px;
+            margin: 30px auto 10px;
+            padding: 10px;
+            background-color: #003049;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+        }
         @media print {
-          body {
-            padding: 0;
-          }
-          .no-print {
-            display: none;
-          }
+          body { padding: 0; background-color: #fff; }
+          .receipt-container { margin: 0; border: none; }
+          .print-button { display: none; }
         }
       </style>
     </head>
     <body>
-      <div class="header">
-        <h1>Code i Technology</h1>
-        <p>123 Education Street, Tech City - 700001</p>
-        <p>Phone: +91 9876543210 | Email: info@codeitechnology.com</p>
-      </div>
-      
-      <div class="invoice-details">
+      <div class="receipt-container">
+        <div class="header">
+          <div class="company-details">
+            <img src="https://placehold.co/400x100/000000/FFFFFF?text=CODE+i+TECHNOLOGY" alt="CODE i TECHNOLOGY Logo">
+            <p><strong>Aman & Akash Complex, Sinha College More</strong></p>
+            <p>Aurangabad Bihar - 824101</p>
+            <p><strong>Mobile Number:</strong> +91 7004554075</p>
+            <p><strong>Email:</strong> infocodeitechnology@gmail.com</p>
+          </div>
+          <div class="receipt-title-section">
+            <h1 class="receipt-title">RECEIPT</h1>
+            <div class="receipt-info">
+              <table>
+                <tr>
+                  <td>Receipt Number</td>
+                  <td>/ ${transaction.billNo}</td>
+                </tr>
+                <tr>
+                  <td>Receipt Date</td>
+                  <td>/ ${receiptDate}</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+
         <div class="student-details">
-          <h3>Student Details</h3>
-          <p><strong>Name:</strong> ${student.fullName}</p>
-          <p><strong>Roll No:</strong> ${student.rollNumber}</p>
-          <p><strong>Mobile:</strong> ${student.studentMobile}</p>
-          <p><strong>Address:</strong> ${JSON.parse(student.localAddress).flatHouseNo}, ${JSON.parse(student.localAddress).street}, ${JSON.parse(student.localAddress).district}, ${JSON.parse(student.localAddress).state} - ${JSON.parse(student.localAddress).pincode}</p>
+          <table>
+            <tr>
+              <td style="width: 200px;"><strong>Student ID / Enrollment No.:</strong></td>
+              <td>${student.rollNumber}</td>
+            </tr>
+            <tr>
+              <td><strong>Name:</strong></td>
+              <td>${student.fullName}</td>
+            </tr>
+            <tr>
+              <td><strong>Mobile Number:</strong></td>
+              <td>${student.studentMobile}</td>
+            </tr>
+            <tr>
+              <td><strong>Address:</strong></td>
+              <td>${studentAddress}</td>
+            </tr>
+          </table>
         </div>
-        
-        <div class="invoice-info">
-          <h3>Invoice Details</h3>
-          <p><strong>Bill No:</strong> ${transaction.billNo}</p>
-          <p><strong>Date:</strong> ${invoiceDate}</p>
-          <p><strong>Transaction ID:</strong> ${transaction.tid}</p>
-        </div>
-      </div>
-      
-      <div class="section">
-        <h3>Course Details</h3>
-        <table>
+
+        <table class="items-table">
           <thead>
             <tr>
-              <th>S.no</th>
-              <th>Course Name</th>
-              <th>Duration</th>
-              <th>Fee per Month</th>
-              <th>Months Paid</th>
-              <th>Total Fee</th>
+              <th>S.No.</th>
+              <th class="course-name">Course Name.</th>
+              <th>Course Fee</th>
               <th>Discount</th>
-              <th>Net Payable</th>
+              <th>Net Amount Payable</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>1</td>
-              <td>${course.title}</td>
-              <td>${course.duration} months</td>
-              <td>₹${course.feePerMonth}</td>
-              <td>${transaction.months}</td>
-              <td>₹${transaction.amount + transaction.discount}</td>
-              <td>₹${transaction.discount}</td>
-              <td>₹${transaction.netPayable}</td>
+              <td class="course-name">${course.title}</td>
+              <td>${formatCurrency(transaction.amount)}</td>
+              <td>${formatCurrency(transaction.discount)}</td>
+              <td>${formatCurrency(transaction.netPayable)}</td>
             </tr>
+            <!-- Empty rows for spacing -->
+            <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td></tr>
           </tbody>
         </table>
+        
+        <div class="payment-summary">
+          <div class="payment-mode">
+            <strong>Mode of Payment</strong>
+            <div class="payment-mode-options">
+              <input type="checkbox" id="cash" ${isCash ? 'checked' : ''} disabled>
+              <label for="cash">Cash</label>
+              <br>
+              <input type="checkbox" id="upi" ${isUpi ? 'checked' : ''} disabled>
+              <label for="upi">UPI</label>
+              ${isUpi ? `<div style="border: 1px solid #000; padding: 5px; margin-top: 5px; display: inline-block;">Transaction Ref: Proof Attached</div>` : ''}
+            </div>
+          </div>
+          <div class="payment-totals">
+            <table>
+              <tr>
+                <td>Amount Paid</td>
+                <td>${formatCurrency(transaction.netPayable)}</td>
+              </tr>
+              <tr>
+                <td>Balance Due</td>
+                <td>${formatCurrency(0)}</td>
+              </tr>
+              <tr>
+                <td>Remark</td>
+                <td>&nbsp;</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="footer">
+          <div class="terms">
+            <p>TERMS & CONDITION</p>
+            <ul>
+              <li>Fee once paid is non-refundable and non-transferable.</li>
+              <li>Classes commence from the next working day after demo class completion.</li>
+            </ul>
+          </div>
+          <div class="signature">
+            Seal & Signature
+          </div>
+          <div class="thank-you">
+            Thank you for the payment!
+          </div>
+        </div>
       </div>
-      
-      <div class="section">
-        <h3>Payment Details</h3>
-        <p><strong>Mode of Payment:</strong> ${transaction.modeOfPayment}</p>
-        <p><strong>Status:</strong> ${transaction.status}</p>
-        ${transaction.paymentProofUrl ? `<p><strong>Payment Proof:</strong> <a href="${transaction.paymentProofUrl}" target="_blank">View Proof</a></p>` : ''}
-      </div>
-      
-      <div class="terms">
-        <h4>Terms & Conditions</h4>
-        <ul>
-          <li>Fee once paid is non-refundable/non-transferable</li>
-          <li>Classes start next working day after demo class</li>
-          <li>Certificate will be provided only after course completion</li>
-          <li>Institute reserves the right to make changes to the schedule</li>
-        </ul>
-      </div>
-      
-      <div class="footer">
-        <p>Thank you for choosing Code i Technology!</p>
-        <p>This is a computer generated invoice and does not require a signature.</p>
-      </div>
-      
-      <div class="no-print" style="text-align: center; margin-top: 20px;">
-        <button onclick="window.print()" style="background-color: #003049; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
-          Print Invoice
-        </button>
-      </div>
+      <button class="print-button" onclick="window.print()">Print Receipt</button>
     </body>
     </html>
   `;
@@ -181,3 +312,4 @@ const generateInvoiceHTML = (transaction, student, course) => {
 module.exports = {
   generateInvoiceHTML
 };
+

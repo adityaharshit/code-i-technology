@@ -1,3 +1,4 @@
+// cit/src/components/admin/CourseManagement.jsx
 import React, { useState, useEffect } from 'react';
 import { coursesAPI } from '../../services/courses';
 import Button from '../ui/Button';
@@ -19,7 +20,7 @@ const CourseManagement = () => {
     startDate: '',
     feePerMonth: '',
     qrCodeUrl: '',
-    status: 'upcoming'
+    discountPercentage: 0,
   });
 
   useEffect(() => {
@@ -39,6 +40,19 @@ const CourseManagement = () => {
     }
   };
 
+  const resetForm = () => {
+    setEditingCourse(null);
+    setFormData({
+      title: '',
+      description: '',
+      duration: '',
+      startDate: '',
+      feePerMonth: '',
+      qrCodeUrl: '',
+      discountPercentage: 0
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -48,16 +62,7 @@ const CourseManagement = () => {
         await coursesAPI.create(formData);
       }
       setIsModalOpen(false);
-      setEditingCourse(null);
-      setFormData({
-        title: '',
-        description: '',
-        duration: '',
-        startDate: '',
-        feePerMonth: '',
-        qrCodeUrl: '',
-        status: 'upcoming'
-      });
+      resetForm();
       fetchCourses();
     } catch (error) {
       setError('Failed to save course');
@@ -68,12 +73,12 @@ const CourseManagement = () => {
     setEditingCourse(course);
     setFormData({
       title: course.title,
-      description: course.description,
+      description: course.description || '',
       duration: course.duration.toString(),
       startDate: course.startDate ? course.startDate.split('T')[0] : '',
       feePerMonth: course.feePerMonth.toString(),
       qrCodeUrl: course.qrCodeUrl || '',
-      status: course.status
+      discountPercentage: course.discountPercentage || 0
     });
     setIsModalOpen(true);
   };
@@ -129,6 +134,7 @@ const CourseManagement = () => {
             <div className="space-y-2 text-sm text-gray-400 mb-4">
               <p>Duration: {course.duration} months</p>
               <p>Fee: ₹{course.feePerMonth}/month</p>
+              {course.discountPercentage > 0 && <p>Discount: {course.discountPercentage}% (full payment)</p>}
               {course.startDate && (
                 <p>Starts: {new Date(course.startDate).toLocaleDateString()}</p>
               )}
@@ -154,16 +160,7 @@ const CourseManagement = () => {
 
       <Modal isOpen={isModalOpen} onClose={() => {
         setIsModalOpen(false);
-        setEditingCourse(null);
-        setFormData({
-          title: '',
-          description: '',
-          duration: '',
-          startDate: '',
-          feePerMonth: '',
-          qrCodeUrl: '',
-          status: 'upcoming'
-        });
+        resetForm();
       }}>
         <h2 className="text-2xl font-bold text-white mb-6">
           {editingCourse ? 'Edit Course' : 'Add New Course'}
@@ -183,7 +180,6 @@ const CourseManagement = () => {
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               className="input-field h-20"
-              required
             />
           </div>
 
@@ -220,18 +216,14 @@ const CourseManagement = () => {
             placeholder="https://cloudinary.com/example.png"
           />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Status</label>
-            <select
-              value={formData.status}
-              onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-              className="input-field"
-            >
-              <option value="upcoming">Upcoming</option>
-              <option value="live">Live</option>
-              <option value="completed">Completed</option>
-            </select>
-          </div>
+          <Input
+              label="Discount Percentage (%)"
+              type="number"
+              step="0.01"
+              value={formData.discountPercentage}
+              onChange={(e) => setFormData({ ...formData, discountPercentage: e.target.value })}
+              placeholder="e.g., 10 for 10%"
+            />
 
           <div className="flex space-x-4 pt-4">
             <Button type="submit" className="flex-1">
@@ -242,7 +234,7 @@ const CourseManagement = () => {
               variant="outline"
               onClick={() => {
                 setIsModalOpen(false);
-                setEditingCourse(null);
+                resetForm();
               }}
             >
               Cancel
@@ -255,3 +247,4 @@ const CourseManagement = () => {
 };
 
 export default CourseManagement;
+
