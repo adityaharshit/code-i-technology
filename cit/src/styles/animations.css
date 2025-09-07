@@ -1,15 +1,461 @@
 /*
-  Keyframe definitions for reusable animations.
+  Enhanced keyframe definitions for modern, smooth animations.
 */
 
-/* Fades an element in from being fully transparent */
+/* Advanced fade animations */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { 
+    opacity: 0; 
+  }
+  to { 
+    opacity: 1; 
+  }
 }
 
-/* Slides an element up and fades it in */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Scale and rotate animations */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes scaleInRotate {
+  from {
+    opacity: 0;
+    transform: scale(0.8) rotate(-5deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* Advanced slide animations */
 @keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Pulse and glow effects */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(102, 155, 188, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(102, 155, 188, 0.8);
+  }
+}
+
+@keyframes pulseSubtle {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.02);
+    opacity: 0.9;
+  }
+}
+
+/* Bounce animations */
+@keyframes bounce {
+  0%, 20%, 53%, 80%, 100% {
+    animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+    transform: translate3d(0,0,0);
+  }
+
+  40%, 43% {
+    animation-timing-function: cubic-bezier(0.755, 0.050, 0.855, 0.060);
+    transform: translate3d(0, -30px, 0);
+  }
+
+  70% {
+    animation-timing-function: cubic-bezier(0.755, 0.050, 0.855, 0.060);
+    transform: translate3d(0, -15px, 0);
+  }
+
+  90% {
+    transform: translate3d(0,-4px,0);
+  }
+}
+
+@keyframes slowBounce {
+  0%, 100% {
+    transform: translateY(-10px);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+/* Modern wobble and shake */
+@keyframes wobble {
+  0% { transform: rotate(0deg); }
+  15% { transform: rotate(-5deg); }
+  30% { transform: rotate(3deg); }
+  45% { transform: rotate(-1deg); }
+  60% { transform: rotate(1deg); }
+  75% { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+  20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
+/* Flip animations */
+@keyframes flipInX {
+  from {
+    transform: perspective(400px) rotate3d(1, 0, 0, 90deg);
+    animation-timing-function: ease-in;
+    opacity: 0;
+  }
+  40% {
+    transform: perspective(400px) rotate3d(1, 0, 0, -20deg);
+    animation-timing-function: ease-in;
+  }
+  60% {
+    transform: perspective(400px) rotate3d(1, 0, 0, 10deg);
+    opacity: 1;
+  }
+  80% {
+    transform: perspective(400px) rotate3d(1, 0, 0, -5deg);
+  }
+  to {
+    transform: perspective(400px);
+  }
+}
+
+@keyframes flipInY {
+  from {
+    transform: perspective(400px) rotate3d(0, 1, 0, 90deg);
+    animation-timing-function: ease-in;
+    opacity: 0;
+  }
+  40% {
+    transform: perspective(400px) rotate3d(0, 1, 0, -20deg);
+    animation-timing-function: ease-in;
+  }
+  60% {
+    transform: perspective(400px) rotate3d(0, 1, 0, 10deg);
+    opacity: 1;
+  }
+  80% {
+    transform: perspective(400px) rotate3d(0, 1, 0, -5deg);
+  }
+  to {
+    transform: perspective(400px);
+  }
+}
+
+/* Glow and highlight effects */
+@keyframes glow {
+  from {
+    text-shadow: 0 0 20px rgba(102, 155, 188, 0.5);
+  }
+  to {
+    text-shadow: 0 0 30px rgba(102, 155, 188, 0.8), 0 0 40px rgba(102, 155, 188, 0.6);
+  }
+}
+
+@keyframes highlight {
+  0% {
+    background-size: 0% 100%;
+  }
+  100% {
+    background-size: 100% 100%;
+  }
+}
+
+/*
+  Utility classes for applying animations with different durations and delays
+*/
+
+/* Basic animations */
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.8s ease-out forwards;
+}
+
+.animate-fade-in-left {
+  animation: fadeInLeft 0.8s ease-out forwards;
+}
+
+.animate-fade-in-right {
+  animation: fadeInRight 0.8s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.6s ease-out forwards;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.6s ease-out forwards;
+}
+
+.animate-slide-in-left {
+  animation: slideInFromLeft 0.8s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInFromRight 0.8s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.5s ease-out forwards;
+}
+
+.animate-scale-in-rotate {
+  animation: scaleInRotate 0.6s ease-out forwards;
+}
+
+/* Interactive animations */
+.animate-pulse-subtle {
+  animation: pulseSubtle 2s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.animate-bounce-slow {
+  animation: slowBounce 3s ease-in-out infinite;
+}
+
+.animate-wobble {
+  animation: wobble 1s ease-in-out;
+}
+
+.animate-flip-in-x {
+  animation: flipInX 0.75s ease-out forwards;
+}
+
+.animate-flip-in-y {
+  animation: flipInY 0.75s ease-out forwards;
+}
+
+.animate-glow {
+  animation: glow 1.5s ease-in-out infinite alternate;
+}
+
+/* Hover-triggered animations */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.hover-scale {
+  transition: transform 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-rotate {
+  transition: transform 0.3s ease;
+}
+
+.hover-rotate:hover {
+  transform: rotate(3deg);
+}
+
+.hover-glow {
+  transition: box-shadow 0.3s ease;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(102, 155, 188, 0.4);
+}
+
+/* Animation delays for staggered effects */
+.animate-delay-75 { animation-delay: 75ms; }
+.animate-delay-100 { animation-delay: 100ms; }
+.animate-delay-150 { animation-delay: 150ms; }
+.animate-delay-200 { animation-delay: 200ms; }
+.animate-delay-300 { animation-delay: 300ms; }
+.animate-delay-500 { animation-delay: 500ms; }
+.animate-delay-700 { animation-delay: 700ms; }
+.animate-delay-1000 { animation-delay: 1000ms; }
+
+/* Animation durations */
+.animate-duration-300 { animation-duration: 300ms; }
+.animate-duration-500 { animation-duration: 500ms; }
+.animate-duration-700 { animation-duration: 700ms; }
+.animate-duration-1000 { animation-duration: 1000ms; }
+
+/* Initial opacity for elements that will animate in */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.animate-on-scroll.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/*
+  Additional animations for enhanced responsive design
+  Add this to the existing animations.css file
+*/
+
+/* Enhanced hover animations for interactive elements */
+@keyframes gentlePulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.02);
+    opacity: 0.95;
+  }
+}
+
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes shimmerGlow {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes cardLift {
+  from {
+    transform: translateY(0px) scale(1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+  to {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(102, 155, 188, 0.1);
+  }
+}
+
+@keyframes staggeredFadeIn {
   from {
     opacity: 0;
     transform: translateY(20px);
@@ -20,46 +466,405 @@
   }
 }
 
-/* A subtle pulse effect, great for notifications or calls to action */
-@keyframes pulse {
-  0%, 100% {
+@keyframes progressFill {
+  from {
+    width: 0%;
+  }
+  to {
+    width: var(--progress-width, 100%);
+  }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced utility classes for responsive animations */
+.animate-gentle-pulse {
+  animation: gentlePulse 3s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: floatSlow 4s ease-in-out infinite;
+}
+
+.animate-shimmer-glow {
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0.1) 25%, 
+    rgba(255, 255, 255, 0.2) 50%, 
+    rgba(255, 255, 255, 0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmerGlow 2s infinite;
+}
+
+.animate-card-lift {
+  animation: cardLift 0.3s ease-out forwards;
+}
+
+.animate-staggered-fade-in {
+  animation: staggeredFadeIn 0.6s ease-out forwards;
+}
+
+.animate-slide-in-bottom {
+  animation: slideInFromBottom 0.8s ease-out forwards;
+}
+
+.animate-progress-fill {
+  animation: progressFill 1.5s ease-out forwards;
+}
+
+/* Responsive animation utilities */
+.animate-mobile-optimized {
+  animation-duration: 0.3s;
+}
+
+@media (min-width: 768px) {
+  .animate-mobile-optimized {
+    animation-duration: 0.6s;
+  }
+}
+
+/* Hover states for interactive elements */
+.hover-float {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-float:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.hover-brighten {
+  transition: filter 0.3s ease;
+}
+
+.hover-brighten:hover {
+  filter: brightness(1.1);
+}
+
+.hover-border-glow {
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-border-glow:hover {
+  border-color: rgba(102, 155, 188, 0.6);
+  box-shadow: 0 0 0 1px rgba(102, 155, 188, 0.3);
+}
+
+/* Loading states */
+.loading-skeleton {
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0.1) 25%, 
+    rgba(255, 255, 255, 0.2) 50%, 
+    rgba(255, 255, 255, 0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmerGlow 1.5s infinite;
+  border-radius: 4px;
+}
+
+/* Mobile-specific animations */
+@media (max-width: 768px) {
+  .mobile-slide-up {
+    animation: slideUp 0.4s ease-out forwards;
+  }
+  
+  .mobile-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+  }
+  
+  /* Reduce motion for mobile performance */
+  .animate-pulse-glow {
+    animation-duration: 3s;
+  }
+  
+  .animate-bounce-slow {
+    animation-duration: 4s;
+  }
+}
+
+/* Enhanced stagger delays for better performance */
+.animate-stagger-1 { animation-delay: 50ms; }
+.animate-stagger-2 { animation-delay: 100ms; }
+.animate-stagger-3 { animation-delay: 150ms; }
+.animate-stagger-4 { animation-delay: 200ms; }
+.animate-stagger-5 { animation-delay: 250ms; }
+.animate-stagger-6 { animation-delay: 300ms; }
+.animate-stagger-7 { animation-delay: 350ms; }
+.animate-stagger-8 { animation-delay: 400ms; }
+
+
+/* Admin dashboard specific animations */
+@keyframes dashboardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes sidebarSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes statsCardHover {
+  0% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+  100% {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 0 20px rgba(102, 155, 188, 0.1);
+  }
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes tableRowSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Enhanced animation utility classes */
+.animate-dashboard-entrance {
+  animation: dashboardEntrance 0.8s ease-out forwards;
+}
+
+.animate-sidebar-slide-in {
+  animation: sidebarSlideIn 0.6s ease-out forwards;
+}
+
+.animate-stats-card-hover {
+  animation: statsCardHover 0.3s ease-out forwards;
+}
+
+.animate-modal-slide-up {
+  animation: modalSlideUp 0.4s ease-out forwards;
+}
+
+.animate-table-row-slide-in {
+  animation: tableRowSlideIn 0.3s ease-out forwards;
+}
+
+/* Staggered animations for lists */
+.animate-stagger-fast-1 { animation-delay: 50ms; }
+.animate-stagger-fast-2 { animation-delay: 100ms; }
+.animate-stagger-fast-3 { animation-delay: 150ms; }
+.animate-stagger-fast-4 { animation-delay: 200ms; }
+.animate-stagger-fast-5 { animation-delay: 250ms; }
+.animate-stagger-fast-6 { animation-delay: 300ms; }
+.animate-stagger-fast-7 { animation-delay: 350ms; }
+.animate-stagger-fast-8 { animation-delay: 400ms; }
+
+/* Performance optimized hover effects */
+.hover-admin-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  will-change: transform;
+}
+
+.hover-admin-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 155, 188, 0.15);
+}
+
+/* Mobile performance optimizations */
+@media (max-width: 768px) {
+  .animate-dashboard-entrance,
+  .animate-fade-in-up,
+  .animate-fade-in-down {
+    animation-duration: 0.4s;
+  }
+  
+  /* Reduce motion for better mobile performance */
+  .hover-admin-card:hover {
+    transform: none;
+  }
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
     transform: scale(1);
   }
-  50% {
-    transform: scale(1.03);
-  }
 }
 
-/* A slow, gentle bounce, useful for icons */
-@keyframes slowBounce {
+@keyframes textGlow {
   0%, 100% {
-    transform: translateY(-5%);
-    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+    text-shadow: 0 0 20px rgba(102, 155, 188, 0.5);
   }
   50% {
-    transform: translateY(0);
-    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    text-shadow: 0 0 30px rgba(102, 155, 188, 0.8), 0 0 40px rgba(102, 155, 188, 0.6);
   }
 }
 
-/*
-  Utility classes to apply the animations.
-  These can be added directly to HTML elements.
-  Example: <div class="animate-fade-in">...</div>
-*/
-
-.animate-fade-in {
-  animation: fadeIn 0.5s ease-in-out forwards;
+@keyframes backgroundPulse {
+  0%, 100% {
+    background: rgba(30, 41, 59, 0.6);
+  }
+  50% {
+    background: rgba(51, 65, 85, 0.7);
+  }
 }
 
-.animate-slide-up {
-  animation: slideUp 0.6s ease-out forwards;
+@keyframes borderGlow {
+  0%, 100% {
+    border-color: rgba(102, 155, 188, 0.3);
+    box-shadow: 0 0 10px rgba(102, 155, 188, 0.2);
+  }
+  50% {
+    border-color: rgba(102, 155, 188, 0.6);
+    box-shadow: 0 0 20px rgba(102, 155, 188, 0.4);
+  }
 }
 
-.animate-pulse-subtle {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+@keyframes successPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+  }
 }
 
-.animate-bounce-slow {
-  animation: slowBounce 2.5s infinite;
+/* Enhanced stagger animations for grid layouts */
+.animate-stagger-grid-1 { animation-delay: 50ms; }
+.animate-stagger-grid-2 { animation-delay: 100ms; }
+.animate-stagger-grid-3 { animation-delay: 150ms; }
+.animate-stagger-grid-4 { animation-delay: 200ms; }
+.animate-stagger-grid-5 { animation-delay: 250ms; }
+.animate-stagger-grid-6 { animation-delay: 300ms; }
+.animate-stagger-grid-7 { animation-delay: 350ms; }
+.animate-stagger-grid-8 { animation-delay: 400ms; }
+
+/* Enhanced animation utility classes */
+.animate-slide-in-top {
+  animation: slideInFromTop 0.8s ease-out forwards;
+}
+
+.animate-zoom-in {
+  animation: zoomIn 0.6s ease-out forwards;
+}
+
+.animate-text-glow {
+  animation: textGlow 2s ease-in-out infinite alternate;
+}
+
+.animate-background-pulse {
+  animation: backgroundPulse 3s ease-in-out infinite;
+}
+
+.animate-border-glow {
+  animation: borderGlow 2s ease-in-out infinite;
+}
+
+.animate-success-pulse {
+  animation: successPulse 2s infinite;
+}
+
+/* Page transition animations */
+.page-enter {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.page-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-exit-active {
+  opacity: 0;
+  transform: translateY(-30px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* Mobile-specific animations with reduced motion */
+@media (max-width: 768px) {
+  .mobile-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+  }
+  
+  .mobile-slide-up {
+    animation: slideUp 0.4s ease-out forwards;
+  }
+  
+  .mobile-scale-in {
+    animation: scaleIn 0.3s ease-out forwards;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in-up,
+  .animate-fade-in-down,
+  .animate-fade-in-left,
+  .animate-fade-in-right,
+  .animate-slide-up,
+  .animate-slide-down,
+  .animate-scale-in,
+  .animate-zoom-in,
+  .animate-slide-in-top {
+    animation: fadeIn 0.3s ease-out forwards;
+  }
+  
+  .animate-pulse-glow,
+  .animate-text-glow,
+  .animate-background-pulse,
+  .animate-border-glow {
+    animation: none;
+  }
 }

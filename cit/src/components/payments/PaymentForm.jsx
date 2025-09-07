@@ -7,7 +7,7 @@ import { paymentsAPI } from '../../services/payments';
 import { validatePayment } from '../../utils/validators';
 import Button from '../ui/Button';
 import PaymentSummary from './PaymentSummary';
-import { UploadCloud } from 'lucide-react';
+import { UploadCloud, Calendar, CreditCard, Clock, CheckCircle } from 'lucide-react';
 
 const PaymentForm = ({ course }) => {
   const { values, errors, isSubmitting, handleChange, setValues } = useForm(
@@ -60,79 +60,305 @@ const PaymentForm = ({ course }) => {
   };
 
   return (
-    <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label htmlFor="months" className="block text-sm font-medium text-gray-300 mb-1">
-            Number of Months to Pay
-          </label>
-          <select
-            id="months"
-            name="months"
-            value={values.months}
-            onChange={handleMonthsChange}
-            className="input-field"
-            disabled={monthsRemaining <= 0}
-          >
-            {monthsRemaining > 0 ? (
-              monthOptions.map(option => (
-                <option key={option.value} value={option.value}>{option.label}</option>
-              ))
-            ) : (
-              <option>Fully Paid</option>
-            )}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="modeOfPayment" className="block text-sm font-medium text-gray-300 mb-1">
-            Mode of Payment
-          </label>
-          <select
-            id="modeOfPayment"
-            name="modeOfPayment"
-            value={values.modeOfPayment}
-            onChange={handleChange}
-            className="input-field"
-          >
-            <option value="online">Online</option>
-            <option value="offline">Offline</option>
-          </select>
-        </div>
-      </div>
-      
-      <PaymentSummary
-        feePerMonth={course.feePerMonth}
-        months={parseInt(values.months, 10)}
-        courseDuration={course.duration} 
-        discountPercentage={course.discountPercentage} 
-      />
-
-      {values.modeOfPayment === 'online' && (
-        <div className="text-center p-4 border border-dashed border-gray-600 rounded-lg">
-          <h3 className="text-lg font-semibold mb-2">Pay via QR Code</h3>
-          <p className="text-gray-400 text-sm mb-4">Scan the QR code below and upload a screenshot of your payment.</p>
-          {course.qrCodeUrl ? (
-            <img src={course.qrCodeUrl} alt="QR Code" className="mx-auto my-4 w-48 h-48 object-contain rounded-md" />
-          ) : (
-            <p className="text-ternary1">QR Code is not available for this course.</p>
-          )}
-          <div className="mt-4">
-             <label htmlFor="paymentProof" className="relative cursor-pointer bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg inline-flex items-center">
-              <UploadCloud className="mr-2" size={18}/>
-              <span>{values.paymentProof ? values.paymentProof.name : 'Upload Screenshot'}</span>
-              <input id="paymentProof" name="paymentProof" type="file" className="sr-only" onChange={handleChange} accept="image/*" />
-            </label>
-            {errors.paymentProof && <p className="text-ternary1 text-sm mt-2">{errors.paymentProof}</p>}
+    <div className="space-y-6 sm:space-y-8">
+      {/* Course Info Header */}
+      <div className="bg-gradient-to-r from-primary to-secondary rounded-xl p-4 sm:p-6 text-white animate-fade-in-up">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+          <div className="space-y-1">
+            <h2 className="text-lg sm:text-xl font-bold">{course.title}</h2>
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-sm opacity-90">
+              <div className="flex items-center space-x-1">
+                <Calendar size={14} />
+                <span>Duration: {course.duration} months</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <CheckCircle size={14} />
+                <span>Paid: {monthsPaid} months</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Clock size={14} />
+                <span>Remaining: {monthsRemaining} months</span>
+              </div>
+            </div>
+          </div>
+          <div className="text-right">
+            <p className="text-sm opacity-75">Fee per month</p>
+            <p className="text-xl sm:text-2xl font-bold">₹{course.feePerMonth}</p>
           </div>
         </div>
-      )}
+      </div>
 
-      <Button type="submit" loading={isSubmitting} className="w-full" size="lg" disabled={monthsRemaining <= 0}>
-        Submit Payment
-      </Button>
-    </form>
+      <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="space-y-6 sm:space-y-8">
+        {/* Payment Options */}
+        <div className="glass-card p-4 sm:p-6 rounded-xl animate-fade-in-up animate-delay-200">
+          <h3 className="text-lg sm:text-xl font-semibold text-white mb-4 sm:mb-6 flex items-center">
+            <CreditCard className="mr-2 text-secondary" size={20} />
+            Payment Details
+          </h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div className="space-y-2">
+              <label htmlFor="months" className="block text-sm font-medium text-gray-300">
+                Number of Months to Pay
+              </label>
+              <select
+                id="months"
+                name="months"
+                value={values.months}
+                onChange={handleMonthsChange}
+                className="input-field w-full hover-glow transition-all duration-200"
+                disabled={monthsRemaining <= 0}
+              >
+                {monthsRemaining > 0 ? (
+                  monthOptions.map(option => (
+                    <option key={option.value} value={option.value} className="bg-gray-800">
+                      {option.label}
+                    </option>
+                  ))
+                ) : (
+                  <option className="bg-gray-800">Fully Paid</option>
+                )}
+              </select>
+              {monthsRemaining <= 0 && (
+                <p className="text-xs text-green-400 flex items-center">
+                  <CheckCircle size={12} className="mr-1" />
+                  Course fully paid!
+                </p>
+              )}
+            </div>
+            
+            <div className="space-y-2">
+              <label htmlFor="modeOfPayment" className="block text-sm font-medium text-gray-300">
+                Mode of Payment
+              </label>
+              <select
+                id="modeOfPayment"
+                name="modeOfPayment"
+                value={values.modeOfPayment}
+                onChange={handleChange}
+                className="input-field w-full hover-glow transition-all duration-200"
+              >
+                <option value="online" className="bg-gray-800">Online Payment</option>
+                <option value="offline" className="bg-gray-800">Offline Payment</option>
+              </select>
+              <p className="text-xs text-gray-500">
+                {values.modeOfPayment === 'online' 
+                  ? 'Pay using QR code and upload proof'
+                  : 'Pay at institute and upload receipt'
+                }
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        {/* Payment Summary */}
+        <div className="animate-fade-in-up animate-delay-300">
+          <PaymentSummary
+            feePerMonth={course.feePerMonth}
+            months={parseInt(values.months, 10)}
+            courseDuration={course.duration} 
+            discountPercentage={course.discountPercentage} 
+          />
+        </div>
+
+        {/* QR Code Section for Online Payments */}
+        {values.modeOfPayment === 'online' && (
+          <div className="glass-card p-4 sm:p-6 rounded-xl animate-fade-in-up animate-delay-400">
+            <h3 className="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center">
+              <CreditCard className="mr-2 text-secondary" size={20} />
+              Complete Your Payment
+            </h3>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+              {/* QR Code */}
+              <div className="text-center space-y-4">
+                <div className="space-y-2">
+                  <h4 className="text-base sm:text-lg font-semibold text-white">
+                    Scan QR Code to Pay
+                  </h4>
+                  <p className="text-sm text-gray-400">
+                    Use any UPI app to scan and pay
+                  </p>
+                </div>
+                
+                {course.qrCodeUrl ? (
+                  <div className="relative inline-block">
+                    <div className="p-4 bg-white rounded-xl shadow-lg animate-pulse-glow">
+                      <img 
+                        src={course.qrCodeUrl} 
+                        alt="Payment QR Code" 
+                        className="w-48 h-48 sm:w-56 sm:h-56 mx-auto object-contain rounded-lg"
+                      />
+                    </div>
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
+                      <CheckCircle size={16} className="text-white" />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-8 border-2 border-dashed border-gray-600 rounded-xl">
+                    <p className="text-ternary1 text-sm sm:text-base">
+                      QR Code is not available for this course.
+                    </p>
+                    <p className="text-gray-500 text-xs mt-2">
+                      Please contact administration.
+                    </p>
+                  </div>
+                )}
+              </div>
+              
+              {/* Upload Section */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <h4 className="text-base sm:text-lg font-semibold text-white">
+                    Upload Payment Proof
+                  </h4>
+                  <p className="text-sm text-gray-400">
+                    Take a screenshot of your successful payment
+                  </p>
+                </div>
+                
+                <div className="border-2 border-dashed border-gray-600 rounded-xl p-4 sm:p-6 hover:border-secondary transition-colors duration-200">
+                  <div className="text-center space-y-4">
+                    <div className="w-16 h-16 mx-auto bg-gray-700 rounded-full flex items-center justify-center">
+                      <UploadCloud className="text-gray-400" size={24} />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <label 
+                        htmlFor="paymentProof" 
+                        className="cursor-pointer bg-secondary hover:bg-opacity-90 text-white font-medium py-3 px-4 sm:px-6 rounded-lg inline-flex items-center transition-all duration-200 hover-lift"
+                      >
+                        <UploadCloud className="mr-2" size={18}/>
+                        <span className="text-sm sm:text-base">
+                          {values.paymentProof ? values.paymentProof.name : 'Choose Screenshot'}
+                        </span>
+                        <input 
+                          id="paymentProof" 
+                          name="paymentProof" 
+                          type="file" 
+                          className="sr-only" 
+                          onChange={handleChange} 
+                          accept="image/*,application/pdf" 
+                        />
+                      </label>
+                      
+                      <p className="text-xs text-gray-500">
+                        Supported formats: JPG, PNG, PDF (Max 5MB)
+                      </p>
+                    </div>
+                    
+                    {values.paymentProof && (
+                      <div className="p-3 bg-green-900/20 border border-green-400/30 rounded-lg">
+                        <div className="flex items-center justify-center space-x-2 text-green-400">
+                          <CheckCircle size={16} />
+                          <span className="text-sm font-medium">File selected successfully</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {errors.paymentProof && (
+                  <p className="text-ternary1 text-sm mt-2 flex items-center">
+                    <span className="mr-1">⚠️</span>
+                    {errors.paymentProof}
+                  </p>
+                )}
+                
+                {/* Payment Instructions */}
+                <div className="p-4 bg-blue-900/20 border border-blue-400/30 rounded-lg">
+                  <h5 className="text-sm font-semibold text-blue-400 mb-2">
+                    Payment Instructions:
+                  </h5>
+                  <ol className="text-xs text-gray-300 space-y-1 list-decimal list-inside">
+                    <li>Scan the QR code with any UPI app</li>
+                    <li>Enter the exact amount shown in summary</li>
+                    <li>Complete the payment</li>
+                    <li>Take a screenshot of success page</li>
+                    <li>Upload the screenshot above</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Offline Payment Instructions */}
+        {values.modeOfPayment === 'offline' && (
+          <div className="glass-card p-4 sm:p-6 rounded-xl animate-fade-in-up animate-delay-400">
+            <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+              <CreditCard className="mr-2 text-secondary" size={20} />
+              Offline Payment Instructions
+            </h3>
+            
+            <div className="space-y-4">
+              <div className="p-4 bg-yellow-900/20 border border-yellow-400/30 rounded-lg">
+                <h5 className="text-sm font-semibold text-yellow-400 mb-2">
+                  How to pay offline:
+                </h5>
+                <ol className="text-xs text-gray-300 space-y-1 list-decimal list-inside">
+                  <li>Visit the institute's accounts office</li>
+                  <li>Make payment at the designated counter</li>
+                  <li>Collect your payment receipt</li>
+                  <li>Upload a clear photo of the receipt</li>
+                </ol>
+              </div>
+              
+              <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center hover:border-secondary transition-colors duration-200">
+                <div className="space-y-4">
+                  <UploadCloud className="text-gray-400 mx-auto" size={32} />
+                  <div>
+                    <label 
+                      htmlFor="paymentProof" 
+                      className="cursor-pointer bg-secondary hover:bg-opacity-90 text-white font-medium py-2 px-4 rounded-lg inline-flex items-center transition-all duration-200"
+                    >
+                      <UploadCloud className="mr-2" size={16}/>
+                      {values.paymentProof ? values.paymentProof.name : 'Upload Receipt'}
+                      <input 
+                        id="paymentProof" 
+                        name="paymentProof" 
+                        type="file" 
+                        className="sr-only" 
+                        onChange={handleChange} 
+                        accept="image/*,application/pdf" 
+                      />
+                    </label>
+                  </div>
+                </div>
+              </div>
+              
+              {errors.paymentProof && (
+                <p className="text-ternary1 text-sm">{errors.paymentProof}</p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Submit Button */}
+        <div className="flex flex-col sm:flex-row gap-4 pt-6 animate-fade-in-up animate-delay-500">
+          <Button 
+            type="submit" 
+            loading={isSubmitting} 
+            className="flex-1 sm:flex-initial btn-hover-lift text-base sm:text-lg py-3 px-6 sm:px-8" 
+            size="lg"
+            disabled={monthsRemaining <= 0}
+          >
+            {isSubmitting ? 'Submitting...' : 'Submit Payment'}
+          </Button>
+          
+          <Button 
+            type="button"
+            variant="outline" 
+            onClick={() => navigate(-1)}
+            className="flex-1 sm:flex-initial text-base sm:text-lg py-3 px-6 sm:px-8"
+            size="lg"
+          >
+            Cancel
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 };
 
 export default PaymentForm;
-

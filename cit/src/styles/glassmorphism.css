@@ -26,3 +26,395 @@
   background: rgba(51, 65, 85, 0.7); /* Corresponds to dark-700 with 70% opacity */
   border: 1px solid rgba(71, 85, 105, 0.6); /* Corresponds to dark-600 with 60% opacity */
 }
+
+/*
+  Enhanced glassmorphism utilities for responsive design
+  Add this to the existing glassmorphism.css file
+*/
+
+/* Responsive glass card variants */
+.glass-card-mobile {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(51, 65, 85, 0.4);
+  @apply rounded-lg;
+  transition: all 0.3s ease;
+}
+
+@media (min-width: 768px) {
+  .glass-card-mobile {
+    background: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(51, 65, 85, 0.5);
+    @apply rounded-xl;
+  }
+}
+
+/* Enhanced glass effects with better opacity for mobile */
+.glass-intense {
+  background: rgba(30, 41, 59, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(71, 85, 105, 0.6);
+  @apply rounded-xl;
+}
+
+.glass-subtle {
+  background: rgba(30, 41, 59, 0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(51, 65, 85, 0.3);
+  @apply rounded-lg;
+}
+
+/* Interactive glass states */
+.glass-interactive {
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(51, 65, 85, 0.5);
+  @apply rounded-xl;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.glass-interactive:hover {
+  background: rgba(51, 65, 85, 0.7);
+  border: 1px solid rgba(102, 155, 188, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 
+    0 10px 25px rgba(0, 0, 0, 0.2),
+    0 0 20px rgba(102, 155, 188, 0.1);
+}
+
+.glass-interactive:active {
+  transform: translateY(0px);
+  box-shadow: 
+    0 5px 15px rgba(0, 0, 0, 0.1),
+    0 0 10px rgba(102, 155, 188, 0.05);
+}
+
+/* Colored glass variants */
+.glass-blue {
+  background: rgba(59, 130, 246, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  @apply rounded-xl;
+}
+
+.glass-green {
+  background: rgba(16, 185, 129, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  @apply rounded-xl;
+}
+
+.glass-purple {
+  background: rgba(139, 92, 246, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  @apply rounded-xl;
+}
+
+.glass-red {
+  background: rgba(239, 68, 68, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  @apply rounded-xl;
+}
+
+.glass-yellow {
+  background: rgba(245, 158, 11, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  @apply rounded-xl;
+}
+
+/* Glass input fields */
+.glass-input {
+  background: rgba(55, 65, 81, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(75, 85, 99, 0.4);
+  @apply rounded-lg;
+  transition: all 0.2s ease;
+}
+
+.glass-input:focus {
+  background: rgba(55, 65, 81, 0.8);
+  border: 1px solid rgba(102, 155, 188, 0.5);
+  box-shadow: 
+    0 0 0 3px rgba(102, 155, 188, 0.1),
+    0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Glass buttons */
+.glass-button {
+  background: rgba(102, 155, 188, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(102, 155, 188, 0.3);
+  @apply rounded-lg;
+  transition: all 0.2s ease;
+}
+
+.glass-button:hover {
+  background: rgba(102, 155, 188, 0.3);
+  border: 1px solid rgba(102, 155, 188, 0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 155, 188, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .glass-card {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    @apply rounded-lg;
+  }
+  
+  .glass-intense {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
+
+/* Performance optimization for mobile */
+@media (max-width: 768px) {
+  .glass-card:hover {
+    transform: none;
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(51, 65, 85, 0.5);
+  }
+  
+  .glass-interactive:hover {
+    transform: none;
+    background: rgba(51, 65, 85, 0.7);
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .glass-card {
+    background: rgba(30, 41, 59, 0.9);
+    border: 2px solid rgba(102, 155, 188, 0.8);
+  }
+  
+  .glass-input {
+    background: rgba(55, 65, 81, 0.9);
+    border: 2px solid rgba(75, 85, 99, 0.8);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .glass-card,
+  .glass-interactive,
+  .glass-input,
+  .glass-button {
+    transition: none;
+  }
+}
+
+/* Admin dashboard specific glass effects */
+.glass-admin-card {
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(51, 65, 85, 0.4);
+  border-radius: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.glass-admin-card:hover {
+  background: rgba(51, 65, 85, 0.6);
+  border: 1px solid rgba(102, 155, 188, 0.3);
+  transform: translateY(-1px);
+}
+
+.glass-admin-sidebar {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(51, 65, 85, 0.3);
+}
+
+.glass-admin-modal {
+  background: rgba(30, 41, 59, 0.9);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(71, 85, 105, 0.4);
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+}
+
+.glass-admin-header {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba(51, 65, 85, 0.4);
+}
+
+.glass-admin-stats {
+  background: rgba(30, 41, 59, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(102, 155, 188, 0.2);
+  border-radius: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-admin-stats:hover {
+  background: rgba(51, 65, 85, 0.5);
+  border: 1px solid rgba(102, 155, 188, 0.4);
+  box-shadow: 0 10px 30px rgba(102, 155, 188, 0.1);
+}
+
+/* Responsive glass effects */
+@media (max-width: 640px) {
+  .glass-admin-card {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-radius: 0.5rem;
+  }
+  
+  .glass-admin-modal {
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 0.5rem;
+  }
+}
+
+/* Enhanced glass variants for different admin sections */
+.glass-transaction-card {
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(51, 65, 85, 0.4);
+  border-left: 3px solid rgba(102, 155, 188, 0.6);
+  border-radius: 0.75rem;
+}
+
+.glass-user-card {
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(51, 65, 85, 0.4);
+  border-radius: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.glass-user-card:hover {
+  background: rgba(51, 65, 85, 0.6);
+  border: 1px solid rgba(102, 155, 188, 0.4);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.glass-page-card {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(51, 65, 85, 0.6);
+  @apply rounded-2xl;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.3),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.glass-page-card:hover {
+  background: rgba(51, 65, 85, 0.8);
+  border: 1px solid rgba(102, 155, 188, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 
+    0 25px 35px -5px rgba(0, 0, 0, 0.4),
+    0 0 25px rgba(102, 155, 188, 0.1);
+}
+
+/* Step indicator glass effect */
+.glass-step-indicator {
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(51, 65, 85, 0.4);
+  @apply rounded-lg;
+  transition: all 0.3s ease;
+}
+
+/* Form section glass */
+.glass-form-section {
+  background: rgba(30, 41, 59, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(51, 65, 85, 0.3);
+  @apply rounded-xl;
+  transition: all 0.3s ease;
+}
+
+.glass-form-section:hover {
+  background: rgba(51, 65, 85, 0.5);
+  border: 1px solid rgba(102, 155, 188, 0.3);
+}
+
+/* Enhanced glass for mobile */
+@media (max-width: 640px) {
+  .glass-page-card {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    @apply rounded-lg;
+    margin: 0.5rem;
+  }
+  
+  .glass-form-section {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    @apply rounded-lg;
+  }
+}
+
+/* Glass variants for different page sections */
+.glass-hero-section {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(51, 65, 85, 0.4);
+  @apply rounded-2xl;
+}
+
+.glass-feature-card {
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(51, 65, 85, 0.4);
+  @apply rounded-xl;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-feature-card:hover {
+  background: rgba(51, 65, 85, 0.6);
+  border: 1px solid rgba(102, 155, 188, 0.5);
+  transform: translateY(-4px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.glass-stats-card {
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(102, 155, 188, 0.3);
+  @apply rounded-xl;
+  transition: all 0.3s ease;
+}
+
+.glass-stats-card:hover {
+  background: rgba(51, 65, 85, 0.7);
+  border: 1px solid rgba(102, 155, 188, 0.5);
+  box-shadow: 0 0 30px rgba(102, 155, 188, 0.2);
+}

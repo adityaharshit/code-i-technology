@@ -5,10 +5,24 @@ import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import { Link } from 'react-router-dom';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
+import { 
+  Play, 
+  Calendar, 
+  Award, 
+  CreditCard, 
+  Eye, 
+  BookOpen, 
+  TrendingUp,
+  CheckCircle2,
+  AlertCircle,
+  Clock,
+  Users
+} from 'lucide-react';
 
 const MyCourses = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('all');
 
   useEffect(() => {
     const fetchMyCourses = async () => {
@@ -25,81 +39,325 @@ const MyCourses = () => {
     fetchMyCourses();
   }, []);
 
-  const getStatusBadge = (status) => {
+  const getStatusConfig = (status) => {
     switch (status) {
       case 'live':
-        return <span className="absolute top-4 right-4 bg-red-500 text-white px-2 py-1 text-xs font-bold rounded animate-pulse">LIVE</span>;
+        return {
+          badge: (
+            <span className="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1 text-xs font-bold rounded-full animate-pulse shadow-lg">
+              <Play className="w-3 h-3 inline mr-1" />
+              LIVE
+            </span>
+          ),
+          color: 'border-red-500/30 bg-red-500/5',
+          textColor: 'text-red-400'
+        };
       case 'upcoming':
-        return <span className="absolute top-4 right-4 bg-blue-500 text-white px-2 py-1 text-xs font-bold rounded">UPCOMING</span>;
-       case 'completed':
-        return <span className="absolute top-4 right-4 bg-gray-500 text-white px-2 py-1 text-xs font-bold rounded">COMPLETED</span>;
+        return {
+          badge: (
+            <span className="absolute -top-2 -right-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1 text-xs font-bold rounded-full shadow-lg">
+              <Calendar className="w-3 h-3 inline mr-1" />
+              UPCOMING
+            </span>
+          ),
+          color: 'border-blue-500/30 bg-blue-500/5',
+          textColor: 'text-blue-400'
+        };
+      case 'completed':
+        return {
+          badge: (
+            <span className="absolute -top-2 -right-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white px-3 py-1 text-xs font-bold rounded-full shadow-lg">
+              <Award className="w-3 h-3 inline mr-1" />
+              COMPLETED
+            </span>
+          ),
+          color: 'border-gray-500/30 bg-gray-500/5',
+          textColor: 'text-gray-400'
+        };
       default:
-        return null;
+        return {
+          badge: null,
+          color: 'border-dark-600/50 bg-dark-700/20',
+          textColor: 'text-gray-400'
+        };
     }
   };
 
+  const getFilteredCourses = () => {
+    if (filter === 'all') return courses;
+    return courses.filter(course => course.status === filter);
+  };
+
+  const getOverallProgress = () => {
+    if (courses.length === 0) return { completed: 0, inProgress: 0, upcoming: 0 };
+    
+    const stats = courses.reduce((acc, course) => {
+      if (course.status === 'completed') acc.completed++;
+      else if (course.status === 'live') acc.inProgress++;
+      else if (course.status === 'upcoming') acc.upcoming++;
+      return acc;
+    }, { completed: 0, inProgress: 0, upcoming: 0 });
+
+    return stats;
+  };
 
   if (loading) {
-    return <LoadingSpinner />;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
+  const stats = getOverallProgress();
+  const filteredCourses = getFilteredCourses();
+
   return (
-    <div className="space-y-8">
-      <h1 className="text-4xl font-bold">My Courses</h1>
-      {courses.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {courses.map((course) => {
-            const monthsPaid = course.monthsPaid || 0;
-            const monthsRemaining = course.duration - monthsPaid;
-            const progressPercentage = Math.min((monthsPaid / course.duration) * 100, 100);
+    <div className="min-h-screen py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto space-y-8 sm:space-y-12">
+        
+        {/* Header Section */}
+        <div className="text-center space-y-4 animate-fade-in-down">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-secondary via-primary to-secondary bg-clip-text text-transparent">
+            My Learning Journey
+          </h1>
+          <p className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
+            Track your progress and continue your educational journey
+          </p>
+        </div>
 
-            return (
-              <Card key={course.id} className="p-6 relative flex flex-col">
-                {getStatusBadge(course.status)}
-                <h2 className="text-2xl font-bold mb-2">{course.title}</h2>
-                <p className="text-gray-400 mb-4 flex-grow line-clamp-3">{course.description}</p>
-                
-                <div className="mb-4">
-                  <div className="flex justify-between text-sm text-gray-300 mb-1">
-                    <span>Payment Progress</span>
-                    <span className="font-medium">{monthsPaid} / {course.duration} months</span>
+        {courses.length > 0 && (
+          <>
+            {/* Statistics Overview */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 animate-fade-in-up animate-delay-200">
+              <Card className="p-6 bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-500/20 hover:border-green-400/30 transition-all duration-300">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-green-400 font-medium">Completed</p>
+                    <p className="text-3xl font-bold text-white">{stats.completed}</p>
                   </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2.5">
-                    <div className="bg-green-500 h-2.5 rounded-full" style={{ width: `${progressPercentage}%` }}></div>
+                  <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center">
+                    <CheckCircle2 className="w-6 h-6 text-green-400" />
                   </div>
-                  {monthsRemaining > 0 ? (
-                    <p className="text-right text-xs text-yellow-400 mt-1">{monthsRemaining} month(s) remaining</p>
-                  ) : (
-                     <p className="text-right text-xs text-green-400 mt-1">Fully Paid</p>
-                  )}
-                </div>
-
-                <div className="flex space-x-2 mt-auto pt-4 border-t border-gray-700">
-                  <Link to={`/courses/${course.id}`} className="flex-1">
-                    <Button variant="outline" className="w-full">Details</Button>
-                  </Link>
-                  {monthsRemaining > 0 && course.status !== 'completed' && (
-                     <Link to={`/payment/${course.id}`} className="flex-1">
-                        <Button variant="secondary" className="w-full">Pay Fees</Button>
-                      </Link>
-                  )}
                 </div>
               </Card>
-            );
-          })}
-        </div>
-      ) : (
-         <Card className="p-12 text-center">
-            <h3 className="text-xl font-semibold text-white">No Courses Found</h3>
-            <p className="text-gray-400 mt-2 mb-6">You haven't enrolled in any courses yet. Browse our available courses to get started!</p>
-            <Link to="/courses">
-              <Button>Browse Courses</Button>
-            </Link>
+
+              <Card className="p-6 bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/20 hover:border-blue-400/30 transition-all duration-300">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-blue-400 font-medium">In Progress</p>
+                    <p className="text-3xl font-bold text-white">{stats.inProgress}</p>
+                  </div>
+                  <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
+                    <TrendingUp className="w-6 h-6 text-blue-400" />
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6 bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 hover:border-orange-400/30 transition-all duration-300">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-orange-400 font-medium">Upcoming</p>
+                    <p className="text-3xl font-bold text-white">{stats.upcoming}</p>
+                  </div>
+                  <div className="w-12 h-12 bg-orange-500/20 rounded-xl flex items-center justify-center">
+                    <Clock className="w-6 h-6 text-orange-400" />
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            {/* Filter Buttons */}
+            <div className="flex flex-wrap justify-center gap-3 animate-fade-in-up animate-delay-300">
+              {[
+                { key: 'all', label: 'All Courses', count: courses.length },
+                { key: 'live', label: 'Live', count: stats.inProgress },
+                { key: 'upcoming', label: 'Upcoming', count: stats.upcoming },
+                { key: 'completed', label: 'Completed', count: stats.completed }
+              ].map((filterOption) => (
+                <button
+                  key={filterOption.key}
+                  onClick={() => setFilter(filterOption.key)}
+                  className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 transform hover:scale-105 ${
+                    filter === filterOption.key
+                      ? 'bg-gradient-to-r from-secondary to-primary text-white shadow-lg shadow-secondary/25'
+                      : 'bg-dark-700/50 text-gray-300 hover:bg-dark-600/50 hover:text-white border border-dark-600/50 hover:border-dark-500/50'
+                  }`}
+                >
+                  {filterOption.label} ({filterOption.count})
+                </button>
+              ))}
+            </div>
+
+            {/* Courses Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
+              {filteredCourses.map((course, index) => {
+                const monthsPaid = course.monthsPaid || 0;
+                const monthsRemaining = course.duration - monthsPaid;
+                const progressPercentage = Math.min((monthsPaid / course.duration) * 100, 100);
+                const statusConfig = getStatusConfig(course.status);
+
+                return (
+                  <Card 
+                    key={course.id} 
+                    className={`group relative overflow-hidden bg-gradient-to-br from-dark-800/60 to-dark-700/40 border transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl animate-fade-in-up ${statusConfig.color}`}
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    {statusConfig.badge}
+                    
+                    <div className="p-6 flex flex-col h-full">
+                      {/* Course Header */}
+                      <div className="mb-4">
+                        <h2 className="text-xl sm:text-2xl font-bold mb-2 text-white group-hover:text-secondary transition-colors duration-300 line-clamp-2">
+                          {course.title}
+                        </h2>
+                        <p className="text-gray-400 text-sm line-clamp-3 leading-relaxed">
+                          {course.description}
+                        </p>
+                      </div>
+                      
+                      {/* Payment Progress */}
+                      <div className="mb-6 space-y-3">
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-gray-300 font-medium">Payment Progress</span>
+                          <span className="text-white font-semibold bg-dark-600/50 px-2 py-1 rounded-full">
+                            {monthsPaid} / {course.duration}
+                          </span>
+                        </div>
+                        
+                        <div className="relative w-full bg-dark-600/50 rounded-full h-3 overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-green-400 to-green-500 rounded-full transition-all duration-1000 ease-out relative"
+                            style={{ width: `${progressPercentage}%` }}
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
+                          </div>
+                        </div>
+                        
+                        <div className="flex justify-between items-center text-xs">
+                          {monthsRemaining > 0 ? (
+                            <>
+                              <span className="text-yellow-400 flex items-center">
+                                <AlertCircle className="w-3 h-3 mr-1" />
+                                {monthsRemaining} month(s) remaining
+                              </span>
+                              <span className="text-gray-400">
+                                ₹{course.feePerMonth * monthsRemaining} due
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-green-400 font-semibold flex items-center">
+                              <CheckCircle2 className="w-3 h-3 mr-1" />
+                              Fully Paid
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Course Meta */}
+                      <div className="mb-6 pt-4 border-t border-dark-600/50">
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div className="flex items-center space-x-2">
+                            <Clock className="w-4 h-4 text-secondary" />
+                            <span className="text-gray-300">{course.duration} months</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <CreditCard className="w-4 h-4 text-secondary" />
+                            <span className="text-gray-300">₹{course.feePerMonth}/mo</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex flex-col sm:flex-row gap-3 mt-auto">
+                        <Link to={`/courses/${course.id}`} className="flex-1">
+                          <Button 
+                            variant="outline" 
+                            className="w-full bg-transparent border-secondary/50 text-secondary hover:bg-secondary hover:text-white transition-all duration-300 group/btn"
+                          >
+                            <Eye className="w-4 h-4 mr-2 group-hover/btn:scale-110 transition-transform duration-300" />
+                            Details
+                          </Button>
+                        </Link>
+                        
+                        {monthsRemaining > 0 && course.status !== 'completed' && (
+                          <Link to={`/payment/${course.id}`} className="flex-1">
+                            <Button 
+                              className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-orange-500 hover:to-red-500 text-white transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-orange-500/25"
+                            >
+                              <CreditCard className="w-4 h-4 mr-2" />
+                              Pay Fees
+                            </Button>
+                          </Link>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Hover Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                  </Card>
+                );
+              })}
+            </div>
+          </>
+        )}
+
+        {/* Empty State */}
+        {courses.length === 0 && (
+          <Card className="p-12 sm:p-16 text-center bg-gradient-to-br from-dark-800/60 to-dark-700/40 border border-dark-600/50 animate-fade-in-up">
+            <div className="max-w-md mx-auto space-y-6">
+              <div className="w-20 h-20 mx-auto bg-gradient-to-br from-secondary/20 to-primary/20 rounded-full flex items-center justify-center">
+                <BookOpen className="w-10 h-10 text-secondary" />
+              </div>
+              
+              <div className="space-y-2">
+                <h3 className="text-2xl sm:text-3xl font-bold text-white">Start Your Learning Journey</h3>
+                <p className="text-gray-400 leading-relaxed">
+                  You haven't enrolled in any courses yet. Discover our comprehensive range of courses and begin your path to success!
+                </p>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link to="/courses">
+                  <Button className="w-full sm:w-auto bg-gradient-to-r from-secondary to-primary hover:from-primary hover:to-secondary transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-secondary/25">
+                    <Users className="w-5 h-5 mr-2" />
+                    Browse Courses
+                  </Button>
+                </Link>
+              </div>
+              
+              <div className="pt-6 border-t border-dark-600/50">
+                <p className="text-sm text-gray-500">
+                  Join thousands of students already learning with us
+                </p>
+              </div>
+            </div>
           </Card>
-      )}
+        )}
+
+        {/* No Filtered Results */}
+        {courses.length > 0 && filteredCourses.length === 0 && (
+          <Card className="p-12 text-center bg-gradient-to-br from-dark-800/60 to-dark-700/40 border border-dark-600/50 animate-fade-in-up">
+            <div className="max-w-md mx-auto space-y-4">
+              <div className="w-16 h-16 mx-auto bg-gradient-to-br from-secondary/20 to-primary/20 rounded-full flex items-center justify-center">
+                <AlertCircle className="w-8 h-8 text-secondary" />
+              </div>
+              <h3 className="text-xl sm:text-2xl font-bold text-white">No Courses Found</h3>
+              <p className="text-gray-400">
+                No courses match the selected filter. Try selecting a different filter to see your courses.
+              </p>
+              <button
+                onClick={() => setFilter('all')}
+                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-secondary to-primary hover:from-primary hover:to-secondary text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105"
+              >
+                Show All Courses
+              </button>
+            </div>
+          </Card>
+        )}
+      </div>
     </div>
   );
 };
 
 export default MyCourses;
-
