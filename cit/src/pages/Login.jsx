@@ -12,7 +12,6 @@ const Login = () => {
   });
   const [errors, setErrors] = useState({});
   const [isVisible, setIsVisible] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const { login, loading } = useAuth();
   const navigate = useNavigate();
 
@@ -40,10 +39,14 @@ const Login = () => {
     }
 
     try {
-      await login(credentials);
-      navigate('/dashboard');
+      const response = await login(credentials);
+      if (response.data.user?.type === 'admin') {
+        navigate('/admin-dashboard');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (error) {
-      setErrors({ submit: error.message });
+      setErrors({ submit: error.response?.data?.error || 'Login failed. Please check your credentials.' });
     }
   };
 
@@ -186,24 +189,7 @@ const Login = () => {
                   className="form-input-responsive"
                 />
 
-                {/* Remember Me and Forgot Password */}
-                <div className="flex items-center justify-between text-sm">
-                  <label className="flex items-center space-x-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={rememberMe}
-                      onChange={(e) => setRememberMe(e.target.checked)}
-                      className="w-4 h-4 text-secondary bg-dark-800 border-gray-600 rounded focus:ring-secondary focus:ring-2"
-                    />
-                    <span className="text-gray-300">Remember me</span>
-                  </label>
-                  <Link 
-                    to="/forgot-password"
-                    className="text-secondary hover:text-primary transition-colors duration-200"
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
+              
 
                 {errors.submit && (
                   <div className="error-state animate-shake">

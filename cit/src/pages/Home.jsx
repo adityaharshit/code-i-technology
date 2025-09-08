@@ -104,7 +104,7 @@ const Home = () => {
               },
               {
                 title: 'Career Support',
-                description: 'Get personalized guidance for job placements, interviews, and accelerated career growth.',
+                description: 'Get personalized guidance for interviews, and accelerated career growth.',
                 icon: '🎯',
                 delay: '1200'
               }

@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import Button from '../ui/Button';
 import { formatCurrency, formatDate, formatAddress } from '../../utils/formatters';
+import logo from '../../images/logo.png';
 
 const InvoiceTemplate = ({ transaction, student, course }) => {
   const componentRef = useRef();
@@ -22,9 +23,15 @@ const InvoiceTemplate = ({ transaction, student, course }) => {
         {/* Header */}
         <div className="flex justify-between items-start pb-6 border-b-2 border-primary mb-8">
           <div>
+            <img 
+                          src={logo} 
+                          alt="Code i Technology Logo" 
+                          className="h-8 sm:h-10 w-auto"
+                        />
             <h1 className="text-3xl font-bold text-primary">Code i Technology</h1>
-            <p>123 Education Street, Tech City - 700001</p>
-            <p>info@codeitechnology.com | +91 9876543210</p>
+            <p>Aman & Akash Complex, Sinha College More</p>
+            <p> Tech City - 700001</p>
+            <p>inforcodeitechnology@gmail.com | +91 7004554075</p>
           </div>
           <div className="text-right">
             <h2 className="text-3xl font-bold uppercase text-gray-600">Invoice</h2>

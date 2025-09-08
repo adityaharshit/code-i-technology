@@ -174,9 +174,7 @@ const Register = () => {
     setCurrentStep(prev => Math.max(prev - 1, 1));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
+  const handleSubmit = async () => {
     if (!usernameStatus.available && formData.username) {
       toast.error('Please choose an available username.');
       return;
@@ -638,7 +636,8 @@ const Register = () => {
                   </Button>
                 ) : (
                   <Button 
-                    type="submit" 
+                    type="button"
+                    onClick={handleSubmit}
                     loading={loading || uploading} 
                     className="btn-primary-responsive hover-lift animate-pulse-glow"
                     disabled={loading || uploading}

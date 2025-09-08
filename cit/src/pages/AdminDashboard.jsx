@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { adminAPI } from '../services/admin';
-import { coursesAPI } from '../services/courses';
-import { paymentsAPI } from '../services/payments';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
@@ -10,27 +8,33 @@ import AdminSidebar from '../components/admin/AdminSidebar';
 import UserManagement from '../components/admin/UserManagement';
 import CourseManagement from '../components/admin/CourseManagement';
 import TransactionManagement from '../components/admin/TransactionManagement';
-import { Menu, X, TrendingUp, Users, BookOpen, DollarSign } from 'lucide-react';
+import { formatDistanceToNow } from '../utils/formatters';
+import { Menu, X, TrendingUp, Users, BookOpen, DollarSign, Activity } from 'lucide-react';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [stats, setStats] = useState(null);
+  const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (activeTab === 'dashboard') {
-      fetchDashboardStats();
+      fetchDashboardData();
     }
   }, [activeTab]);
 
-  const fetchDashboardStats = async () => {
+  const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const response = await adminAPI.getDashboardStats();
-      setStats(response.data);
+      const [statsResponse, activityResponse] = await Promise.all([
+        adminAPI.getDashboardStats(),
+        adminAPI.getRecentActivity(),
+      ]);
+      setStats(statsResponse.data);
+      setRecentActivity(activityResponse.data);
     } catch (error) {
       setError('Failed to fetch dashboard statistics');
       console.error('Error fetching stats:', error);
@@ -88,7 +92,7 @@ const AdminDashboard = () => {
         <Card className="p-6 animate-fade-in-up">
           <div className="text-center text-red-400">
             <p className="mb-4">{error}</p>
-            <Button onClick={fetchDashboardStats} className="mt-4">
+            <Button onClick={fetchDashboardData} className="mt-4">
               Retry
             </Button>
           </div>
@@ -159,26 +163,33 @@ const AdminDashboard = () => {
           <Card className="p-4 sm:p-6 animate-fade-in-right animate-delay-600 glass-enhanced">
             <h3 className="text-lg sm:text-xl font-semibold text-white mb-4 sm:mb-6">Recent Activity</h3>
             <div className="space-y-3 sm:space-y-4">
-              {[
-                { icon: '🎓', text: 'New student registration', time: '2 hours ago', color: 'bg-blue-500' },
-                { icon: '💰', text: 'Payment received', time: '5 hours ago', color: 'bg-green-500' },
-                { icon: '📊', text: 'Course enrollment', time: '1 day ago', color: 'bg-purple-500' }
-              ].map((activity, index) => (
-                <div 
-                  key={index}
-                  className={`flex items-center justify-between p-3 sm:p-4 bg-gray-800 bg-opacity-50 rounded-lg hover-lift animate-fade-in-up animate-delay-${700 + index * 100} backdrop-blur-sm`}
-                >
-                  <div className="flex items-center space-x-3 sm:space-x-4">
-                    <div className={`w-8 h-8 sm:w-10 sm:h-10 ${activity.color} rounded-full flex items-center justify-center animate-pulse-subtle`}>
-                      <span className="text-white text-sm sm:text-base">{activity.icon}</span>
+              {recentActivity.length > 0 ? (
+                recentActivity.map((activity, index) => (
+                  <div 
+                    key={index}
+                    className={`flex items-center justify-between p-3 sm:p-4 bg-gray-800 bg-opacity-50 rounded-lg hover-lift animate-fade-in-up animate-delay-${700 + index * 100} backdrop-blur-sm`}
+                  >
+                    <div className="flex items-center space-x-3 sm:space-x-4">
+                      <div className={`w-8 h-8 sm:w-10 sm:h-10 bg-gray-700 rounded-full flex items-center justify-center`}>
+                        <span className="text-white text-sm sm:text-base">{activity.icon}</span>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-white text-sm sm:text-base font-medium">{activity.type}</p>
+                        <p className="text-gray-400 text-xs sm:text-sm truncate" title={activity.details}>
+                          {activity.details}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-white text-sm sm:text-base font-medium">{activity.text}</p>
-                      <p className="text-gray-400 text-xs sm:text-sm">{activity.time}</p>
-                    </div>
+                    <p className="text-gray-500 text-xs sm:text-sm flex-shrink-0 ml-2">
+                      {formatDistanceToNow(activity.timestamp)}
+                    </p>
                   </div>
+                ))
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  No recent activity found.
                 </div>
-              ))}
+              )}
             </div>
           </Card>
         </div>

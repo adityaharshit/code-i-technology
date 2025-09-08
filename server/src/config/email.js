@@ -1,3 +1,4 @@
+// /server/src/config/email.js
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
@@ -11,14 +12,20 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendEmail = async (to, subject, html) => {
+const sendEmail = async (to, subject, html, replyTo = null) => {
   try {
-    await transporter.sendMail({
-      from: process.env.EMAIL_FROM,
+    const mailOptions = {
+      from: `"${process.env.EMAIL_FROM_NAME || 'Code i Technology'}" <${process.env.EMAIL_FROM_ADDRESS}>`,
       to,
       subject,
-      html
-    });
+      html,
+    };
+
+    if (replyTo) {
+      mailOptions.replyTo = replyTo;
+    }
+
+    await transporter.sendMail(mailOptions);
     return true;
   } catch (error) {
     console.error('Error sending email:', error);

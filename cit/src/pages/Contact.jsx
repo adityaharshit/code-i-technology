@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
+import toast from 'react-hot-toast';
+import { contactAPI } from '../services/contact';
 
 const Contact = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -29,54 +31,56 @@ const Contact = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
-    setTimeout(() => {
-      setIsSubmitting(false);
-      // Reset form or show success message
-      alert('Message sent successfully!');
+    const toastId = toast.loading('Sending your message...');
+    
+    try {
+      await contactAPI.sendMessage(formData);
+      toast.success('Message sent successfully! We will get back to you soon.', { id: toastId });
       setFormData({ name: '', email: '', subject: '', message: '' });
-    }, 2000);
+    } catch (error) {
+      toast.error(error.response?.data?.error || 'Failed to send message. Please try again later.', { id: toastId });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const contactInfo = [
     {
       icon: '📧',
       title: 'Email Us',
-      content: 'info@codeitech.com',
+      content: 'infocodeitechnology@gmail.com',
       subtitle: 'We\'ll respond within 24 hours',
       delay: 'animate-delay-100'
     },
     {
       icon: '📞',
       title: 'Call Us',
-      content: '+91 9876543210',
+      content: '+91 7004554075',
       subtitle: 'Mon-Fri, 9AM-6PM IST',
       delay: 'animate-delay-200'
     },
     {
       icon: '📍',
       title: 'Visit Us',
-      content: '123 Tech Street',
-      subtitle: 'Innovation City, IN 560001',
+      content: 'Aman & Akash Complex, Sinha College More',
+      subtitle: 'Aurangabad Bihar - 824101',
       delay: 'animate-delay-300'
     }
   ];
 
   const socialLinks = [
-    { name: 'LinkedIn', icon: '💼', link: '#' },
-    { name: 'Twitter', icon: '🐦', link: '#' },
-    { name: 'Facebook', icon: '📘', link: '#' },
-    { name: 'Instagram', icon: '📸', link: '#' }
+    { name: 'Facebook', icon: '📘', link: 'https://www.facebook.com/codeitechnology' },
+    { name: 'Instagram', icon: '📸', link: 'https://www.instagram.com/codeitechnology' }
   ];
 
   const faqs = [
     {
       question: "What courses do you offer?",
-      answer: "We offer a wide range of courses including Web Development, Data Science, Mobile App Development, and more."
+      answer: "We offer a wide range of courses including Web Development, Data Structures, MySQL, and more."
     },
     {
-      question: "Do you provide placement assistance?",
-      answer: "Yes, we have a dedicated placement team that helps students with job preparation and connecting with industry partners."
+      question: "What is the mode of education?",
+      answer: "The courses are held in a hybrid manner, i.e., it can be either online or offline depending on availability of the instructors."
     },
     {
       question: "Are the courses suitable for beginners?",
@@ -299,7 +303,7 @@ const Contact = () => {
             className="inline-flex items-center space-x-2 bg-gradient-to-r from-secondary to-primary text-white px-6 py-3 rounded-lg hover-lift font-medium transition-all duration-200"
           >
             <span>📞</span>
-            <span>+91 9876543210</span>
+            <span>+91 7004554075</span>
           </a>
         </Card>
       </div>

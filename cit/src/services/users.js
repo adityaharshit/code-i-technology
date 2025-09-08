@@ -23,4 +23,10 @@ export const usersAPI = {
    * @returns {Promise<Object>} The user data.
    */
   getUserById: (id) => api.get(`/users/${id}`),
+
+  /**
+   * Fetches the dashboard statistics for the currently logged-in student.
+   * @returns {Promise<Object>} The dashboard stats data.
+   */
+  getDashboardStats: () => api.get('/users/dashboard-stats'),
 };

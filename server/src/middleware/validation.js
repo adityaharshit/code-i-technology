@@ -1,4 +1,4 @@
-// server/src/middleware/validation.js
+// /server/src/middleware/validation.js
 const { body, validationResult } = require('express-validator');
 
 // Handle validation errors
@@ -77,6 +77,13 @@ const validateCourse = [
   body('title').notEmpty().withMessage('Course title is required'),
   body('duration').isInt({ min: 1 }).withMessage('Duration must be a positive integer'),
   body('feePerMonth').isFloat({ min: 0 }).withMessage('Fee must be a positive number'),
+  body('whatYouWillLearn').optional({ checkFalsy: true }).isJSON().withMessage('What you will learn must be a valid JSON array string.'),
+  body('courseIncludes').optional({ checkFalsy: true }).isJSON().withMessage('Course includes must be a valid JSON array string.'),
+  body('skillLevel').optional({ checkFalsy: true }).isString().trim(),
+  body('language').optional({ checkFalsy: true }).isString().trim(),
+  body('instructorName').optional({ checkFalsy: true }).isString().trim(),
+  body('instructorDetails').optional({ checkFalsy: true }).isString().trim(),
+  body('discountPercentage').optional({ checkFalsy: true }).isFloat({ min: 0, max: 100 }).withMessage('Discount must be between 0 and 100'),
   handleValidationErrors
 ];
 

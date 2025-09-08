@@ -87,8 +87,47 @@ const paymentApprovalEmailTemplate = (name, courseName, amount) => {
   `;
 };
 
+
+const contactFormEmailTemplate = (data) => {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>New Contact Form Submission</title>
+    </head>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+      <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h1 style="color: #003049;">New Message from Contact Form</h1>
+        </div>
+        
+        <p>You have received a new message from the contact form on your website.</p>
+        
+        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+          <p><strong>Name:</strong> ${data.name}</p>
+          <p><strong>From Email:</strong> <a href="mailto:${data.from}">${data.from}</a></p>
+          <p><strong>Subject:</strong> ${data.subject}</p>
+        </div>
+        
+        <h3 style="color: #003049;">Message:</h3>
+        <p style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; white-space: pre-wrap;">${data.message}</p>
+        
+        <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+        
+        <p style="font-size: 12px; color: #777;">
+          This is an automated notification. You can reply directly to this email to contact the sender.
+        </p>
+      </div>
+    </body>
+    </html>
+  `;
+};
+
+
 // Main export
 module.exports = {
   verificationEmailTemplate,
-  paymentApprovalEmailTemplate
+  paymentApprovalEmailTemplate,
+  contactFormEmailTemplate
 };

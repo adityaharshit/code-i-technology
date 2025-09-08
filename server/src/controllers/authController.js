@@ -53,7 +53,12 @@ const register = async (req, res) => {
     });
 
     // Send verification email
-    await sendVerificationEmail(email, fullName, verificationToken);
+    const emailSent = await sendVerificationEmail(email, fullName, verificationToken);
+    if (!emailSent) {
+      console.warn(`WARN: Failed to send verification email to ${email}, but user was created.`);
+      // The registration is still successful, but we log the issue.
+    }
+
 
     res.status(201).json({
       message: 'Registration successful. Please check your email for verification.',

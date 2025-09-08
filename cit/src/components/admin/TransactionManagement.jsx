@@ -7,7 +7,8 @@ import Input from '../ui/Input';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import TransactionDetailModal from './TransactionDetailModal';
 import { formatCurrency, formatDate } from '../../utils/formatters';
-import { Search, Filter, TrendingUp, AlertCircle, CheckCircle, Clock, XCircle } from 'lucide-react';
+import ManualInvoiceModal from './ManualInvoiceModal';
+import { Search, Filter, TrendingUp, AlertCircle, CheckCircle, Clock, XCircle, FilePlus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import useDebounce from '../../hooks/useDebounce';
 
@@ -18,6 +19,7 @@ const TransactionManagement = () => {
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [isManualInvoiceOpen, setIsManualInvoiceOpen] = useState(false);
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   const fetchTransactions = useCallback(async () => {
@@ -167,6 +169,10 @@ const TransactionManagement = () => {
             </select>
           </div>
         </div>
+        <Button onClick={() => setIsManualInvoiceOpen(true)} className="hover-scale">
+            <FilePlus size={16} className="mr-2" />
+            Create Manual Invoice
+        </Button>
       </div>
 
       {error && (
@@ -272,6 +278,11 @@ const TransactionManagement = () => {
         onClose={() => setSelectedTransaction(null)}
         transaction={selectedTransaction}
         onStatusUpdate={handleStatusUpdate}
+      />
+      <ManualInvoiceModal
+        isOpen={isManualInvoiceOpen}
+        onClose={() => setIsManualInvoiceOpen(false)}
+        onSuccess={fetchTransactions}
       />
     </div>
   );

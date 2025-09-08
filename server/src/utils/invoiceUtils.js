@@ -188,7 +188,7 @@ const generateInvoiceHTML = (transaction, student, course) => {
       <div class="receipt-container">
         <div class="header">
           <div class="company-details">
-            <img src="https://placehold.co/400x100/000000/FFFFFF?text=CODE+i+TECHNOLOGY" alt="CODE i TECHNOLOGY Logo">
+            <img src="https://res.cloudinary.com/dqz9yoyh9/image/upload/v1757322301/logo_wy7pbt.png" alt="CODE i TECHNOLOGY Logo">
             <p><strong>Aman & Akash Complex, Sinha College More</strong></p>
             <p>Aurangabad Bihar - 824101</p>
             <p><strong>Mobile Number:</strong> +91 7004554075</p>

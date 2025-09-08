@@ -1,4 +1,7 @@
+// /server/src/controllers/adminController.js
 const prisma = require('../config/database');
+const { generateBillNumber } = require('../utils/generators');
+const { generateInvoiceHTML } = require('../utils/invoiceUtils');
 
 const getStudentDetails = async (req, res) => {
   try {
@@ -114,9 +117,129 @@ const getDashboardStats = async (req, res) => {
   }
 };
 
+const createManualTransactionAndInvoice = async (req, res) => {
+  try {
+    const {
+      studentId,
+      studentName,
+      studentMobile,
+      studentAddress,
+      courseName,
+      courseFee,
+      discount,
+      netPayable,
+      modeOfPayment,
+      amountPaid
+    } = req.body;
+
+    // Generate a new bill number for this invoice
+    const billNo = await generateBillNumber();
+
+    // Construct mock objects for the invoice generator utility
+    const mockStudent = {
+      rollNumber: studentId,
+      fullName: studentName,
+      studentMobile: studentMobile,
+      localAddress: { street: studentAddress } // Structure to match formatAddress utility
+    };
+
+    const mockCourse = {
+      title: courseName
+    };
+
+    const mockTransaction = {
+      billNo,
+      createdAt: new Date(),
+      months: 1, // Default to 1 for manual entry since it's not specified
+      amount: parseFloat(courseFee),
+      discount: parseFloat(discount),
+      netPayable: parseFloat(netPayable),
+      modeOfPayment,
+      status: 'paid'
+    };
+
+    const invoiceHTML = generateInvoiceHTML(mockTransaction, mockStudent, mockCourse);
+
+    res.header('Content-Type', 'text/html').send(invoiceHTML);
+
+  } catch (error) {
+    console.error('Manual invoice generation error:', error);
+    res.status(500).json({ error: 'Failed to generate manual invoice.' });
+  }
+};
+
 module.exports = {
   getAllStudents,
   deleteStudent,
   getDashboardStats,
-  getStudentDetails
+  getStudentDetails,
+  createManualTransactionAndInvoice,
 };
+
+const getRecentActivity = async (req, res) => {
+  try {
+    const recentRegistrations = await prisma.student.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+      select: { fullName: true, createdAt: true },
+    });
+
+    const recentPayments = await prisma.transaction.findMany({
+      where: { status: 'paid' },
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+      include: { student: { select: { fullName: true } } },
+    });
+
+    const recentEnrollments = await prisma.enrollment.findMany({
+      orderBy: { enrolledAt: 'desc' },
+      take: 5,
+      include: {
+        student: { select: { fullName: true } },
+        course: { select: { title: true } },
+      },
+    });
+
+    const activities = [
+      ...recentRegistrations.map(s => ({
+        type: 'New Student Registration',
+        details: s.fullName,
+        timestamp: s.createdAt,
+        icon: '🎓',
+      })),
+      ...recentPayments.map(p => ({
+        type: 'Payment Received',
+        details: `from ${p.student.fullName}`,
+        timestamp: p.createdAt,
+        icon: '💰',
+      })),
+      ...recentEnrollments.map(e => ({
+        type: 'Course Enrollment',
+        details: `${e.student.fullName} in ${e.course.title}`,
+        timestamp: e.enrolledAt,
+        icon: '📊',
+      })),
+    ];
+
+    // Sort all activities by timestamp and take the most recent 5
+    const sortedActivities = activities
+      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+      .slice(0, 5);
+
+    res.json(sortedActivities);
+  } catch (error) {
+    console.error('Failed to get recent activity:', error);
+    res.status(500).json({ error: 'Failed to fetch recent activity' });
+  }
+};
+
+
+module.exports = {
+  getAllStudents,
+  deleteStudent,
+  getDashboardStats,
+  getStudentDetails,
+  createManualTransactionAndInvoice,
+  getRecentActivity,
+};
+

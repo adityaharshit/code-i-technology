@@ -1,4 +1,4 @@
-// cit/src/AppRoutes.jsx
+// /cit/src/AppRoutes.jsx
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './components/layout/ProtectedRoute';
@@ -13,7 +13,8 @@ import Payment from './pages/Payment';
 import Profile from './pages/Profile';
 import Transactions from './pages/Transactions';
 import AdminDashboard from './pages/AdminDashboard';
-import AdminCourseDetail from './pages/AdminCourseDetail'; // Import the new page
+import AdminCourseDetail from './pages/AdminCourseDetail';
+import AddEditCourse from './components/admin/AddEditCourse'; // Import the new page
 import VerifyEmail from './pages/VerifyEmail';
 import Contact from './pages/Contact';
 import About from './pages/About';
@@ -39,7 +40,9 @@ const AppRoutes = () => {
       
       {/* Admin Protected Routes */}
       <Route path="/admin-dashboard" element={<ProtectedRoute adminOnly={true}><AdminDashboard /></ProtectedRoute>} />
-      <Route path="/admin/courses/:id" element={<ProtectedRoute adminOnly={true}><AdminCourseDetail /></ProtectedRoute>} /> {/* Add new route */}
+      <Route path="/admin/courses/:id" element={<ProtectedRoute adminOnly={true}><AdminCourseDetail /></ProtectedRoute>} />
+      <Route path="/admin/course/add" element={<ProtectedRoute adminOnly={true}><AddEditCourse /></ProtectedRoute>} />
+      <Route path="/admin/course/edit/:id" element={<ProtectedRoute adminOnly={true}><AddEditCourse /></ProtectedRoute>} />
     </Routes>
   );
 };

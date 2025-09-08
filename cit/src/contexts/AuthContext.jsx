@@ -1,3 +1,4 @@
+// cit/src/contexts/AuthContext.jsx
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { authAPI } from '../services/auth';
 
@@ -18,6 +19,14 @@ const authReducer = (state, action) => {
       return { ...state, loading: false, user: action.payload, isAuthenticated: true, error: null };
     case 'LOGIN_FAILURE':
       return { ...state, loading: false, error: action.payload, isAuthenticated: false };
+
+    case 'REGISTER_START':
+      return { ...state, loading: true, error: null };
+    case 'REGISTER_SUCCESS':
+      // On successful registration, stop loading but don't log the user in.
+      return { ...state, loading: false, error: null };
+    case 'REGISTER_FAILURE':
+      return { ...state, loading: false, error: action.payload };
 
     case 'LOGOUT':
       return { ...state, user: null, isAuthenticated: false, loading: false, error: null };
@@ -48,7 +57,6 @@ export const AuthProvider = ({ children }) => {
       const response = await authAPI.getCurrentUser();
       dispatch({ type: 'AUTH_CHECK_SUCCESS', payload: response.data.user });
     } catch (error) {
-      // Don't treat 401 as an error - just means user is not logged in
       if (error.response?.status === 401) {
         dispatch({ type: 'AUTH_CHECK_FAILURE' });
       } else {
@@ -72,14 +80,14 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (userData) => {
-    dispatch({ type: 'LOGIN_START' });
+    dispatch({ type: 'REGISTER_START' });
     try {
       const response = await authAPI.register(userData);
-      dispatch({ type: 'CLEAR_ERROR' });
+      dispatch({ type: 'REGISTER_SUCCESS' });
       return response;
     } catch (error) {
       const message = error.response?.data?.error || 'Registration failed';
-      dispatch({ type: 'LOGIN_FAILURE', payload: message });
+      dispatch({ type: 'REGISTER_FAILURE', payload: message });
       throw error;
     }
   };
@@ -117,4 +125,3 @@ export const useAuth = () => {
   return context;
 };
 
-export default useAuth;

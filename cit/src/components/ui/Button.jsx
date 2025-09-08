@@ -1,3 +1,4 @@
+// /cit/src/components/ui/Button.jsx
 import React from 'react';
 
 const Button = ({ 
@@ -9,6 +10,7 @@ const Button = ({
   fullWidth = false,
   glow = false,
   className = '',
+  type = 'button', // Ensured default type is 'button'
   ...props 
 }) => {
   const baseClasses = 'font-medium rounded-lg transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95';
@@ -36,7 +38,7 @@ const Button = ({
   const classes = `${baseClasses} ${variants[variant]} ${sizes[size]} ${widthClass} ${glowEffect} ${className}`;
   
   return (
-    <button className={classes} disabled={disabled || loading} {...props}>
+    <button type={type} className={classes} disabled={disabled || loading} {...props}>
       {loading ? (
         <div className="flex items-center justify-center">
           <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
@@ -50,3 +52,4 @@ const Button = ({
 };
 
 export default Button;
+

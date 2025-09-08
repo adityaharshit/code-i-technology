@@ -1,5 +1,6 @@
-// server/src/controllers/courseController.js
+// /server/src/controllers/courseController.js
 const prisma = require('../config/database');
+const { uploadToCloudinary } = require('../services/uploadService');
 
 /**
  * Determines the status of a course based on its start date and duration.
@@ -178,7 +179,16 @@ const getCourseById = async (req, res) => {
 
 const createCourse = async (req, res) => {
   try {
-    const { title, description, duration, startDate, feePerMonth, qrCodeUrl, discountPercentage } = req.body;
+    const { 
+        title, description, duration, startDate, feePerMonth, discountPercentage, 
+        whatYouWillLearn, courseIncludes, skillLevel, language, instructorName, instructorDetails 
+    } = req.body;
+
+    let qrCodeUrl = req.body.qrCodeUrl || '';
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file, 'course-qrcodes');
+      qrCodeUrl = result.secure_url;
+    }
     
     const course = await prisma.course.create({
       data: {
@@ -189,18 +199,34 @@ const createCourse = async (req, res) => {
         feePerMonth: parseFloat(feePerMonth),
         qrCodeUrl,
         discountPercentage: parseFloat(discountPercentage) || 0,
+        whatYouWillLearn: whatYouWillLearn ? JSON.parse(whatYouWillLearn) : undefined,
+        courseIncludes: courseIncludes ? JSON.parse(courseIncludes) : undefined,
+        skillLevel,
+        language,
+        instructorName,
+        instructorDetails,
       }
     });
     
     res.status(201).json(course);
   } catch (error) {
+    console.error('Course creation error:', error);
     res.status(500).json({ error: 'Failed to create course' });
   }
 };
 
 const updateCourse = async (req, res) => {
   try {
-    const { title, description, duration, startDate, feePerMonth, qrCodeUrl, discountPercentage } = req.body;
+    const { 
+        title, description, duration, startDate, feePerMonth, discountPercentage,
+        whatYouWillLearn, courseIncludes, skillLevel, language, instructorName, instructorDetails 
+    } = req.body;
+
+    let qrCodeUrl = req.body.qrCodeUrl || '';
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file, 'course-qrcodes');
+      qrCodeUrl = result.secure_url;
+    }
     
     const course = await prisma.course.update({
       where: { id: parseInt(req.params.id) },
@@ -212,11 +238,18 @@ const updateCourse = async (req, res) => {
         feePerMonth: parseFloat(feePerMonth),
         qrCodeUrl,
         discountPercentage: parseFloat(discountPercentage) || 0,
+        whatYouWillLearn: whatYouWillLearn ? JSON.parse(whatYouWillLearn) : undefined,
+        courseIncludes: courseIncludes ? JSON.parse(courseIncludes) : undefined,
+        skillLevel,
+        language,
+        instructorName,
+        instructorDetails,
       }
     });
     
     res.json(course);
   } catch (error) {
+    console.error('Course update error:', error);
     res.status(500).json({ error: 'Failed to update course' });
   }
 };
@@ -305,4 +338,3 @@ module.exports = {
   getStudentCourses,
   getCourseDetailsForAdmin,
 };
-

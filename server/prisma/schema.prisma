@@ -1,3 +1,5 @@
+// /server/prisma/schema.prisma
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -49,18 +51,25 @@ model Admin {
 }
 
 model Course {
-  id           Int            @id @default(autoincrement())
-  title        String         @db.VarChar(200)
-  description  String?
-  duration     Int
-  startDate    DateTime?
-  feePerMonth  Float
-  qrCodeUrl    String?        @db.VarChar(500)
-  discountPercentage Float         @default(0)
-  enrollments  Enrollment[]
-  transactions Transaction[]
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  id                 Int            @id @default(autoincrement())
+  title              String         @db.VarChar(200)
+  description        String?
+  duration           Int
+  startDate          DateTime?
+  feePerMonth        Float
+  qrCodeUrl          String?        @db.VarChar(500)
+  discountPercentage Float          @default(0)
+  whatYouWillLearn   Json?
+  courseIncludes     Json?
+  skillLevel         String?        @db.VarChar(50)
+  language           String?        @db.VarChar(50)
+  instructorName     String?        @db.VarChar(100)
+  instructorDetails  String?
+
+  enrollments        Enrollment[]
+  transactions       Transaction[]
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
 
   @@map("courses")
 }
