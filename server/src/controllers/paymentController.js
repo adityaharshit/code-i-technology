@@ -1,13 +1,22 @@
 // server/src/controllers/paymentController.js
 const prisma = require('../config/database');
 const { generateBillNumber } = require('../utils/generators');
+const { uploadToCloudinary } = require('../services/uploadService');
 const { generateInvoiceHTML } = require('../utils/invoiceUtils');
 
 
 const createTransaction = async (req, res) => {
   try {
-    const { courseId, months, modeOfPayment, paymentProofUrl } = req.body;
+    const { courseId, months, modeOfPayment } = req.body;
     const studentId = parseInt(req.session.userId, 10);
+    
+    let paymentProofUrl = null;
+
+    // Handle file upload from multer
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file, 'payment-proofs');
+      paymentProofUrl = result.secure_url;
+    }
     
     const course = await prisma.course.findUnique({
       where: { id: parseInt(courseId) }
@@ -38,7 +47,7 @@ const createTransaction = async (req, res) => {
         discount,
         netPayable,
         modeOfPayment,
-        paymentProofUrl
+        paymentProofUrl // Save the Cloudinary URL
       },
       include: {
         course: true,
@@ -167,4 +176,3 @@ module.exports = {
   updateTransactionStatus,
   getTransactionInvoice
 };
-

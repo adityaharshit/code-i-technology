@@ -8,6 +8,7 @@ import { validatePayment } from '../../utils/validators';
 import Button from '../ui/Button';
 import PaymentSummary from './PaymentSummary';
 import { UploadCloud, Calendar, CreditCard, Clock, CheckCircle } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const PaymentForm = ({ course }) => {
   const { values, errors, isSubmitting, handleChange, setValues } = useForm(
@@ -40,13 +41,26 @@ const PaymentForm = ({ course }) => {
     setValues(prev => ({ ...prev, months: newMonths }));
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast.error('File size should not exceed 5MB.');
+        e.target.value = null; // Clear the input
+        setValues(prev => ({ ...prev, paymentProof: null }));
+        return;
+      }
+      setValues(prev => ({ ...prev, paymentProof: file }));
+    }
+  };
+
   const handleSubmit = async () => {
     const formData = new FormData();
     formData.append('courseId', course.id);
     formData.append('months', values.months);
     formData.append('modeOfPayment', values.modeOfPayment);
     
-    if (values.modeOfPayment === 'online' && values.paymentProof) {
+    if (values.paymentProof) {
       formData.append('paymentProof', values.paymentProof);
     }
 
@@ -90,7 +104,7 @@ const PaymentForm = ({ course }) => {
 
       <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="space-y-6 sm:space-y-8">
         {/* Payment Options */}
-        <div className="glass-card p-4 sm:p-6 rounded-xl animate-fade-in-up animate-delay-200">
+        <div className="glass-card p-4 sm:p-6 rounded-xl animate-fade-in-up animate-delay-100">
           <h3 className="text-lg sm:text-xl font-semibold text-white mb-4 sm:mb-6 flex items-center">
             <CreditCard className="mr-2 text-secondary" size={20} />
             Payment Details
@@ -152,7 +166,7 @@ const PaymentForm = ({ course }) => {
         </div>
         
         {/* Payment Summary */}
-        <div className="animate-fade-in-up animate-delay-300">
+        <div className="animate-fade-in-up animate-delay-100">
           <PaymentSummary
             feePerMonth={course.feePerMonth}
             months={parseInt(values.months, 10)}
@@ -163,7 +177,7 @@ const PaymentForm = ({ course }) => {
 
         {/* QR Code Section for Online Payments */}
         {values.modeOfPayment === 'online' && (
-          <div className="glass-card p-4 sm:p-6 rounded-xl animate-fade-in-up animate-delay-400">
+          <div className="glass-card p-4 sm:p-6 rounded-xl animate-fade-in-up animate-delay-100">
             <h3 className="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center">
               <CreditCard className="mr-2 text-secondary" size={20} />
               Complete Your Payment
@@ -237,7 +251,7 @@ const PaymentForm = ({ course }) => {
                           name="paymentProof" 
                           type="file" 
                           className="sr-only" 
-                          onChange={handleChange} 
+                          onChange={handleFileChange} 
                           accept="image/*,application/pdf" 
                         />
                       </label>
@@ -285,7 +299,7 @@ const PaymentForm = ({ course }) => {
 
         {/* Offline Payment Instructions */}
         {values.modeOfPayment === 'offline' && (
-          <div className="glass-card p-4 sm:p-6 rounded-xl animate-fade-in-up animate-delay-400">
+          <div className="glass-card p-4 sm:p-6 rounded-xl animate-fade-in-up animate-delay-100">
             <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
               <CreditCard className="mr-2 text-secondary" size={20} />
               Offline Payment Instructions
@@ -319,7 +333,7 @@ const PaymentForm = ({ course }) => {
                         name="paymentProof" 
                         type="file" 
                         className="sr-only" 
-                        onChange={handleChange} 
+                        onChange={handleFileChange} 
                         accept="image/*,application/pdf" 
                       />
                     </label>
@@ -335,7 +349,7 @@ const PaymentForm = ({ course }) => {
         )}
 
         {/* Submit Button */}
-        <div className="flex flex-col sm:flex-row gap-4 pt-6 animate-fade-in-up animate-delay-500">
+        <div className="flex flex-col sm:flex-row gap-4 pt-6 animate-fade-in-up animate-delay-100">
           <Button 
             type="submit" 
             loading={isSubmitting} 

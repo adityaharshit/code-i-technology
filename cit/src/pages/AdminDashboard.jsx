@@ -58,7 +58,7 @@ const AdminDashboard = () => {
       icon: BookOpen,
       color: 'secondary',
       bgColor: 'bg-purple-500',
-      delay: 'animate-delay-200'
+      delay: 'animate-delay-100'
     },
     {
       title: 'Transactions',
@@ -66,7 +66,7 @@ const AdminDashboard = () => {
       icon: TrendingUp,
       color: 'ternary1',
       bgColor: 'bg-green-500',
-      delay: 'animate-delay-300'
+      delay: 'animate-delay-100'
     },
     {
       title: 'Total Revenue',
@@ -74,7 +74,7 @@ const AdminDashboard = () => {
       icon: DollarSign,
       color: 'ternary3',
       bgColor: 'bg-orange-500',
-      delay: 'animate-delay-400'
+      delay: 'animate-delay-100'
     }
   ];
 

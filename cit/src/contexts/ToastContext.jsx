@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useCallback } from 'react';
+import React, { createContext, useContext, useCallback, useMemo } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 
 // Create the context
@@ -25,12 +25,12 @@ export const ToastProvider = ({ children }) => {
     toast.dismiss(toastId);
   }, []);
 
-  const value = {
+  const value = useMemo(() => ({
     showSuccess,
     showError,
     showLoading,
     dismissToast,
-  };
+  }), [showSuccess, showError, showLoading, dismissToast]);
 
   return (
     <ToastContext.Provider value={value}>

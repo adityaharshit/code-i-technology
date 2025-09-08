@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
+import React, { createContext, useState, useEffect, useContext, useCallback, useMemo } from 'react';
 import { coursesAPI } from '../services/courses';
 
 // Create the context
@@ -32,12 +32,12 @@ export const CourseProvider = ({ children }) => {
     fetchCourses();
   }, [fetchCourses]);
 
-  const value = {
+  const value = useMemo(() => ({
     courses,
     loading,
     error,
     refetchCourses: fetchCourses,
-  };
+  }), [courses, loading, error, fetchCourses]);
 
   return (
     <CourseContext.Provider value={value}>

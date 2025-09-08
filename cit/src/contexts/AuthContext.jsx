@@ -1,5 +1,5 @@
 // cit/src/contexts/AuthContext.jsx
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useCallback, useMemo } from 'react';
 import { authAPI } from '../services/auth';
 
 const AuthContext = createContext();
@@ -47,11 +47,7 @@ export const AuthProvider = ({ children }) => {
     error: null
   });
 
-  useEffect(() => {
-    checkAuthStatus();
-  }, []);
-
-  const checkAuthStatus = async () => {
+  const checkAuthStatus = useCallback(async () => {
     dispatch({ type: 'AUTH_CHECK_START' });
     try {
       const response = await authAPI.getCurrentUser();
@@ -64,9 +60,13 @@ export const AuthProvider = ({ children }) => {
         dispatch({ type: 'AUTH_CHECK_FAILURE' });
       }
     }
-  };
+  }, []);
 
-  const login = async (credentials) => {
+  useEffect(() => {
+    checkAuthStatus();
+  }, [checkAuthStatus]);
+
+  const login = useCallback(async (credentials) => {
     dispatch({ type: 'LOGIN_START' });
     try {
       const response = await authAPI.login(credentials);
@@ -77,9 +77,9 @@ export const AuthProvider = ({ children }) => {
       dispatch({ type: 'LOGIN_FAILURE', payload: message });
       throw error;
     }
-  };
+  }, []);
 
-  const register = async (userData) => {
+  const register = useCallback(async (userData) => {
     dispatch({ type: 'REGISTER_START' });
     try {
       const response = await authAPI.register(userData);
@@ -90,9 +90,9 @@ export const AuthProvider = ({ children }) => {
       dispatch({ type: 'REGISTER_FAILURE', payload: message });
       throw error;
     }
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       await authAPI.logout();
     } catch (error) {
@@ -100,15 +100,15 @@ export const AuthProvider = ({ children }) => {
     } finally {
       dispatch({ type: 'LOGOUT' });
     }
-  };
+  }, []);
 
-  const value = {
+  const value = useMemo(() => ({
     ...state,
     login,
     register,
     logout,
     checkAuthStatus
-  };
+  }), [state, login, register, logout, checkAuthStatus]);
 
   return (
     <AuthContext.Provider value={value}>
@@ -124,4 +124,3 @@ export const useAuth = () => {
   }
   return context;
 };
-
