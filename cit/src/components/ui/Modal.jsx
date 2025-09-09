@@ -2,7 +2,7 @@
 import React, { useRef } from 'react';
 import useOnClickOutside from '../../hooks/useOnClickOutside';
 
-const Modal = ({ isOpen, onClose, children }) => {
+const Modal = ({ isOpen, onClose, children, className = "" }) => {
   if (!isOpen) return null;
 
   const modalRef = useRef(null);
@@ -16,7 +16,7 @@ const Modal = ({ isOpen, onClose, children }) => {
       {/* This is the modal panel itself */}
       <div
         ref={modalRef} // We attach the ref here
-        className="bg-dark-800 p-6 md:p-8 rounded-lg shadow-xl w-full max-w-lg relative max-h-[90vh] overflow-y-auto"
+        className={`bg-dark-800 p-6 md:p-8 rounded-lg shadow-xl w-full max-w-lg relative max-h-[90vh] overflow-y-auto ${className}`}
       >
         <button
           onClick={onClose}

@@ -1,10 +1,13 @@
 // Enhanced Futuristic MyCourses Page
 import React, { useState, useEffect } from 'react';
 import { coursesAPI } from '../services/courses';
+import { useAuth } from '../contexts/AuthContext';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import { Link } from 'react-router-dom';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
+import IDCardGenerator from '../components/idcard/IDCardGenerator';
+import toast from 'react-hot-toast';
 import { 
   Play, 
   Calendar, 
@@ -23,13 +26,17 @@ import {
   ChevronRight,
   Activity,
   Shield,
-  Star
+  Star,
+  Badge
 } from 'lucide-react';
 
 const MyCourses = () => {
+  const { user } = useAuth();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const [selectedCourseForID, setSelectedCourseForID] = useState(null);
+  const [isIDCardModalOpen, setIsIDCardModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchMyCourses = async () => {
@@ -106,6 +113,24 @@ const MyCourses = () => {
     }, { completed: 0, inProgress: 0, upcoming: 0 });
 
     return stats;
+  };
+
+  const handleGenerateIDCard = (course) => {
+    if (!user) {
+      toast.error('User information not available. Please refresh the page.');
+      return;
+    }
+    if (!course) {
+      toast.error('Course information not available. Please try again.');
+      return;
+    }
+    setSelectedCourseForID(course);
+    setIsIDCardModalOpen(true);
+  };
+
+  const handleCloseIDCardModal = () => {
+    setIsIDCardModalOpen(false);
+    setSelectedCourseForID(null);
   };
 
   if (loading) {
@@ -334,27 +359,40 @@ const MyCourses = () => {
                       </div>
 
                       {/* Action Buttons */}
-                      <div className="flex flex-col sm:flex-row gap-3 mt-auto">
-                        <Link to={`/courses/${course.id}`} className="flex-1">
-                          <Button 
-                            variant="outline" 
-                            className="w-full bg-transparent border-secondary/50 text-secondary hover:bg-secondary hover:text-white transition-all duration-300 group/btn"
-                          >
-                            <Eye className="w-4 h-4 mr-2 group-hover/btn:scale-110 transition-transform duration-300" />
-                            Details
-                          </Button>
-                        </Link>
-                        
-                        {monthsRemaining > 0 && course.status !== 'completed' && (
-                          <Link to={`/payment/${course.id}`} className="flex-1">
+                      <div className="flex flex-col gap-3 mt-auto">
+                        {/* First row - Details and Pay Fees */}
+                        <div className="flex flex-col sm:flex-row gap-3">
+                          <Link to={`/courses/${course.id}`} className="flex-1">
                             <Button 
-                              className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-orange-500 hover:to-red-500 text-white transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-orange-500/25"
+                              variant="outline" 
+                              className="w-full bg-transparent border-secondary/50 text-secondary hover:bg-secondary hover:text-white transition-all duration-300 group/btn"
                             >
-                              <CreditCard className="w-4 h-4 mr-2" />
-                              Pay Fees
+                              <Eye className="w-4 h-4 mr-2 group-hover/btn:scale-110 transition-transform duration-300" />
+                              Details
                             </Button>
                           </Link>
-                        )}
+                          
+                          {monthsRemaining > 0 && course.status !== 'completed' && (
+                            <Link to={`/payment/${course.id}`} className="flex-1">
+                              <Button 
+                                className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-orange-500 hover:to-red-500 text-white transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-orange-500/25"
+                              >
+                                <CreditCard className="w-4 h-4 mr-2" />
+                                Pay Fees
+                              </Button>
+                            </Link>
+                          )}
+                        </div>
+
+                        {/* Second row - Generate ID Card */}
+                        <Button 
+                          onClick={() => handleGenerateIDCard(course)}
+                          className="w-full bg-gradient-to-r from-electric-500 to-cyber-500 hover:from-cyber-500 hover:to-matrix-500 text-white transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-electric-500/25 group/id relative overflow-hidden"
+                        >
+                          <Badge className="w-4 h-4 mr-2 group-hover/id:scale-110 transition-transform duration-300" />
+                          Generate ID Card
+                          <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover/id:translate-x-full transition-transform duration-700"></div>
+                        </Button>
                       </div>
                     </div>
 
@@ -419,6 +457,16 @@ const MyCourses = () => {
               </button>
             </div>
           </Card>
+        )}
+
+        {/* ID Card Generator Modal */}
+        {selectedCourseForID && (
+          <IDCardGenerator
+            isOpen={isIDCardModalOpen}
+            onClose={handleCloseIDCardModal}
+            course={selectedCourseForID}
+            user={user}
+          />
         )}
       </div>
     </div>
