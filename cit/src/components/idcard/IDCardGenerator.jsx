@@ -5,6 +5,7 @@ import QRCode from 'qrcode';
 import Button from '../ui/Button';
 import Modal from '../ui/Modal';
 import LoadingSpinner from '../ui/LoadingSpinner';
+import { useAuth } from '../../contexts/AuthContext';
 import { 
   CreditCard, 
   Download, 
@@ -15,13 +16,44 @@ import {
   X,
   CheckCircle,
   AlertTriangle,
-  Sparkles
+  Sparkles,
+  RefreshCw
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const IDCardGenerator = ({ isOpen, onClose, course, user }) => {
+  const { refreshUser } = useAuth();
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const canvasRef = useRef(null);
+
+  // Debug user data
+  React.useEffect(() => {
+    if (isOpen && user) {
+      console.log('ID Card Generator - User Data:', {
+        rollNumber: user.rollNumber,
+        fullName: user.fullName,
+        photoUrl: user.photoUrl,
+        gender: user.gender,
+        bloodGroup: user.bloodGroup,
+        studentMobile: user.studentMobile,
+        parentMobile: user.parentMobile,
+        type: user.type
+      });
+    }
+  }, [isOpen, user]);
+
+  const handleRefreshUserData = async () => {
+    setIsRefreshing(true);
+    try {
+      await refreshUser();
+      toast.success('User data refreshed successfully!');
+    } catch (error) {
+      toast.error('Failed to refresh user data. Please try again.');
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   // Calculate expiry date based on course end date
   const getExpiryDate = () => {
@@ -347,7 +379,22 @@ const IDCardGenerator = ({ isOpen, onClose, course, user }) => {
 
           {/* Title */}
           <div className="space-y-2">
-            <h2 className="text-2xl sm:text-3xl font-display font-bold text-white">Generate ID Card</h2>
+            <div className="flex items-center justify-center space-x-4">
+              <h2 className="text-2xl sm:text-3xl font-display font-bold text-white">Generate ID Card</h2>
+              <Button
+                onClick={handleRefreshUserData}
+                disabled={isRefreshing}
+                variant="outline"
+                size="sm"
+                className="text-xs"
+              >
+                {isRefreshing ? (
+                  <LoadingSpinner className="w-3 h-3" />
+                ) : (
+                  <RefreshCw className="w-3 h-3" />
+                )}
+              </Button>
+            </div>
             <p className="text-gray-400">
               Create your student ID card for <span className="text-electric-400 font-semibold">{course.title}</span>
             </p>
@@ -428,6 +475,19 @@ const IDCardGenerator = ({ isOpen, onClose, course, user }) => {
               </div>
             </div>
           </div>
+
+          {/* Debug Information (only in development) */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="bg-gradient-to-br from-gray-500/10 to-gray-600/5 border border-gray-500/20 rounded-xl p-4">
+              <h4 className="font-semibold text-gray-400 mb-3 flex items-center">
+                <User className="w-4 h-4 mr-2" />
+                Debug - Raw User Data:
+              </h4>
+              <pre className="text-xs text-gray-300 bg-gray-800/50 p-2 rounded overflow-x-auto">
+                {JSON.stringify(user, null, 2)}
+              </pre>
+            </div>
+          )}
 
           {/* Requirements Check */}
           <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/20 rounded-xl p-4">

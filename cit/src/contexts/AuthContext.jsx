@@ -102,13 +102,20 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
+  const refreshUser = useCallback(async () => {
+    if (state.isAuthenticated) {
+      await checkAuthStatus();
+    }
+  }, [checkAuthStatus, state.isAuthenticated]);
+
   const value = useMemo(() => ({
     ...state,
     login,
     register,
     logout,
-    checkAuthStatus
-  }), [state, login, register, logout, checkAuthStatus]);
+    checkAuthStatus,
+    refreshUser
+  }), [state, login, register, logout, checkAuthStatus, refreshUser]);
 
   return (
     <AuthContext.Provider value={value}>
