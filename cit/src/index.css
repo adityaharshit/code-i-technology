@@ -2,6 +2,7 @@
 @import '../src/styles/globals.css';
 @import '../src/styles/animations.css';
 @import '../src/styles/glassmorphism.css';
+@import '../src/styles/futuristic-animations.css';
 
 @tailwind base;
 @tailwind components;
@@ -10,6 +11,7 @@
 
 /* Root variables for consistent theming */
 :root {
+  /* Legacy colors */
   --primary: #003049;
   --secondary: #669BBC;
   --ternary1: #C1121F;
@@ -21,24 +23,31 @@
   --dark-600: #475569;
   --text-light: #F8FAFC;
   --text-dark: #CBD5E1;
+  
+  /* New futuristic color system */
+  --electric-500: #00D4FF;
+  --cyber-500: #8B5CF6;
+  --matrix-500: #00FF88;
+  --neural-500: #FF6B35;
+  --quantum-500: #6991B9;
+  --space-900: #0A0E1A;
 }
 
-/* Base body styles with modern animated background */
+/* Enhanced body styles with futuristic background */
 body {
   @apply text-white font-sans antialiased;
   min-height: 100vh;
   overflow-x: hidden;
   
-  /* Modern animated gradient background */
+  /* Futuristic animated gradient background - now handled by FuturisticBackground component */
   background: linear-gradient(-45deg, 
+    #0A0E1A, 
+    #1E2A3A, 
     #0F172A, 
-    #1E293B, 
-    #003049, 
-    #334155, 
-    #1E3A8A
+    #1E293B
   );
   background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
+  animation: gradientShift 20s ease infinite;
   
   /* Add margin top to account for fixed navbar */
   padding-top: 64px; /* Adjust based on navbar height */

@@ -1,3 +1,4 @@
+// Enhanced Futuristic Register Page
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -9,6 +10,28 @@ import Input from '../components/ui/Input';
 import Card from '../components/ui/Card';
 import { statesAndDistricts } from '../utils/statesDistricts';
 import toast from 'react-hot-toast';
+import { 
+  User, 
+  Mail, 
+  Lock, 
+  Phone, 
+  MapPin, 
+  Calendar, 
+  GraduationCap, 
+  Camera, 
+  Check, 
+  ChevronRight, 
+  ChevronLeft, 
+  Sparkles, 
+  Shield, 
+  Target, 
+  Zap,
+  Eye,
+  EyeOff,
+  Upload,
+  CheckCircle,
+  AlertCircle
+} from 'lucide-react';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -219,82 +242,180 @@ const Register = () => {
 
   const renderStepIndicator = () => (
     <div className={`mb-8 ${isVisible ? 'animate-fade-in-down' : 'opacity-0'}`}>
-      <div className="flex justify-center items-center space-x-2 sm:space-x-4 mb-6">
-        {steps.map((step, index) => (
-          <React.Fragment key={step.number}>
-            <div className={`flex flex-col items-center ${currentStep >= step.number ? 'text-secondary' : 'text-gray-500'}`}>
-              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 flex items-center justify-center text-sm font-semibold transition-all duration-300 ${
-                currentStep >= step.number 
-                  ? 'border-secondary bg-secondary text-white' 
-                  : 'border-gray-500'
+      <Card variant="hologram" className="p-6 mb-8">
+        <div className="flex justify-center items-center space-x-2 sm:space-x-6">
+          {steps.map((step, index) => (
+            <React.Fragment key={step.number}>
+              <div className={`flex flex-col items-center group transition-all duration-300 ${
+                currentStep >= step.number ? 'text-electric-400' : 'text-gray-500'
               }`}>
-                {currentStep > step.number ? '✓' : step.number}
+                <div className={`relative w-10 h-10 sm:w-12 sm:h-12 rounded-2xl border-2 flex items-center justify-center text-sm font-bold transition-all duration-500 ${
+                  currentStep >= step.number 
+                    ? 'border-electric-500 bg-gradient-to-br from-electric-500 to-cyber-500 text-white shadow-glow animate-neural-pulse' 
+                    : 'border-quantum-600 bg-quantum-800/50 backdrop-blur-sm'
+                }`}>
+                  {currentStep > step.number ? (
+                    <CheckCircle className="w-5 h-5 " />
+                  ) : (
+                    <span className="font-display">{step.number}</span>
+                  )}
+                  {/* Floating indicator */}
+                  {currentStep === step.number && (
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-matrix-400 rounded-full " />
+                  )}
+                </div>
+                
+                <div className="hidden sm:block text-center mt-3 space-y-1">
+                  <div className={`text-sm font-display font-semibold transition-colors duration-300 ${
+                    currentStep >= step.number ? 'text-white' : 'text-gray-400'
+                  }`}>
+                    {step.title}
+                  </div>
+                  <div className="text-xs text-gray-400">{step.description}</div>
+                </div>
               </div>
-              <div className="hidden sm:block text-center mt-2">
-                <div className="text-xs font-medium">{step.title}</div>
-                <div className="text-xs text-gray-500">{step.description}</div>
-              </div>
-            </div>
-            {index < steps.length - 1 && (
-              <div className={`w-8 sm:w-16 h-0.5 transition-colors duration-300 ${
-                currentStep > step.number ? 'bg-secondary' : 'bg-gray-600'
-              }`} />
-            )}
-          </React.Fragment>
-        ))}
-      </div>
+              
+              {index < steps.length - 1 && (
+                <div className="relative">
+                  <div className={`w-8 sm:w-20 h-1 rounded-full transition-all duration-500 ${
+                    currentStep > step.number 
+                      ? 'bg-gradient-to-r from-electric-500 to-cyber-500 animate-energy-flow' 
+                      : 'bg-quantum-700'
+                  }`} />
+                  {currentStep > step.number && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-electric-500/20 to-cyber-500/20 rounded-full blur-sm " />
+                  )}
+                </div>
+              )}
+            </React.Fragment>
+          ))}
+        </div>
+        
+        {/* Progress percentage */}
+        <div className="mt-6 text-center">
+          <div className="text-sm text-gray-300 mb-2">
+            Step {currentStep} of {steps.length} - {Math.round((currentStep / steps.length) * 100)}% Complete
+          </div>
+          <div className="w-full bg-quantum-800 rounded-full h-2 overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-electric-500 to-cyber-500 rounded-full transition-all duration-500 animate-energy-flow"
+              style={{ width: `${(currentStep / steps.length) * 100}%` }}
+            />
+          </div>
+        </div>
+      </Card>
     </div>
   );
 
   const renderPersonalInfo = () => (
-    <div className={`space-y-6 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
-      <h2 className="subheading-responsive text-secondary border-b border-gray-600 pb-2">
-        Personal Information
-      </h2>
+    <div className={`space-y-8 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
+      <div className="flex items-center justify-between mb-8">
+        <h2 className="text-2xl sm:text-3xl font-display font-bold bg-gradient-to-r from-electric-400 to-cyber-500 bg-clip-text text-transparent flex items-center">
+          <User className="w-7 h-7 mr-3 text-electric-400 " />
+          Personal Information
+        </h2>
+        <div className="w-16 h-1 bg-gradient-to-r from-electric-500 to-cyber-500 rounded-full animate-energy-flow" />
+      </div>
       
-      <div className="form-grid-responsive">
-        <Input
-          label="Full Name *"
-          name="fullName"
-          value={formData.fullName}
-          onChange={handleChange}
-          required
-          className="form-input-responsive"
-        />
-        <Input
-          label="Father's Name *"
-          name="fatherName"
-          value={formData.fatherName}
-          onChange={handleChange}
-          required
-          className="form-input-responsive"
-        />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {/* Enhanced Full Name Input */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-300">Full Name *</label>
+          <div className="relative">
+            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-electric-400" />
+            <input
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleChange}
+              required
+              placeholder="Enter your full name"
+              className="w-full pl-12 pr-4 py-3 bg-quantum-800/50 border border-electric-500/30 rounded-xl text-white placeholder-gray-400 focus:border-electric-500 focus:ring-2 focus:ring-electric-500/20 focus:outline-none transition-all duration-300 backdrop-blur-sm"
+            />
+            {formData.fullName && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-matrix-400 rounded-full " />
+            )}
+          </div>
+        </div>
+
+        {/* Enhanced Father's Name Input */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-300">Father's Name *</label>
+          <div className="relative">
+            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-cyber-400" />
+            <input
+              name="fatherName"
+              value={formData.fatherName}
+              onChange={handleChange}
+              required
+              placeholder="Enter father's name"
+              className="w-full pl-12 pr-4 py-3 bg-quantum-800/50 border border-cyber-500/30 rounded-xl text-white placeholder-gray-400 focus:border-cyber-500 focus:ring-2 focus:ring-cyber-500/20 focus:outline-none transition-all duration-300 backdrop-blur-sm"
+            />
+            {formData.fatherName && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-matrix-400 rounded-full " />
+            )}
+          </div>
+        </div>
       </div>
 
-      <div className="form-grid-responsive">
-        <Input
-          label="Email *"
-          name="email"
-          type="email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          className="form-input-responsive"
-        />
-        <div>
-          <Input
-            label="Username *"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            maxLength="20"
-            required
-            className="form-input-responsive"
-          />
-          {usernameStatus.loading && <p className="text-xs text-gray-400 mt-1">Checking...</p>}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {/* Enhanced Email Input */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-300">Email Address *</label>
+          <div className="relative">
+            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-matrix-400" />
+            <input
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              placeholder="Enter your email address"
+              className="w-full pl-12 pr-4 py-3 bg-quantum-800/50 border border-matrix-500/30 rounded-xl text-white placeholder-gray-400 focus:border-matrix-500 focus:ring-2 focus:ring-matrix-500/20 focus:outline-none transition-all duration-300 backdrop-blur-sm"
+            />
+            {formData.email && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-matrix-400 rounded-full " />
+            )}
+          </div>
+        </div>
+
+        {/* Enhanced Username Input with Status */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-300">Username *</label>
+          <div className="relative">
+            <Target className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neural-400" />
+            <input
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              maxLength="20"
+              required
+              placeholder="Choose a unique username"
+              className="w-full pl-12 pr-12 py-3 bg-quantum-800/50 border border-neural-500/30 rounded-xl text-white placeholder-gray-400 focus:border-neural-500 focus:ring-2 focus:ring-neural-500/20 focus:outline-none transition-all duration-300 backdrop-blur-sm"
+            />
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              {usernameStatus.loading ? (
+                <div className="w-5 h-5 border-2 border-neural-400 border-t-transparent rounded-full animate-spin" />
+              ) : usernameStatus.available && formData.username ? (
+                <CheckCircle className="w-5 h-5 text-matrix-400   " />
+              ) : formData.username && !usernameStatus.available ? (
+                <AlertCircle className="w-5 h-5 text-red-400 animate-pulse" />
+              ) : null}
+            </div>
+          </div>
+          {usernameStatus.loading && (
+            <p className="text-xs text-neural-400 flex items-center space-x-2 animate-fade-in-up">
+              <div className="w-1 h-1 bg-neural-400 rounded-full animate-pulse" />
+              <span>Checking availability...</span>
+            </p>
+          )}
           {usernameStatus.message && (
-            <p className={`text-xs mt-1 ${usernameStatus.available ? 'text-green-400' : 'text-red-400'}`}>
-              {usernameStatus.message}
+            <p className={`text-xs flex items-center space-x-2 animate-fade-in-up ${
+              usernameStatus.available ? 'text-matrix-400' : 'text-red-400'
+            }`}>
+              <div className={`w-1 h-1 rounded-full ${
+                usernameStatus.available ? 'bg-matrix-400 ' : 'bg-red-400 animate-pulse'
+              }`} />
+              <span>{usernameStatus.message}</span>
             </p>
           )}
         </div>

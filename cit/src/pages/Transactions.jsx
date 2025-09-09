@@ -1,3 +1,4 @@
+// Enhanced Futuristic Transactions Page
 import React, { useState, useEffect } from 'react';
 import { paymentsAPI } from '../services/payments';
 import Card from '../components/ui/Card';
@@ -14,7 +15,15 @@ import {
   Eye,
   Filter,
   Download,
-  RefreshCw
+  RefreshCw,
+  TrendingUp,
+  Zap,
+  Shield,
+  Activity,
+  Target,
+  Sparkles,
+  ChevronRight,
+  DollarSign
 } from 'lucide-react';
 
 const Transactions = () => {
@@ -110,86 +119,124 @@ const Transactions = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center space-y-4 animate-fade-in-up">
-          <LoadingSpinner />
-          <p className="text-gray-400 animate-pulse">Loading your transactions...</p>
-        </div>
+        <LoadingSpinner size="lg" text="Loading your transactions..." />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen py-4 sm:py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
-        {/* Header Section */}
-        <div className="text-center space-y-4 animate-fade-in-down">
-          <div className="flex items-center justify-center space-x-3">
-            <div className="p-3 bg-gradient-to-br from-secondary to-primary rounded-full animate-pulse-glow">
-              <Receipt className="text-white" size={32} />
+    <div className="min-h-screen py-4 sm:py-8 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Floating particles */}
+      <div className="absolute inset-0 pointer-events-none">
+        <Receipt className="absolute top-20 left-10 w-4 h-4 text-electric-500/20 animate-float" style={{ animationDelay: '0s' }} />
+        <CreditCard className="absolute top-32 right-16 w-3 h-3 text-cyber-500/20 animate-particle-float" style={{ animationDelay: '2s' }} />
+        <DollarSign className="absolute bottom-32 left-20 w-5 h-5 text-matrix-500/20 animate-neural-pulse" style={{ animationDelay: '1s' }} />
+        <Shield className="absolute bottom-20 right-12 w-4 h-4 text-neural-500/20 " style={{ animationDelay: '3s' }} />
+      </div>
+
+      <div className="max-w-7xl mx-auto space-y-8 relative z-10">
+        {/* Enhanced Header Section */}
+        <Card variant="hologram" className="p-6 sm:p-8 text-center animate-fade-in-down">
+          <div className="flex flex-col items-center space-y-6">
+            {/* Enhanced Icon */}
+            <div className="relative">
+              <div className="p-4 bg-gradient-to-br from-electric-500 to-cyber-500 rounded-3xl animate-neural-pulse shadow-glow">
+                <Receipt className="text-white w-8 h-8" />
+              </div>
+              {/* Floating indicators */}
+              <div className="absolute -top-2 -right-2 w-3 h-3 bg-matrix-400 rounded-full " />
+              <div className="absolute -bottom-1 -left-2 w-2 h-2 bg-neural-400 rounded-full animate-particle-float" />
+            </div>
+
+            {/* Enhanced Title */}
+            <div className="space-y-3">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold bg-gradient-to-r from-electric-400 via-cyber-500 to-matrix-400 bg-clip-text text-transparent ">
+                My Transactions
+              </h1>
+              <p className="text-lg text-gray-300 max-w-2xl">
+                View and manage your{' '}
+                <span className="text-electric-400 font-semibold">payment history</span>{' '}
+                and{' '}
+                <span className="text-cyber-400 font-semibold">transaction records</span>
+              </p>
+              
+              {/* Activity indicator */}
+              <div className="flex items-center justify-center space-x-2 mt-4">
+                <Activity className="w-4 h-4 text-matrix-400 animate-pulse" />
+                <span className="text-sm text-gray-400">
+                  Last updated: {new Date().toLocaleDateString()}
+                </span>
+              </div>
             </div>
           </div>
-          <div className="space-y-2">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white animate-fade-in-up animate-delay-200">
-              My Transactions
-            </h1>
-            <p className="text-gray-400 text-sm sm:text-base animate-fade-in-up animate-delay-300">
-              View and manage your payment history
-            </p>
-          </div>
-        </div>
+        </Card>
 
-        {/* Statistics Cards */}
+        {/* Enhanced Statistics Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 animate-fade-in-up animate-delay-400">
-          <Card className="glass-card p-4 sm:p-6 hover-lift">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-green-100 rounded-full">
-                <CheckCircle className="text-green-600" size={20} />
+          <Card variant="matrix" interactive className="p-4 sm:p-6 group">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 rounded-2xl bg-gradient-to-br from-matrix-500/20 to-matrix-600/30 animate-neural-pulse">
+                <CheckCircle className="text-matrix-400 w-6 h-6" />
               </div>
-              <div>
-                <p className="text-sm text-gray-400">Completed</p>
-                <p className="text-xl font-bold text-white">
+              <div className="flex-1">
+                <p className="text-sm text-gray-300 mb-1">Completed</p>
+                <p className="text-2xl font-display font-bold text-white group-hover:text-matrix-400 transition-colors duration-300">
                   {transactions.filter(t => t.status === 'paid').length}
                 </p>
+                <div className="w-full h-1 bg-matrix-500/20 rounded-full mt-2">
+                  <div className="w-full h-full bg-gradient-to-r from-matrix-500 to-matrix-400 rounded-full animate-energy-flow" />
+                </div>
               </div>
             </div>
           </Card>
           
-          <Card className="glass-card p-4 sm:p-6 hover-lift animate-delay-100">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-yellow-100 rounded-full">
-                <Clock className="text-yellow-600" size={20} />
+          <Card variant="neural" interactive className="p-4 sm:p-6 group animate-delay-100">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 rounded-2xl bg-gradient-to-br from-neural-500/20 to-neural-600/30 animate-neural-pulse">
+                <Clock className="text-neural-400 w-6 h-6" />
               </div>
-              <div>
-                <p className="text-sm text-gray-400">Pending</p>
-                <p className="text-xl font-bold text-white">
+              <div className="flex-1">
+                <p className="text-sm text-gray-300 mb-1">Pending</p>
+                <p className="text-2xl font-display font-bold text-white group-hover:text-neural-400 transition-colors duration-300">
                   {transactions.filter(t => t.status === 'pending').length}
                 </p>
+                <div className="w-full h-1 bg-neural-500/20 rounded-full mt-2">
+                  <div className="w-3/4 h-full bg-gradient-to-r from-neural-500 to-neural-400 rounded-full animate-energy-flow" />
+                </div>
               </div>
             </div>
           </Card>
           
-          <Card className="glass-card p-4 sm:p-6 hover-lift animate-delay-200">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-blue-100 rounded-full">
-                <CreditCard className="text-blue-600" size={20} />
+          <Card variant="electric" interactive className="p-4 sm:p-6 group animate-delay-200">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 rounded-2xl bg-gradient-to-br from-electric-500/20 to-electric-600/30 animate-neural-pulse">
+                <CreditCard className="text-electric-400 w-6 h-6" />
               </div>
-              <div>
-                <p className="text-sm text-gray-400">Total</p>
-                <p className="text-xl font-bold text-white">{transactions.length}</p>
+              <div className="flex-1">
+                <p className="text-sm text-gray-300 mb-1">Total Transactions</p>
+                <p className="text-2xl font-display font-bold text-white group-hover:text-electric-400 transition-colors duration-300">
+                  {transactions.length}
+                </p>
+                <div className="w-full h-1 bg-electric-500/20 rounded-full mt-2">
+                  <div className="w-full h-full bg-gradient-to-r from-electric-500 to-electric-400 rounded-full animate-energy-flow" />
+                </div>
               </div>
             </div>
           </Card>
           
-          <Card className="glass-card p-4 sm:p-6 hover-lift animate-delay-300">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-purple-100 rounded-full">
-                <Receipt className="text-purple-600" size={20} />
+          <Card variant="cyber" interactive className="p-4 sm:p-6 group animate-delay-300">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 rounded-2xl bg-gradient-to-br from-cyber-500/20 to-cyber-600/30 animate-neural-pulse">
+                <DollarSign className="text-cyber-400 w-6 h-6" />
               </div>
-              <div>
-                <p className="text-sm text-gray-400">Total Paid</p>
-                <p className="text-lg font-bold text-white">
+              <div className="flex-1">
+                <p className="text-sm text-gray-300 mb-1">Total Paid</p>
+                <p className="text-xl font-display font-bold text-white group-hover:text-cyber-400 transition-colors duration-300">
                   ₹{transactions.filter(t => t.status === 'paid').reduce((sum, t) => sum + t.netPayable, 0)}
                 </p>
+                <div className="w-full h-1 bg-cyber-500/20 rounded-full mt-2">
+                  <div className="w-4/5 h-full bg-gradient-to-r from-cyber-500 to-cyber-400 rounded-full animate-energy-flow" />
+                </div>
               </div>
             </div>
           </Card>

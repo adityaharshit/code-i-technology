@@ -1,4 +1,4 @@
-// cit/src/pages/MyCourses.jsx
+// Enhanced Futuristic MyCourses Page
 import React, { useState, useEffect } from 'react';
 import { coursesAPI } from '../services/courses';
 import Card from '../components/ui/Card';
@@ -16,7 +16,14 @@ import {
   CheckCircle2,
   AlertCircle,
   Clock,
-  Users
+  Users,
+  Zap,
+  Target,
+  Sparkles,
+  ChevronRight,
+  Activity,
+  Shield,
+  Star
 } from 'lucide-react';
 
 const MyCourses = () => {
@@ -104,7 +111,7 @@ const MyCourses = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner />
+        <LoadingSpinner size="lg" text="Loading your courses..." />
       </div>
     );
   }
@@ -113,55 +120,113 @@ const MyCourses = () => {
   const filteredCourses = getFilteredCourses();
 
   return (
-    <div className="min-h-screen py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-8 sm:space-y-12">
+    <div className="min-h-screen py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Floating particles */}
+      <div className="absolute inset-0 pointer-events-none">
+        <BookOpen className="absolute top-20 left-10 w-4 h-4 text-electric-500/20 animate-float" style={{ animationDelay: '0s' }} />
+        <Target className="absolute top-32 right-16 w-3 h-3 text-cyber-500/20 animate-particle-float" style={{ animationDelay: '2s' }} />
+        <Award className="absolute bottom-32 left-20 w-5 h-5 text-matrix-500/20 animate-neural-pulse" style={{ animationDelay: '1s' }} />
+        <TrendingUp className="absolute bottom-20 right-12 w-4 h-4 text-neural-500/20 " style={{ animationDelay: '3s' }} />
+      </div>
+
+      <div className="max-w-7xl mx-auto space-y-8 sm:space-y-12 relative z-10">
         
-        {/* Header Section */}
-        <div className="text-center space-y-4 animate-fade-in-down">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-secondary via-primary to-secondary bg-clip-text text-transparent">
-            My Learning Journey
-          </h1>
-          <p className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
-            Track your progress and continue your educational journey
-          </p>
-        </div>
+        {/* Enhanced Header Section */}
+        <Card variant="hologram" className="p-6 sm:p-8 text-center animate-fade-in-down">
+          <div className="flex flex-col items-center space-y-6">
+            {/* Enhanced Icon */}
+            <div className="relative">
+              <div className="p-4 bg-gradient-to-br from-electric-500 to-cyber-500 rounded-3xl animate-neural-pulse shadow-glow">
+                <BookOpen className="text-white w-8 h-8" />
+              </div>
+              {/* Floating indicators */}
+              <div className="absolute -top-2 -right-2 w-3 h-3 bg-matrix-400 rounded-full " />
+              <div className="absolute -bottom-1 -left-2 w-2 h-2 bg-neural-400 rounded-full animate-particle-float" />
+            </div>
+
+            {/* Enhanced Title */}
+            <div className="space-y-3">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold bg-gradient-to-r from-electric-400 via-cyber-500 to-matrix-400 bg-clip-text text-transparent ">
+                My Learning Journey
+              </h1>
+              <p className="text-lg sm:text-xl text-gray-300 max-w-2xl leading-relaxed">
+                Track your{' '}
+                <span className="text-electric-400 font-semibold">progress</span>{' '}
+                and continue your{' '}
+                <span className="text-cyber-400 font-semibold">educational journey</span>
+              </p>
+              
+              {/* Activity indicator */}
+              <div className="flex items-center justify-center space-x-2 mt-4">
+                <Activity className="w-4 h-4 text-matrix-400 animate-pulse" />
+                <span className="text-sm text-gray-400">
+                  Active learning since {new Date().getFullYear()}
+                </span>
+              </div>
+            </div>
+          </div>
+        </Card>
 
         {courses.length > 0 && (
           <>
-            {/* Statistics Overview */}
+            {/* Enhanced Statistics Overview */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 animate-fade-in-up animate-delay-200">
-              <Card className="p-6 bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-500/20 hover:border-green-400/30 transition-all duration-300">
+              <Card variant="matrix" interactive className="p-6 group">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-green-400 font-medium">Completed</p>
-                    <p className="text-3xl font-bold text-white">{stats.completed}</p>
+                  <div className="flex-1">
+                    <p className="text-matrix-400 font-medium mb-2 flex items-center">
+                      <CheckCircle2 className="w-4 h-4 mr-2" />
+                      Completed
+                    </p>
+                    <p className="text-3xl font-display font-bold text-white group-hover:text-matrix-400 transition-colors duration-300">
+                      {stats.completed}
+                    </p>
+                    <div className="w-full h-1 bg-matrix-500/20 rounded-full mt-3">
+                      <div className="w-full h-full bg-gradient-to-r from-matrix-500 to-matrix-400 rounded-full animate-energy-flow" />
+                    </div>
                   </div>
-                  <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center">
-                    <CheckCircle2 className="w-6 h-6 text-green-400" />
+                  <div className="w-14 h-14 bg-gradient-to-br from-matrix-500/20 to-matrix-600/30 rounded-2xl flex items-center justify-center animate-neural-pulse">
+                    <Award className="w-7 h-7 text-matrix-400" />
                   </div>
                 </div>
               </Card>
 
-              <Card className="p-6 bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/20 hover:border-blue-400/30 transition-all duration-300">
+              <Card variant="electric" interactive className="p-6 group">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-blue-400 font-medium">In Progress</p>
-                    <p className="text-3xl font-bold text-white">{stats.inProgress}</p>
+                  <div className="flex-1">
+                    <p className="text-electric-400 font-medium mb-2 flex items-center">
+                      <Zap className="w-4 h-4 mr-2" />
+                      In Progress
+                    </p>
+                    <p className="text-3xl font-display font-bold text-white group-hover:text-electric-400 transition-colors duration-300">
+                      {stats.inProgress}
+                    </p>
+                    <div className="w-full h-1 bg-electric-500/20 rounded-full mt-3">
+                      <div className="w-4/5 h-full bg-gradient-to-r from-electric-500 to-electric-400 rounded-full animate-energy-flow" />
+                    </div>
                   </div>
-                  <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
-                    <TrendingUp className="w-6 h-6 text-blue-400" />
+                  <div className="w-14 h-14 bg-gradient-to-br from-electric-500/20 to-electric-600/30 rounded-2xl flex items-center justify-center animate-neural-pulse">
+                    <TrendingUp className="w-7 h-7 text-electric-400" />
                   </div>
                 </div>
               </Card>
 
-              <Card className="p-6 bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20 hover:border-orange-400/30 transition-all duration-300">
+              <Card variant="neural" interactive className="p-6 group">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-orange-400 font-medium">Upcoming</p>
-                    <p className="text-3xl font-bold text-white">{stats.upcoming}</p>
+                  <div className="flex-1">
+                    <p className="text-neural-400 font-medium mb-2 flex items-center">
+                      <Clock className="w-4 h-4 mr-2" />
+                      Upcoming
+                    </p>
+                    <p className="text-3xl font-display font-bold text-white group-hover:text-neural-400 transition-colors duration-300">
+                      {stats.upcoming}
+                    </p>
+                    <div className="w-full h-1 bg-neural-500/20 rounded-full mt-3">
+                      <div className="w-3/5 h-full bg-gradient-to-r from-neural-500 to-neural-400 rounded-full animate-energy-flow" />
+                    </div>
                   </div>
-                  <div className="w-12 h-12 bg-orange-500/20 rounded-xl flex items-center justify-center">
-                    <Clock className="w-6 h-6 text-orange-400" />
+                  <div className="w-14 h-14 bg-gradient-to-br from-neural-500/20 to-neural-600/30 rounded-2xl flex items-center justify-center animate-neural-pulse">
+                    <Calendar className="w-7 h-7 text-neural-400" />
                   </div>
                 </div>
               </Card>

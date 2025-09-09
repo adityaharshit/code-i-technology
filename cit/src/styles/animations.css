@@ -326,7 +326,7 @@
   animation: pulseGlow 2s ease-in-out infinite;
 }
 
-.animate-bounce-slow {
+.-slow {
   animation: slowBounce 3s ease-in-out infinite;
 }
 
@@ -586,7 +586,7 @@
     animation-duration: 3s;
   }
   
-  .animate-bounce-slow {
+  .-slow {
     animation-duration: 4s;
   }
 }

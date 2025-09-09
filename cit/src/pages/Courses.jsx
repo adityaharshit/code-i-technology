@@ -1,11 +1,11 @@
-// cit/src/pages/Courses.jsx
+// Enhanced Futuristic Courses Page
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { coursesAPI } from '../services/courses';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
-import { Search, Filter, Grid, List } from 'lucide-react';
+import { Search, Filter, Grid, List, Clock, Users, Star, Zap, Code, BookOpen, Trophy, ChevronRight } from 'lucide-react';
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
@@ -33,13 +33,26 @@ const Courses = () => {
   const getStatusBadgeColor = (status) => {
     switch (status) {
       case 'live':
-        return 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg shadow-red-500/25 animate-pulse-glow';
+        return 'bg-gradient-to-r from-matrix-500 to-matrix-600 text-white shadow-glow-green animate-neural-pulse';
       case 'upcoming':
-        return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25';
+        return 'bg-gradient-to-r from-electric-500 to-electric-600 text-white shadow-glow ';
       case 'completed':
-        return 'bg-gradient-to-r from-gray-500 to-gray-600 text-white shadow-lg shadow-gray-500/25';
+        return 'bg-gradient-to-r from-quantum-500 to-quantum-600 text-white shadow-quantum';
       default:
-        return 'bg-gradient-to-r from-gray-500 to-gray-600 text-white';
+        return 'bg-gradient-to-r from-cyber-500 to-cyber-600 text-white shadow-glow-purple';
+    }
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'live':
+        return <Zap className="w-3 h-3 mr-1" />;
+      case 'upcoming':
+        return <Clock className="w-3 h-3 mr-1" />;
+      case 'completed':
+        return <Trophy className="w-3 h-3 mr-1" />;
+      default:
+        return <BookOpen className="w-3 h-3 mr-1" />;
     }
   };
 
@@ -73,60 +86,89 @@ const Courses = () => {
   }
 
   const CourseCardGrid = ({ course, index }) => (
-    <Card className="group relative overflow-hidden bg-gradient-to-br from-dark-800/60 to-dark-700/40 border border-dark-600/50 hover:border-secondary/50 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-secondary/20 animate-fade-in-up" 
-          style={{ animationDelay: `${index * 100}ms` }}>
-      <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+    <Card 
+       
+      interactive 
+      
+      className="group relative overflow-hidden transition-all duration-500 hover:scale-102 animate-fade-in-up" 
+      style={{ animationDelay: `${index * 100}ms` }}
+    >
+      {/* Floating particles */}
+      <div className="absolute top-4 right-4 w-1 h-1 bg-electric-400 rounded-full animate-particle-float" />
+      <div className="absolute bottom-6 left-6 w-2 h-2 bg-cyber-400 rounded-full animate-float" />
       
       <div className="relative p-6 sm:p-8 flex flex-col h-full">
-        {/* Status Badge */}
+        {/* Enhanced Status Badge */}
         <div className="absolute -top-2 -right-2 z-10">
-          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider transform rotate-3 group-hover:rotate-0 transition-transform duration-300 ${getStatusBadgeColor(course.status)}`}>
+          <div className={`inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transform rotate-3 group-hover:rotate-0 transition-all duration-300 ${getStatusBadgeColor(course.status)}`}>
+            {getStatusIcon(course.status)}
             {course.status}
-          </span>
+          </div>
         </div>
 
-        {/* Course Title */}
-        <h2 className="text-xl sm:text-2xl font-bold mb-3 mt-4 text-white group-hover:text-secondary transition-colors duration-300 leading-tight">
+        {/* Course Title with Gradient */}
+        <h2 className="text-xl sm:text-2xl font-display font-bold mb-3 mt-6 bg-gradient-to-r from-white to-electric-200 bg-clip-text text-transparent group-hover:from-electric-400 group-hover:to-cyber-400 transition-all duration-300 leading-tight">
           {course.title}
         </h2>
 
-        {/* Start Date */}
-        <p className="text-gray-400 text-sm mb-4 group-hover:text-gray-300 transition-colors duration-300">
-          Starts: {new Date(course.startDate).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          })}
-        </p>
+        {/* Enhanced Start Date */}
+        <div className="flex items-center space-x-2 mb-4">
+          <Clock className="w-4 h-4 text-electric-400" />
+          <p className="text-gray-300 text-sm group-hover:text-electric-300 transition-colors duration-300">
+            Starts: {new Date(course.startDate).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}
+          </p>
+        </div>
 
-        {/* Course Info */}
+        
+
+        {/* Enhanced Course Info */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 mt-auto">
           <div className="flex items-center space-x-2">
-            <span className="text-2xl font-bold text-secondary group-hover:text-white transition-colors duration-300">
+            <span className="text-2xl font-display font-bold bg-gradient-to-r from-electric-400 to-cyber-500 bg-clip-text text-transparent">
               ₹{course.feePerMonth}
             </span>
             <span className="text-gray-400 text-sm">/month</span>
           </div>
-          <div className="flex items-center space-x-2 text-gray-400 text-sm">
-            <div className="w-2 h-2 bg-secondary rounded-full animate-pulse"></div>
-            <span>{course.duration} months</span>
+          <div className="flex items-center space-x-4 text-sm">
+            <div className="flex items-center space-x-1 text-matrix-400">
+              <Clock className="w-4 h-4" />
+              <span>{course.duration} months</span>
+            </div>
+            {/* <div className="flex items-center space-x-1 text-neural-400">
+              <Users className="w-4 h-4" />
+              <span>50+ enrolled</span>
+            </div> */}
           </div>
         </div>
 
-        {/* Action Button */}
+        
+
+        {/* Enhanced Action Button */}
         <div className="relative overflow-hidden">
           {course.isEnrolled ? (
             <Button 
-              className="w-full relative overflow-hidden bg-gradient-to-r from-gray-600 to-gray-700 cursor-not-allowed" 
+              variant="success"
+              className="w-full cursor-not-allowed" 
               disabled
             >
-              <span className="relative z-10">Already Enrolled</span>
+              <Trophy className="w-4 h-4 mr-2" />
+              Already Enrolled
             </Button>
           ) : (
             <Link to={`/courses/${course.id}`}>
-              <Button className="w-full relative overflow-hidden bg-gradient-to-r from-secondary to-primary hover:from-primary hover:to-secondary transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-secondary/25">
-                <span className="relative z-10 font-semibold">View Details</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+              <Button 
+                variant="primary" 
+                className="w-full group"
+              >
+                <span className="flex items-center justify-center">
+                  <BookOpen className="w-4 h-4 mr-2 group-hover:" />
+                  View Details
+                  <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </span>
               </Button>
             </Link>
           )}
@@ -136,40 +178,65 @@ const Courses = () => {
   );
 
   const CourseCardList = ({ course, index }) => (
-    <Card className="group relative overflow-hidden bg-gradient-to-r from-dark-800/60 to-dark-700/40 border border-dark-600/50 hover:border-secondary/50 transition-all duration-500 hover:shadow-xl hover:shadow-secondary/20 animate-fade-in-left"
-          style={{ animationDelay: `${index * 50}ms` }}>
+    <Card 
+      variant="cyber" 
+      interactive
+      className="group relative overflow-hidden transition-all duration-500 animate-fade-in-left"
+      style={{ animationDelay: `${index * 50}ms` }}
+    >
       <div className="flex flex-col sm:flex-row items-start sm:items-center p-4 sm:p-6 gap-4">
-        {/* Status Badge */}
+        {/* Enhanced Status Badge */}
         <div className="shrink-0">
-          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${getStatusBadgeColor(course.status)}`}>
+          <div className={`inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider ${getStatusBadgeColor(course.status)}`}>
+            {getStatusIcon(course.status)}
             {course.status}
-          </span>
-        </div>
-
-        {/* Course Info */}
-        <div className="flex-grow min-w-0">
-          <h3 className="text-lg sm:text-xl font-bold text-white group-hover:text-secondary transition-colors duration-300 mb-1 truncate">
-            {course.title}
-          </h3>
-          <p className="text-gray-400 text-sm mb-2">
-            Starts: {new Date(course.startDate).toLocaleDateString()}
-          </p>
-          <div className="flex items-center space-x-4 text-sm text-gray-400">
-            <span className="text-secondary font-bold">₹{course.feePerMonth}/month</span>
-            <span>{course.duration} months</span>
           </div>
         </div>
 
-        {/* Action Button */}
+        {/* Enhanced Course Info */}
+        <div className="flex-grow min-w-0">
+          <h3 className="text-lg sm:text-xl font-display font-bold bg-gradient-to-r from-white to-electric-200 bg-clip-text text-transparent group-hover:from-electric-400 group-hover:to-cyber-400 transition-all duration-300 mb-2 truncate">
+            {course.title}
+          </h3>
+          
+          <div className="flex items-center space-x-2 mb-2">
+            <Clock className="w-4 h-4 text-electric-400" />
+            <p className="text-gray-300 text-sm">
+              Starts: {new Date(course.startDate).toLocaleDateString()}
+            </p>
+          </div>
+          
+          <div className="flex items-center space-x-6 text-sm">
+            <div className="flex items-center space-x-1">
+              <span className="text-electric-400 font-bold">₹{course.feePerMonth}</span>
+              <span className="text-gray-400">/month</span>
+            </div>
+            <div className="flex items-center space-x-1 text-matrix-400">
+              <Clock className="w-3 h-3" />
+              <span>{course.duration} months</span>
+            </div>
+            {/* <div className="flex items-center space-x-1 text-neural-400">
+              <Users className="w-3 h-3" />
+              <span>50+ enrolled</span>
+            </div> */}
+          </div>
+          
+          
+        </div>
+
+        {/* Enhanced Action Button */}
         <div className="shrink-0 w-full sm:w-auto">
           {course.isEnrolled ? (
-            <Button size="sm" className="w-full sm:w-auto bg-gray-600" disabled>
+            <Button size="sm" variant="success" className="w-full sm:w-auto" disabled>
+              <Trophy className="w-3 h-3 mr-1" />
               Enrolled
             </Button>
           ) : (
             <Link to={`/courses/${course.id}`}>
-              <Button size="sm" className="w-full sm:w-auto bg-gradient-to-r from-secondary to-primary hover:from-primary hover:to-secondary transition-all duration-300">
+              <Button size="sm" variant="primary" glow className="w-full sm:w-auto group">
+                <BookOpen className="w-3 h-3 mr-1" />
                 View Details
+                <ChevronRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
           )}
@@ -182,89 +249,146 @@ const Courses = () => {
     <div className="min-h-screen py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-8 sm:space-y-12">
         
-        {/* Header Section */}
-        <div className="text-center space-y-4 animate-fade-in-down">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-secondary via-primary to-secondary bg-clip-text text-transparent">
+        {/* Enhanced Header Section */}
+        <div className="text-center space-y-6 animate-fade-in-down relative">
+          {/* Floating tech icons */}
+          <div className="absolute inset-0 pointer-events-none">
+            <Code className="absolute top-10 left-10 w-6 h-6 text-electric-500/30 animate-float" style={{ animationDelay: '0s' }} />
+            <BookOpen className="absolute top-20 right-16 w-5 h-5 text-cyber-500/30 animate-particle-float" style={{ animationDelay: '2s' }} />
+            <Star className="absolute bottom-10 left-20 w-4 h-4 text-matrix-500/30 animate-neural-pulse" style={{ animationDelay: '1s' }} />
+          </div>
+
+          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-display font-bold bg-gradient-to-r from-electric-400 via-cyber-500 to-matrix-400 bg-clip-text text-transparent ">
             Our Courses
           </h1>
-          <p className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
-            Discover our comprehensive range of courses designed to accelerate your learning journey
+          
+          <p className="text-lg sm:text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+            Discover our comprehensive range of{' '}
+            <span className="text-electric-400 font-semibold">cutting-edge courses</span>{' '}
+            designed to accelerate your learning journey in{' '}
+            <span className="text-cyber-400 font-semibold">Computer Science</span>
           </p>
+          
+          {/* Course statistics */}
+          <div className="flex justify-center items-center space-x-8 mt-8">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-electric-400 animate-neural-pulse">50+</div>
+              <div className="text-sm text-gray-400">Courses</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-cyber-400 ">500+</div>
+              <div className="text-sm text-gray-400">Students</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-matrix-400 ">95%</div>
+              <div className="text-sm text-gray-400">Success Rate</div>
+            </div>
+          </div>
         </div>
 
-        {/* Search and Controls */}
-        <div className="bg-dark-800/40 backdrop-blur-lg rounded-2xl p-4 sm:p-6 border border-dark-600/50 animate-fade-in-up animate-delay-200">
+        {/* Enhanced Search and Controls */}
+        <Card variant="hologram" className="p-4 sm:p-6 animate-fade-in-up animate-delay-200">
           <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-stretch lg:items-center">
             
-            {/* Search Bar */}
+            {/* Enhanced Search Bar */}
             <div className="relative flex-grow">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-electric-400 w-5 h-5 " />
               <input
                 type="text"
-                placeholder="Search courses..."
+                placeholder="Search courses, technologies, or topics..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-dark-700/50 border border-dark-600/50 rounded-xl text-white placeholder-gray-400 focus:border-secondary focus:ring-2 focus:ring-secondary/20 focus:outline-none transition-all duration-300"
+                className="w-full pl-12 pr-4 py-3 bg-quantum-800/50 border border-electric-500/30 rounded-xl text-white placeholder-gray-400 focus:border-electric-500 focus:ring-2 focus:ring-electric-500/20 focus:outline-none transition-all duration-300 backdrop-blur-sm"
               />
+              {/* Search suggestions indicator */}
+              {searchTerm && (
+                <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                  <div className="w-2 h-2 bg-matrix-400 rounded-full animate-neural-pulse" />
+                </div>
+              )}
             </div>
 
-            {/* View Mode Toggle */}
-            <div className="flex items-center space-x-2 bg-dark-700/50 rounded-xl p-1">
+            {/* Enhanced View Mode Toggle */}
+            <div className="flex items-center space-x-2 bg-quantum-800/50 backdrop-blur-sm rounded-xl p-1 border border-cyber-500/20">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-lg transition-all duration-300 ${viewMode === 'grid' ? 'bg-secondary text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-dark-600/50'}`}
+                className={`p-3 rounded-lg transition-all duration-300 group ${
+                  viewMode === 'grid' 
+                    ? 'bg-gradient-to-r from-electric-500 to-cyber-500 text-white shadow-glow' 
+                    : 'text-gray-400 hover:text-white hover:bg-quantum-700/50'
+                }`}
               >
-                <Grid className="w-5 h-5" />
+                <Grid className="w-5 h-5 group-hover:" />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 rounded-lg transition-all duration-300 ${viewMode === 'list' ? 'bg-secondary text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-dark-600/50'}`}
+                className={`p-3 rounded-lg transition-all duration-300 group ${
+                  viewMode === 'list' 
+                    ? 'bg-gradient-to-r from-electric-500 to-cyber-500 text-white shadow-glow' 
+                    : 'text-gray-400 hover:text-white hover:bg-quantum-700/50'
+                }`}
               >
-                <List className="w-5 h-5" />
+                <List className="w-5 h-5 group-hover:" />
               </button>
             </div>
 
-            {/* Mobile Filter Toggle */}
+            {/* Enhanced Mobile Filter Toggle */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="lg:hidden flex items-center space-x-2 px-4 py-3 bg-secondary hover:bg-primary transition-all duration-300 rounded-xl text-white font-medium"
+              className="lg:hidden flex items-center space-x-2 px-4 py-3 bg-gradient-to-r from-electric-500 to-cyber-500 hover:from-cyber-500 hover:to-electric-500 transition-all duration-300 rounded-xl text-white font-medium shadow-glow group"
             >
               <Filter className="w-5 h-5" />
               <span>Filters</span>
             </button>
           </div>
 
-          {/* Filter Pills */}
-          <div className={`mt-4 transition-all duration-300 overflow-hidden ${showFilters || 'max-lg:hidden'}`}>
-            <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
-              {filters.map((filter) => (
+          {/* Enhanced Filter Pills */}
+          <div className={`mt-6 transition-all duration-300 overflow-hidden ${showFilters || 'max-lg:hidden'}`}>
+            <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
+              {filters.map((filter, index) => (
                 <button
                   key={filter}
                   onClick={() => setActiveFilter(filter)}
-                  className={`px-4 py-2 text-sm font-semibold rounded-full transition-all duration-300 transform hover:scale-105 ${
+                  className={`px-4 py-2.5 text-sm font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 animate-fade-in-up ${
                     activeFilter === filter
-                      ? 'bg-gradient-to-r from-secondary to-primary text-white shadow-lg shadow-secondary/25'
-                      : 'bg-dark-700/50 text-gray-300 hover:bg-dark-600/50 hover:text-white border border-dark-600/50 hover:border-dark-500/50'
+                      ? 'bg-gradient-to-r from-electric-500 to-cyber-500 text-white shadow-glow '
+                      : 'bg-quantum-800/50 text-gray-300 hover:bg-quantum-700/70 hover:text-white border border-electric-500/20 hover:border-electric-500/40 backdrop-blur-sm'
                   }`}
+                  style={{ animationDelay: `${index * 100}ms` }}
                 >
                   {filter}
+                  {activeFilter === filter && (
+                    <div className="inline-block w-2 h-2 bg-white rounded-full ml-2 animate-pulse" />
+                  )}
                 </button>
               ))}
             </div>
           </div>
-        </div>
+        </Card>
 
-        {/* Results Count */}
+        {/* Enhanced Results Count */}
         <div className="flex justify-between items-center animate-fade-in-up animate-delay-300">
-          <p className="text-gray-400 text-sm sm:text-base">
-            {filteredCourses.length} {filteredCourses.length === 1 ? 'course' : 'courses'} found
-          </p>
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-electric-400 rounded-full animate-neural-pulse" />
+              <p className="text-gray-300 text-sm sm:text-base font-medium">
+                <span className="text-electric-400 font-bold">{filteredCourses.length}</span>{' '}
+                {filteredCourses.length === 1 ? 'course' : 'courses'} found
+              </p>
+            </div>
+            {activeFilter !== 'All' && (
+              <div className="px-2 py-1 bg-cyber-500/20 border border-cyber-400/30 rounded text-xs text-cyber-300">
+                {activeFilter}
+              </div>
+            )}
+          </div>
           {searchTerm && (
             <button
               onClick={() => setSearchTerm('')}
-              className="text-secondary hover:text-primary transition-colors duration-300 text-sm font-medium"
+              className="flex items-center space-x-1 text-electric-400 hover:text-cyber-400 transition-colors duration-300 text-sm font-medium group"
             >
-              Clear search
+              <span>Clear search</span>
+              <div className="w-1 h-1 bg-electric-400 rounded-full group-hover:" />
             </button>
           )}
         </div>
@@ -285,26 +409,51 @@ const Courses = () => {
             )}
           </div>
         ) : (
-          <Card className="p-12 sm:p-16 text-center bg-gradient-to-br from-dark-800/60 to-dark-700/40 border border-dark-600/50 animate-fade-in-up animate-delay-300">
-            <div className="max-w-md mx-auto space-y-4">
-              <div className="w-16 h-16 mx-auto bg-gradient-to-br from-secondary/20 to-primary/20 rounded-full flex items-center justify-center">
-                <Search className="w-8 h-8 text-secondary" />
+          <Card variant="hologram" className="p-12 sm:p-16 text-center animate-fade-in-up animate-delay-300">
+            <div className="max-w-md mx-auto space-y-6">
+              {/* Enhanced empty state icon */}
+              <div className="relative">
+                <div className="w-20 h-20 mx-auto bg-gradient-to-br from-electric-500/20 to-cyber-500/20 rounded-2xl flex items-center justify-center animate-float">
+                  <Search className="w-10 h-10 text-electric-400" />
+                </div>
+                {/* Floating particles around icon */}
+                <div className="absolute -top-2 -right-2 w-2 h-2 bg-cyber-400 rounded-full animate-particle-float" />
+                <div className="absolute -bottom-1 -left-1 w-1 h-1 bg-matrix-400 rounded-full animate-neural-pulse" />
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-white">No Courses Found</h3>
-              <p className="text-gray-400 leading-relaxed">
+              
+              <h3 className="text-2xl sm:text-3xl font-display font-bold bg-gradient-to-r from-electric-400 to-cyber-500 bg-clip-text text-transparent">
+                No Courses Found
+              </h3>
+              
+              <p className="text-gray-300 leading-relaxed">
                 {searchTerm 
-                  ? `No courses match your search for "${searchTerm}"`
+                  ? (
+                    <>
+                      No courses match your search for{' '}
+                      <span className="text-electric-400 font-semibold">"{searchTerm}"</span>
+                    </>
+                  )
                   : "No courses available for the selected filter"
                 }
               </p>
+              
               {searchTerm && (
                 <button
                   onClick={() => setSearchTerm('')}
-                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-secondary to-primary hover:from-primary hover:to-secondary text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105"
+                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-electric-500 to-cyber-500 hover:from-cyber-500 hover:to-electric-500 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-glow group"
                 >
+                  <Search className="w-4 h-4 mr-2 group-hover:animate-spin" />
                   Clear Search
                 </button>
               )}
+              
+              {/* Suggestion text */}
+              <p className="text-sm text-gray-400 mt-4">
+                Try searching for{' '}
+                <span className="text-cyber-400">React</span>,{' '}
+                <span className="text-electric-400">Node.js</span>, or{' '}
+                <span className="text-matrix-400">Python</span>
+              </p>
             </div>
           </Card>
         )}

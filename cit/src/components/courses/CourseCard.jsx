@@ -122,9 +122,9 @@ const CourseGrid = ({
               <BookOpen className="w-10 h-10 text-secondary" />
             </div>
             {/* Floating Particles */}
-            <div className="absolute top-2 left-8 w-2 h-2 bg-secondary/40 rounded-full animate-bounce animate-delay-300"></div>
-            <div className="absolute top-8 right-4 w-1 h-1 bg-primary/60 rounded-full animate-bounce animate-delay-500"></div>
-            <div className="absolute bottom-4 left-12 w-1.5 h-1.5 bg-secondary/50 rounded-full animate-bounce animate-delay-700"></div>
+            <div className="absolute top-2 left-8 w-2 h-2 bg-secondary/40 rounded-full  animate-delay-300"></div>
+            <div className="absolute top-8 right-4 w-1 h-1 bg-primary/60 rounded-full  animate-delay-500"></div>
+            <div className="absolute bottom-4 left-12 w-1.5 h-1.5 bg-secondary/50 rounded-full  animate-delay-700"></div>
           </div>
           
           <div className="space-y-3">

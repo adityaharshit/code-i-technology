@@ -1,5 +1,7 @@
+// Enhanced Futuristic Footer
 import React from "react";
 import { Link } from "react-router-dom";
+import { Mail, Phone, MapPin, Heart, Zap, Code, Users, Award } from 'lucide-react';
 import logo from "../../images/logo.png";
 
 const Footer = () => {
@@ -40,108 +42,145 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="relative bg-gray-900 bg-opacity-95 backdrop-blur-md border-t border-gray-700 border-opacity-50 mt-auto">
-      {/* Decorative top border */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-50"></div>
+    <footer className="relative bg-space-900/95 backdrop-blur-xl border-t border-electric-500/20 mt-auto overflow-hidden">
+      {/* Enhanced decorative elements */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-electric-500 to-transparent animate-energy-flow"></div>
+      
+      {/* Floating particles */}
+      <div className="absolute inset-0 pointer-events-none">
+        <Code className="absolute top-10 left-10 w-4 h-4 text-electric-500/20 animate-float" style={{ animationDelay: '0s' }} />
+        <Zap className="absolute top-20 right-16 w-3 h-3 text-cyber-500/20 animate-particle-float" style={{ animationDelay: '2s' }} />
+        <Users className="absolute bottom-20 left-20 w-5 h-5 text-matrix-500/20 animate-neural-pulse" style={{ animationDelay: '1s' }} />
+        <Award className="absolute bottom-10 right-10 w-4 h-4 text-neural-500/20 " style={{ animationDelay: '3s' }} />
+      </div>
+      
+      {/* Circuit pattern overlay */}
+      <div className="absolute inset-0 bg-circuit-pattern opacity-5" />
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 lg:gap-12 mb-8 sm:mb-12">
           
-          {/* Company Info */}
-          <div className="sm:col-span-2 lg:col-span-1">
-            <Link to="/" className="inline-flex items-center space-x-2 mb-4 sm:mb-6 group">
-              <img
-                src={logo}
-                alt="Code i Technology Logo"
-                className="h-8 sm:h-10 w-auto transition-all duration-200 group-hover:brightness-110"
-              />
+          {/* Enhanced Company Info */}
+          <div className="sm:col-span-2 lg:col-span-1 relative">
+            <Link to="/" className="inline-flex items-center space-x-3 mb-6 group">
+              <div className="relative">
+                <img
+                  src={logo}
+                  alt="Code i Technology Logo"
+                  className="h-10 sm:h-12 w-auto transition-all duration-300 group-hover:brightness-125 relative z-10"
+                />
+                {/* Glow effect behind logo */}
+                <div className="absolute inset-0 bg-electric-500/20 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 " />
+              </div>
+              
             </Link>
-            <p className="text-sm sm:text-base text-gray-400 mb-4 sm:mb-6 leading-relaxed max-w-md">
-              Empowering students with cutting-edge technology education and hands-on 
-              learning experiences that prepare them for successful careers in tech.
+            
+            <p className="text-sm sm:text-base text-gray-300 mb-6 leading-relaxed max-w-md">
+              Empowering students with{' '}
+              <span className="text-electric-400 font-semibold">cutting-edge technology</span>{' '}
+              education and hands-on learning experiences that prepare them for{' '}
+              <span className="text-cyber-400 font-semibold">successful careers</span> in tech.
             </p>
             
-            {/* Social Media Links */}
-            <div className="flex space-x-4 sm:space-x-5">
+            {/* Enhanced Social Media Links */}
+            <div className="flex space-x-4">
               {socialLinks.map((social, index) => (
                 <a
                   key={social.name}
                   href={social.href}
-                  className="text-gray-400 hover:text-white transition-all duration-200 hover:scale-110 hover:shadow-lg hover:shadow-blue-500/25 p-2 rounded-lg hover:bg-blue-500/10"
+                  className="group relative p-3 rounded-xl bg-quantum-800/50 border border-electric-500/20 hover:border-electric-500/50 transition-all duration-300 hover:scale-110 backdrop-blur-sm"
                   aria-label={`Follow us on ${social.name}`}
                 >
-                  {social.icon}
+                  <div className="text-gray-400 group-hover:text-electric-400 transition-colors duration-300">
+                    {social.icon}
+                  </div>
+                  {/* Hover glow effect */}
+                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-electric-500/10 to-cyber-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </a>
               ))}
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Enhanced Quick Links */}
           <div>
-            <h3 className="text-base sm:text-lg font-semibold mb-4 sm:mb-6 text-white">
+            <h3 className="text-lg font-display font-semibold mb-6 bg-gradient-to-r from-electric-400 to-cyber-500 bg-clip-text text-transparent">
               Quick Links
             </h3>
-            <ul className="space-y-2 sm:space-y-3">
+            <ul className="space-y-3">
               {quickLinks.map((link, index) => (
                 <li key={link.name}>
                   <Link
                     to={link.href}
-                    className="text-sm sm:text-base text-gray-400 hover:text-white hover:translate-x-1 transition-all duration-200 inline-block"
+                    className="group flex items-center space-x-2 text-sm sm:text-base text-gray-300 hover:text-electric-400 transition-all duration-300"
                   >
-                    {link.name}
+                    <div className="w-1 h-1 bg-electric-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <span className="group-hover:translate-x-1 transition-transform duration-300">
+                      {link.name}
+                    </span>
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Support Links */}
+          {/* Enhanced Support Links */}
           <div>
-            <h3 className="text-base sm:text-lg font-semibold mb-4 sm:mb-6 text-white">
+            <h3 className="text-lg font-display font-semibold mb-6 bg-gradient-to-r from-cyber-400 to-matrix-500 bg-clip-text text-transparent">
               Support
             </h3>
-            <ul className="space-y-2 sm:space-y-3">
+            <ul className="space-y-3">
               {supportLinks.map((link, index) => (
                 <li key={link.name}>
                   <Link
                     to={link.href}
-                    className="text-sm sm:text-base text-gray-400 hover:text-white hover:translate-x-1 transition-all duration-200 inline-block"
+                    className="group flex items-center space-x-2 text-sm sm:text-base text-gray-300 hover:text-cyber-400 transition-all duration-300"
                   >
-                    {link.name}
+                    <div className="w-1 h-1 bg-cyber-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <span className="group-hover:translate-x-1 transition-transform duration-300">
+                      {link.name}
+                    </span>
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Contact Info */}
+          {/* Enhanced Contact Info */}
           <div>
-            <h3 className="text-base sm:text-lg font-semibold mb-4 sm:mb-6 text-white">
+            <h3 className="text-lg font-display font-semibold mb-6 bg-gradient-to-r from-matrix-400 to-neural-500 bg-clip-text text-transparent">
               Contact Info
             </h3>
-            <div className="space-y-3 sm:space-y-4 text-sm sm:text-base text-gray-400">
-              <div className="flex items-center space-x-3">
-                <span className="text-blue-400">📧</span>
+            <div className="space-y-4 text-sm sm:text-base">
+              <div className="group flex items-center space-x-3 p-2 rounded-lg hover:bg-quantum-800/30 transition-all duration-300">
+                <div className="p-2 rounded-lg bg-electric-500/20 group-hover:bg-electric-500/30 transition-colors duration-300">
+                  <Mail className="w-4 h-4 text-electric-400" />
+                </div>
                 <a 
-                  href="mailto:info@codeitech.com" 
-                  className="hover:text-white transition-colors duration-200"
+                  href="mailto:infocodeitechnology@gmail.com" 
+                  className="text-gray-300 hover:text-electric-400 transition-colors duration-300"
                 >
                   infocodeitechnology@gmail.com
                 </a>
               </div>
-              <div className="flex items-center space-x-3">
-                <span className="text-blue-400">📞</span>
+              
+              <div className="group flex items-center space-x-3 p-2 rounded-lg hover:bg-quantum-800/30 transition-all duration-300">
+                <div className="p-2 rounded-lg bg-cyber-500/20 group-hover:bg-cyber-500/30 transition-colors duration-300">
+                  <Phone className="w-4 h-4 text-cyber-400" />
+                </div>
                 <a 
-                  href="tel:+919876543210" 
-                  className="hover:text-white transition-colors duration-200"
+                  href="tel:+917004554075" 
+                  className="text-gray-300 hover:text-cyber-400 transition-colors duration-300"
                 >
                   +91 7004554075
                 </a>
               </div>
-              <div className="flex items-start space-x-3">
-                <span className="text-blue-400 mt-0.5">📍</span>
-                <address className="not-italic leading-relaxed">
+              
+              <div className="group flex items-start space-x-3 p-2 rounded-lg hover:bg-quantum-800/30 transition-all duration-300">
+                <div className="p-2 rounded-lg bg-matrix-500/20 group-hover:bg-matrix-500/30 transition-colors duration-300 mt-0.5">
+                  <MapPin className="w-4 h-4 text-matrix-400" />
+                </div>
+                <address className="not-italic leading-relaxed text-gray-300 group-hover:text-matrix-400 transition-colors duration-300">
                   Aman & Akash Complex,<br />
                   Sinha College More<br />
                   Aurangabad Bihar - 824101
@@ -151,41 +190,73 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Newsletter Signup */}
-        <div className="border-t border-gray-700 border-opacity-50 pt-8 sm:pt-10 mb-8 sm:mb-10">
+        {/* Enhanced Newsletter Signup */}
+        <div className="border-t border-electric-500/20 pt-10 mb-10 relative">
+          {/* Decorative line */}
+          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-px bg-gradient-to-r from-electric-500 to-cyber-500 animate-energy-flow" />
+          
           <div className="max-w-md mx-auto text-center lg:text-left lg:max-w-none lg:flex lg:items-center lg:justify-between">
-            <div className="mb-4 lg:mb-0">
-              <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">
+            <div className="mb-6 lg:mb-0">
+              <h3 className="text-xl sm:text-2xl font-display font-bold mb-3 bg-gradient-to-r from-electric-400 to-cyber-500 bg-clip-text text-transparent">
                 Stay Updated
               </h3>
-              <p className="text-sm sm:text-base text-gray-400">
-                Get the latest news and updates about new courses and features.
+              <p className="text-sm sm:text-base text-gray-300">
+                Get the latest news and updates about{' '}
+                <span className="text-electric-400 font-semibold">new courses</span> and{' '}
+                <span className="text-cyber-400 font-semibold">features</span>.
               </p>
             </div>
+            
             <div className="flex flex-col sm:flex-row gap-3 lg:max-w-md">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-2 sm:py-3 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400 text-sm sm:text-base"
-              />
-              <button className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg font-medium transition-all duration-200 hover:scale-105 text-sm sm:text-base whitespace-nowrap">
-                Subscribe
+              <div className="relative flex-1">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="w-full px-4 py-3 bg-quantum-800/50 border border-electric-500/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-electric-500/50 focus:border-electric-500 text-white placeholder-gray-400 text-sm sm:text-base backdrop-blur-sm transition-all duration-300"
+                />
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <div className="w-2 h-2 bg-electric-400 rounded-full " />
+                </div>
+              </div>
+              
+              <button className="px-6 py-3 bg-gradient-to-r from-electric-500 to-cyber-500 hover:from-cyber-500 hover:to-electric-500 text-white rounded-xl font-semibold transition-all duration-300 hover:scale-105 text-sm sm:text-base whitespace-nowrap shadow-glow group">
+                <span className="flex items-center justify-center">
+                  Subscribe
+                  <Zap className="w-4 h-4 ml-2 group-hover:" />
+                </span>
               </button>
             </div>
           </div>
         </div>
 
-        {/* Bottom Footer */}
-        <div className="border-t border-gray-700 border-opacity-50 pt-6 sm:pt-8">
+        {/* Enhanced Bottom Footer */}
+        <div className="border-t border-electric-500/20 pt-8 relative">
+          {/* Decorative elements */}
+          <div className="absolute top-0 left-0 w-16 h-px bg-gradient-to-r from-electric-500 to-transparent animate-energy-flow" />
+          <div className="absolute top-0 right-0 w-16 h-px bg-gradient-to-l from-cyber-500 to-transparent animate-energy-flow" />
+          
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-xs sm:text-sm text-gray-400 text-center sm:text-left">
-              © {new Date().getFullYear()} Code i Technology. All rights reserved.
+            <p className="text-xs sm:text-sm text-gray-300 text-center sm:text-left">
+              © {new Date().getFullYear()}{' '}
+              <span className="bg-gradient-to-r from-electric-400 to-cyber-500 bg-clip-text text-transparent font-semibold">
+                Code i Technology
+              </span>
+              . All rights reserved.
             </p>
-            <div className="flex items-center space-x-4 sm:space-x-6 text-xs sm:text-sm text-gray-400">
-              <span>Made with ❤️ in India</span>
-              <div className="flex items-center space-x-1">
-                <span>by</span>
-                <span className="text-blue-400 font-medium">Harshit Aditya</span>
+            
+            <div className="flex items-center space-x-6 text-xs sm:text-sm">
+              <div className="flex items-center space-x-2 text-gray-300">
+                <span>Made with</span>
+                <Heart className="w-3 h-3 text-red-400 animate-pulse" />
+                <span>in India</span>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <span className="text-gray-400">by</span>
+                <span className="bg-gradient-to-r from-electric-400 to-cyber-500 bg-clip-text text-transparent font-semibold">
+                  Harshit Aditya
+                </span>
+                <div className="w-1 h-1 bg-electric-400 rounded-full " />
               </div>
             </div>
           </div>

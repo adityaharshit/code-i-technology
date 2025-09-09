@@ -1,3 +1,4 @@
+// Enhanced Futuristic Profile Page
 import React, { useState, useEffect } from 'react';
 import { usersAPI } from '../services/users.js';
 import Card from '../components/ui/Card';
@@ -5,7 +6,25 @@ import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
 import toast from 'react-hot-toast';
 import LoadingSpinner from '../components/ui/LoadingSpinner.jsx';
-import { User, Phone, MapPin, Save, Edit3 } from 'lucide-react';
+import { 
+  User, 
+  Phone, 
+  MapPin, 
+  Save, 
+  Edit3, 
+  Mail, 
+  Calendar, 
+  Shield, 
+  Settings, 
+  Award, 
+  Target, 
+  Zap, 
+  CheckCircle, 
+  Camera,
+  Sparkles,
+  TrendingUp,
+  Activity
+} from 'lucide-react';
 
 const Profile = () => {
   const [profile, setProfile] = useState(null);
@@ -62,10 +81,7 @@ const Profile = () => {
   if (pageLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center space-y-4 animate-fade-in-up">
-          <LoadingSpinner />
-          <p className="text-gray-400 animate-pulse">Loading your profile...</p>
-        </div>
+        <LoadingSpinner size="lg" text="Loading your profile..." />
       </div>
     );
   }
@@ -73,11 +89,24 @@ const Profile = () => {
   if (!profile) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Card className="p-8 text-center glass-card animate-fade-in-up">
-          <div className="text-gray-400 space-y-2">
-            <User size={48} className="mx-auto text-gray-500" />
-            <p className="text-lg">Could not load profile data.</p>
-            <p className="text-sm">Please try refreshing the page.</p>
+        <Card variant="hologram" className="p-12 text-center animate-fade-in-up">
+          <div className="space-y-6">
+            <div className="relative">
+              <div className="w-20 h-20 mx-auto bg-gradient-to-br from-electric-500/20 to-cyber-500/20 rounded-2xl flex items-center justify-center animate-float">
+                <User className="w-10 h-10 text-electric-400" />
+              </div>
+              <div className="absolute -top-2 -right-2 w-2 h-2 bg-cyber-400 rounded-full animate-particle-float" />
+            </div>
+            <div>
+              <h3 className="text-xl font-display font-bold bg-gradient-to-r from-electric-400 to-cyber-500 bg-clip-text text-transparent mb-2">
+                Profile Not Found
+              </h3>
+              <p className="text-gray-300 mb-4">Could not load profile data.</p>
+              <Button variant="primary" glow onClick={() => window.location.reload()}>
+                <Shield className="w-4 h-4 mr-2" />
+                Refresh Page
+              </Button>
+            </div>
           </div>
         </Card>
       </div>
@@ -85,40 +114,87 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen py-4 sm:py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto space-y-6 sm:space-y-8">
-        {/* Header Section */}
-        <div className="text-center space-y-4 animate-fade-in-down">
-          <div className="relative inline-block">
-            <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-secondary to-primary rounded-full flex items-center justify-center text-white text-2xl sm:text-3xl font-bold shadow-xl animate-pulse-glow">
-              {profile.fullName?.charAt(0) || 'U'}
-            </div>
-          </div>
-          <div className="space-y-2">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white animate-fade-in-up animate-delay-200">
-              My Profile
-            </h1>
-            <p className="text-gray-400 text-sm sm:text-base animate-fade-in-up animate-delay-300">
-              Manage your personal information and preferences
-            </p>
-          </div>
-        </div>
+    <div className="min-h-screen py-4 sm:py-8 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Floating particles */}
+      <div className="absolute inset-0 pointer-events-none">
+        <User className="absolute top-20 left-10 w-4 h-4 text-electric-500/20 animate-float" style={{ animationDelay: '0s' }} />
+        <Settings className="absolute top-32 right-16 w-3 h-3 text-cyber-500/20 animate-particle-float" style={{ animationDelay: '2s' }} />
+        <Award className="absolute bottom-32 left-20 w-5 h-5 text-matrix-500/20 animate-neural-pulse" style={{ animationDelay: '1s' }} />
+        <Shield className="absolute bottom-20 right-12 w-4 h-4 text-neural-500/20 " style={{ animationDelay: '3s' }} />
+      </div>
 
-        <Card className="glass-card p-4 sm:p-6 lg:p-8 animate-fade-in-up animate-delay-400">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 space-y-4 sm:space-y-0">
-            <div className="flex items-center space-x-3">
-              <User className="text-secondary" size={24} />
-              <h2 className="text-xl sm:text-2xl font-bold text-white">Personal Information</h2>
+      <div className="max-w-6xl mx-auto space-y-8 relative z-10">
+        {/* Enhanced Header Section */}
+        <Card variant="hologram" className="p-6 sm:p-8 text-center animate-fade-in-down">
+          <div className="flex flex-col items-center space-y-6">
+            {/* Enhanced Avatar */}
+            <div className="relative group">
+              <div className="w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-electric-500 to-cyber-500 rounded-3xl flex items-center justify-center text-white text-3xl sm:text-4xl font-display font-bold shadow-glow">
+                {profile.fullName?.charAt(0) || 'U'}
+              </div>
+              {/* Status indicator */}
+              <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-matrix-500 rounded-2xl border-4 border-quantum-800 flex items-center justify-center group-hover:">
+                <CheckCircle className="w-4 h-4 text-white" />
+              </div>
+              {/* Floating particles around avatar */}
+              <div className="absolute -top-2 -left-2 w-2 h-2 bg-electric-400 rounded-full animate-particle-float" />
+              <div className="absolute -bottom-1 -left-3 w-1 h-1 bg-cyber-400 rounded-full animate-float" />
             </div>
-            <Button
-              onClick={() => setEditMode(!editMode)}
-              variant="outline"
-              size="sm"
-              className="self-start sm:self-auto"
-            >
-              <Edit3 size={16} className="mr-2" />
-              {editMode ? 'Cancel' : 'Edit'}
-            </Button>
+
+            {/* Enhanced Title */}
+            <div className="space-y-3">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold bg-gradient-to-r from-electric-400 via-cyber-500 to-matrix-400 bg-clip-text text-transparent ">
+                My Profile
+              </h1>
+              <p className="text-lg text-gray-300 max-w-2xl">
+                Manage your{' '}
+                <span className="text-electric-400 font-semibold">personal information</span>{' '}
+                and{' '}
+                <span className="text-cyber-400 font-semibold">preferences</span>
+              </p>
+              
+              
+            </div>
+          </div>
+        </Card>
+
+        {/* Enhanced Main Profile Card */}
+        <Card variant="neural" className="p-6 sm:p-8 lg:p-10 animate-fade-in-up animate-delay-400 relative overflow-hidden">
+          {/* Floating particles inside card */}
+          <div className="absolute top-4 right-4 w-1 h-1 bg-electric-400 rounded-full animate-particle-float" />
+          <div className="absolute bottom-6 left-6 w-2 h-2 bg-cyber-400 rounded-full animate-float" />
+          
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 space-y-4 sm:space-y-0 relative z-10">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 rounded-2xl bg-gradient-to-br from-electric-500/20 to-cyber-500/30 animate-neural-pulse">
+                <User className="text-electric-400 w-6 h-6" />
+              </div>
+              <div>
+                <h2 className="text-2xl sm:text-3xl font-display font-bold bg-gradient-to-r from-electric-400 to-cyber-500 bg-clip-text text-transparent">
+                  Personal Information
+                </h2>
+                <p className="text-sm text-gray-400 mt-1">Keep your details up to date</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              {editMode && (
+                <div className="flex items-center space-x-2 px-3 py-1 bg-matrix-500/20 border border-matrix-400/30 rounded-lg">
+                  <Activity className="w-4 h-4 text-matrix-400 animate-pulse" />
+                  <span className="text-xs text-matrix-300">Edit Mode</span>
+                </div>
+              )}
+              <Button
+                onClick={() => setEditMode(!editMode)}
+                variant={editMode ? "outline" : "cyber"}
+                size="sm"
+                className="group"
+              >
+                <Edit3 className="w-4 h-4 mr-2" />
+                {editMode ? 'Cancel' : 'Edit Profile'}
+                {!editMode && <Sparkles className="w-3 h-3 ml-2 group-hover:" />}
+              </Button>
+            </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
