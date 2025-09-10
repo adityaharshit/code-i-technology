@@ -7,7 +7,7 @@ import { adminAPI } from '../../services/admin';
 import { useToast } from '../../contexts/ToastContext';
 import { FilePlus } from 'lucide-react';
 
-const ManualInvoiceModal = ({ isOpen, onClose }) => {
+const ManualInvoiceModal = ({ isOpen, onClose, onSuccess }) => {
   const { showSuccess, showError } = useToast();
   const [loading, setLoading] = useState(false);
 
@@ -26,13 +26,15 @@ const ManualInvoiceModal = ({ isOpen, onClose }) => {
   const netPayable = useMemo(() => {
     const courseFee = parseFloat(formData.courseFee) || 0;
     const discount = parseFloat(formData.discount) || 0;
-    const result = courseFee - discount;
-    // Automatically update amountPaid when netPayable changes
-    if (result > 0) {
-      setFormData(prev => ({ ...prev, amountPaid: result.toString() }));
-    }
-    return result;
+    return courseFee - discount;
   }, [formData.courseFee, formData.discount]);
+
+  // Update amountPaid when netPayable changes
+  React.useEffect(() => {
+    if (netPayable > 0 && formData.courseFee && formData.discount !== '') {
+      setFormData(prev => ({ ...prev, amountPaid: netPayable.toString() }));
+    }
+  }, [netPayable, formData.courseFee, formData.discount]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -68,6 +70,9 @@ const ManualInvoiceModal = ({ isOpen, onClose }) => {
       showSuccess('Invoice generated successfully!');
       resetForm();
       onClose();
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (error) {
       showError(error.response?.data?.error || 'Failed to generate invoice.');
     } finally {
@@ -76,7 +81,7 @@ const ManualInvoiceModal = ({ isOpen, onClose }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal key="manual-invoice-modal" isOpen={isOpen} onClose={onClose}>
       <h2 className="text-2xl font-bold mb-6 text-white">Create Manual Invoice</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

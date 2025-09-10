@@ -24,7 +24,6 @@ const CourseManagement = () => {
       setCourses(response.data);
     } catch (error) {
       setError('Failed to fetch courses');
-      console.error('Error fetching courses:', error);
     } finally {
       setLoading(false);
     }

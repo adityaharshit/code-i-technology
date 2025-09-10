@@ -27,7 +27,6 @@ const TransactionDetailModal = ({ isOpen, onClose, transaction, onStatusUpdate }
       }
     } catch (error) {
       toast.error('Failed to generate invoice.');
-      console.error('Invoice generation error:', error);
     }
   };
 

@@ -28,7 +28,6 @@ const UserManagement = () => {
       setStudents(response.data);
     } catch (error) {
       setError('Failed to fetch students');
-      console.error('Error fetching students:', error);
     } finally {
       setLoading(false);
     }

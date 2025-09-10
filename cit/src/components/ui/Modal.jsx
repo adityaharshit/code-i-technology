@@ -2,13 +2,13 @@
 import React, { useRef } from 'react';
 import useOnClickOutside from '../../hooks/useOnClickOutside';
 
-const Modal = ({ isOpen, onClose, children, className = "" }) => {
-  if (!isOpen) return null;
-
+const Modal = React.memo(({ isOpen, onClose, children, className = "" }) => {
   const modalRef = useRef(null);
   
   // Custom hook that closes the modal when a click is detected outside of the modalRef element
   useOnClickOutside(modalRef, onClose);
+
+  if (!isOpen) return null;
 
   return (
     // This is the full-screen backdrop
@@ -21,6 +21,7 @@ const Modal = ({ isOpen, onClose, children, className = "" }) => {
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-white z-10 text-2xl leading-none"
+          type="button"
         >
           &times;
         </button>
@@ -28,6 +29,8 @@ const Modal = ({ isOpen, onClose, children, className = "" }) => {
       </div>
     </div>
   );
-};
+});
+
+Modal.displayName = 'Modal';
 
 export default Modal;

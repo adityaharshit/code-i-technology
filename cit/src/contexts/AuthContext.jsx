@@ -50,10 +50,14 @@ export const AuthProvider = ({ children }) => {
   const checkAuthStatus = useCallback(async () => {
     dispatch({ type: 'AUTH_CHECK_START' });
     try {
+      // Use longer timeout for auth check
       const response = await authAPI.getCurrentUser();
       dispatch({ type: 'AUTH_CHECK_SUCCESS', payload: response.data.user });
     } catch (error) {
       if (error.response?.status === 401) {
+        dispatch({ type: 'AUTH_CHECK_FAILURE' });
+      } else if (error.isTimeout || error.isNetworkError) {
+        console.warn('Auth check timeout/network error, will retry on next request');
         dispatch({ type: 'AUTH_CHECK_FAILURE' });
       } else {
         console.error('Auth check error:', error);
@@ -73,7 +77,16 @@ export const AuthProvider = ({ children }) => {
       dispatch({ type: 'LOGIN_SUCCESS', payload: response.data.user });
       return response;
     } catch (error) {
-      const message = error.response?.data?.error || 'Login failed';
+      let message = 'Login failed';
+      
+      if (error.isTimeout) {
+        message = 'Login request timed out. Please try again.';
+      } else if (error.isNetworkError) {
+        message = 'Network error. Please check your connection and try again.';
+      } else if (error.response?.data?.error) {
+        message = error.response.data.error;
+      }
+      
       dispatch({ type: 'LOGIN_FAILURE', payload: message });
       throw error;
     }

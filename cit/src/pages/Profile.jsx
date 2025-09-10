@@ -1,63 +1,94 @@
 // Enhanced Futuristic Profile Page
-import React, { useState, useEffect } from 'react';
-import { usersAPI } from '../services/users.js';
-import Card from '../components/ui/Card';
-import Input from '../components/ui/Input';
-import Button from '../components/ui/Button';
-import toast from 'react-hot-toast';
-import LoadingSpinner from '../components/ui/LoadingSpinner.jsx';
-import { useAuth } from '../contexts/AuthContext.jsx';
-import useUpload from '../hooks/useUpload.js';
-import { 
-  User, 
-  Phone, 
-  MapPin, 
-  Save, 
-  Edit3, 
-  Mail, 
-  Calendar, 
-  Shield, 
-  Settings, 
-  Award, 
-  Target, 
-  Zap, 
-  CheckCircle, 
+import React, { useState, useEffect } from "react";
+import { usersAPI } from "../services/users.js";
+import Card from "../components/ui/Card";
+import Input from "../components/ui/Input";
+import Button from "../components/ui/Button";
+import toast from "react-hot-toast";
+import LoadingSpinner from "../components/ui/LoadingSpinner.jsx";
+import { useAuth } from "../contexts/AuthContext.jsx";
+import useUpload from "../hooks/useUpload.js";
+import useApiCall from "../hooks/useApiCall.js";
+import {
+  User,
+  Phone,
+  MapPin,
+  Save,
+  Edit3,
+  Mail,
+  Calendar,
+  Shield,
+  Settings,
+  Award,
+  Target,
+  Zap,
+  CheckCircle,
   Camera,
   Sparkles,
   TrendingUp,
-  Activity
-} from 'lucide-react';
+  Activity,
+} from "lucide-react";
 
 const Profile = () => {
   const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [pageLoading, setPageLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState('');
+  const [previewUrl, setPreviewUrl] = useState("");
   const { uploadFile, uploading } = useUpload();
-  const { refreshUser } = useAuth();
+  const { user: authUser, refreshUser, isAuthenticated } = useAuth();
 
+
+
+  // Enhanced API call handling with better timeout and error management
+  const { loading: pageLoading, execute: fetchProfileData } = useApiCall({
+    showErrorToast: true,
+    loadingMessage: "Loading your profile...",
+    onSuccess: (data) => {
+      setProfile(data);
+    },
+    onError: (error) => {
+      console.error("Failed to fetch profile:", error);
+    },
+  });
+
+  const { loading: updateLoading, execute: updateProfileData } = useApiCall({
+    showSuccessToast: true,
+    showErrorToast: true,
+    successMessage: "Profile updated successfully!",
+    loadingMessage: "Updating your profile...",
+    onSuccess: async () => {
+      setEditMode(false);
+      await refreshUser();
+      // Refresh profile data
+      await fetchProfileData(() => usersAPI.getProfile());
+    },
+  });
+
+  // Fetch profile data when component mounts
   useEffect(() => {
-    const fetchProfile = async () => {
+
+    // Try direct API call as fallback
+    const directFetch = async () => {
       try {
         const response = await usersAPI.getProfile();
         setProfile(response.data);
       } catch (error) {
-        toast.error('Failed to fetch profile.');
-        console.error('Failed to fetch profile:', error);
-      } finally {
-        setPageLoading(false);
+        // If direct call fails, try with useApiCall hook
+        fetchProfileData(() => usersAPI.getProfile());
       }
     };
-    fetchProfile();
-  }, []);
+
+    // Only fetch if user is authenticated
+    if (isAuthenticated && authUser) {
+      directFetch();
+    }
+  }, [isAuthenticated, authUser, fetchProfileData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProfile((prev) => ({ ...prev, [name]: value }));
   };
-  
+
   const handleAddressChange = (e, addressType) => {
     const { name, value } = e.target;
     setProfile((prev) => ({
@@ -72,8 +103,9 @@ const Profile = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 500 * 1024) { // 500KB limit
-        toast.error('File size should not exceed 500KB.');
+      if (file.size > 500 * 1024) {
+        // 500KB limit
+        toast.error("File size should not exceed 500KB.");
         return;
       }
       setSelectedFile(file);
@@ -87,31 +119,36 @@ const Profile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+
     try {
       let updatedProfileData = { ...profile };
 
       if (selectedFile) {
-        const uploadedUrl = await uploadFile(selectedFile, 'student-photos');
+        const uploadedUrl = await uploadFile(selectedFile, "student-photos");
         if (uploadedUrl) {
           updatedProfileData.photoUrl = uploadedUrl;
         } else {
-          throw new Error('Photo upload failed.');
+          throw new Error("Photo upload failed.");
         }
       }
-      
-      const { id, rollNumber, fullName, email, isVerified, createdAt, ...updateData } = updatedProfileData;
-      
-      await usersAPI.updateProfile(updateData);
-      toast.success('Profile updated successfully!');
-      setEditMode(false);
+
+      const {
+        id,
+        rollNumber,
+        fullName,
+        email,
+        isVerified,
+        createdAt,
+        ...updateData
+      } = updatedProfileData;
+
+      // Use the enhanced API call
+      await updateProfileData(() => usersAPI.updateProfile(updateData));
+
       setSelectedFile(null);
-      setPreviewUrl('');
-      await refreshUser(); // Refresh user data in AuthContext to update navbar, etc.
+      setPreviewUrl("");
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Failed to update profile.');
-    } finally {
-      setLoading(false);
+      toast.error(error.response?.data?.error || "Failed to update profile.");
     }
   };
 
@@ -122,11 +159,14 @@ const Profile = () => {
       </div>
     );
   }
-  
+
   if (!profile) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Card variant="hologram" className="p-12 text-center animate-fade-in-up">
+        <Card
+          variant="hologram"
+          className="p-12 text-center animate-fade-in-up"
+        >
           <div className="space-y-6">
             <div className="relative">
               <div className="w-20 h-20 mx-auto bg-gradient-to-br from-electric-500/20 to-cyber-500/20 rounded-2xl flex items-center justify-center animate-float">
@@ -139,7 +179,11 @@ const Profile = () => {
                 Profile Not Found
               </h3>
               <p className="text-gray-300 mb-4">Could not load profile data.</p>
-              <Button variant="primary" glow onClick={() => window.location.reload()}>
+              <Button
+                variant="primary"
+                glow
+                onClick={() => window.location.reload()}
+              >
                 <Shield className="w-4 h-4 mr-2" />
                 Refresh Page
               </Button>
@@ -154,31 +198,63 @@ const Profile = () => {
     <div className="min-h-screen py-4 sm:py-8 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Floating particles */}
       <div className="absolute inset-0 pointer-events-none">
-        <User className="absolute top-20 left-10 w-4 h-4 text-electric-500/20 animate-float" style={{ animationDelay: '0s' }} />
-        <Settings className="absolute top-32 right-16 w-3 h-3 text-cyber-500/20 animate-particle-float" style={{ animationDelay: '2s' }} />
-        <Award className="absolute bottom-32 left-20 w-5 h-5 text-matrix-500/20 animate-neural-pulse" style={{ animationDelay: '1s' }} />
-        <Shield className="absolute bottom-20 right-12 w-4 h-4 text-neural-500/20 " style={{ animationDelay: '3s' }} />
+        <User
+          className="absolute top-20 left-10 w-4 h-4 text-electric-500/20 animate-float"
+          style={{ animationDelay: "0s" }}
+        />
+        <Settings
+          className="absolute top-32 right-16 w-3 h-3 text-cyber-500/20 animate-particle-float"
+          style={{ animationDelay: "2s" }}
+        />
+        <Award
+          className="absolute bottom-32 left-20 w-5 h-5 text-matrix-500/20 animate-neural-pulse"
+          style={{ animationDelay: "1s" }}
+        />
+        <Shield
+          className="absolute bottom-20 right-12 w-4 h-4 text-neural-500/20 "
+          style={{ animationDelay: "3s" }}
+        />
       </div>
 
       <div className="max-w-6xl mx-auto space-y-8 relative z-10">
         {/* Enhanced Header Section */}
-        <Card variant="hologram" className="p-6 sm:p-8 text-center animate-fade-in-down">
+        <Card
+          variant="hologram"
+          className="p-6 sm:p-8 text-center animate-fade-in-down"
+        >
           <div className="flex flex-col items-center space-y-6">
             {/* Enhanced Avatar */}
             <div className="relative group">
               <div className="w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-electric-500 to-cyber-500 rounded-3xl flex items-center justify-center text-white text-3xl sm:text-4xl font-display font-bold shadow-glow overflow-hidden">
                 {previewUrl ? (
-                  <img src={previewUrl} alt="New Profile" className="w-full h-full object-cover" />
+                  <img
+                    src={previewUrl}
+                    alt="New Profile"
+                    className="w-full h-full object-cover"
+                  />
                 ) : profile.photoUrl ? (
-                  <img src={profile.photoUrl} alt={profile.fullName} className="w-full h-full object-cover" />
+                  <img
+                    src={profile.photoUrl}
+                    alt={profile.fullName}
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
-                  profile.fullName?.charAt(0) || 'U'
+                  profile.fullName?.charAt(0) || "U"
                 )}
               </div>
               {editMode && (
-                <label htmlFor="photo-upload" className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white cursor-pointer rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <label
+                  htmlFor="photo-upload"
+                  className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white cursor-pointer rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                >
                   <Camera className="w-8 h-8" />
-                  <input id="photo-upload" type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+                  <input
+                    id="photo-upload"
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                  />
                 </label>
               )}
               {/* Status indicator */}
@@ -196,23 +272,28 @@ const Profile = () => {
                 My Profile
               </h1>
               <p className="text-lg text-gray-300 max-w-2xl">
-                Manage your{' '}
-                <span className="text-electric-400 font-semibold">personal information</span>{' '}
-                and{' '}
-                <span className="text-cyber-400 font-semibold">preferences</span>
+                Manage your{" "}
+                <span className="text-electric-400 font-semibold">
+                  personal information
+                </span>{" "}
+                and{" "}
+                <span className="text-cyber-400 font-semibold">
+                  preferences
+                </span>
               </p>
-              
-              
             </div>
           </div>
         </Card>
 
         {/* Enhanced Main Profile Card */}
-        <Card variant="neural" className="p-6 sm:p-8 lg:p-10 animate-fade-in-up animate-delay-400 relative overflow-hidden">
+        <Card
+          variant="neural"
+          className="p-6 sm:p-8 lg:p-10 animate-fade-in-up animate-delay-400 relative overflow-hidden"
+        >
           {/* Floating particles inside card */}
           <div className="absolute top-4 right-4 w-1 h-1 bg-electric-400 rounded-full animate-particle-float" />
           <div className="absolute bottom-6 left-6 w-2 h-2 bg-cyber-400 rounded-full animate-float" />
-          
+
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 space-y-4 sm:space-y-0 relative z-10">
             <div className="flex items-center space-x-4">
               <div className="p-3 rounded-2xl bg-gradient-to-br from-electric-500/20 to-cyber-500/30 animate-neural-pulse">
@@ -222,10 +303,12 @@ const Profile = () => {
                 <h2 className="text-2xl sm:text-3xl font-display font-bold bg-gradient-to-r from-electric-400 to-cyber-500 bg-clip-text text-transparent">
                   Personal Information
                 </h2>
-                <p className="text-sm text-gray-400 mt-1">Keep your details up to date</p>
+                <p className="text-sm text-gray-400 mt-1">
+                  Keep your details up to date
+                </p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-3">
               {editMode && (
                 <div className="flex items-center space-x-2 px-3 py-1 bg-matrix-500/20 border border-matrix-400/30 rounded-lg">
@@ -240,8 +323,10 @@ const Profile = () => {
                 className="group"
               >
                 <Edit3 className="w-4 h-4 mr-2" />
-                {editMode ? 'Cancel' : 'Edit Profile'}
-                {!editMode && <Sparkles className="w-3 h-3 ml-2 group-hover:" />}
+                {editMode ? "Cancel" : "Edit Profile"}
+                {!editMode && (
+                  <Sparkles className="w-3 h-3 ml-2 group-hover:" />
+                )}
               </Button>
             </div>
           </div>
@@ -255,26 +340,26 @@ const Profile = () => {
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 <div className="animate-fade-in-left animate-delay-500">
-                  <Input 
-                    label="Full Name" 
-                    value={profile.fullName || ''} 
-                    disabled 
+                  <Input
+                    label="Full Name"
+                    value={profile.fullName || ""}
+                    disabled
                     className="bg-gray-800 border-gray-600"
                   />
                 </div>
                 <div className="animate-fade-in-up animate-delay-600">
-                  <Input 
-                    label="Email" 
-                    value={profile.email || ''} 
-                    disabled 
+                  <Input
+                    label="Email"
+                    value={profile.email || ""}
+                    disabled
                     className="bg-gray-800 border-gray-600"
                   />
                 </div>
                 <div className="animate-fade-in-right animate-delay-700">
-                  <Input 
-                    label="Roll Number" 
-                    value={profile.rollNumber || ''} 
-                    disabled 
+                  <Input
+                    label="Roll Number"
+                    value={profile.rollNumber || ""}
+                    disabled
                     className="bg-gray-800 border-gray-600"
                   />
                 </div>
@@ -282,10 +367,12 @@ const Profile = () => {
                   <Input
                     label="Father's Name"
                     name="fatherName"
-                    value={profile.fatherName || ''}
+                    value={profile.fatherName || ""}
                     onChange={handleChange}
                     disabled={!editMode}
-                    className={editMode ? 'hover-glow' : 'bg-gray-800 border-gray-600'}
+                    className={
+                      editMode ? "hover-glow" : "bg-gray-800 border-gray-600"
+                    }
                   />
                 </div>
               </div>
@@ -302,27 +389,31 @@ const Profile = () => {
                   <Input
                     label="Student Mobile"
                     name="studentMobile"
-                    value={profile.studentMobile || ''}
+                    value={profile.studentMobile || ""}
                     onChange={handleChange}
                     disabled={!editMode}
                     placeholder="Enter your mobile number"
-                    className={editMode ? 'hover-glow' : 'bg-gray-800 border-gray-600'}
+                    className={
+                      editMode ? "hover-glow" : "bg-gray-800 border-gray-600"
+                    }
                   />
                 </div>
                 <div className="animate-fade-in-right animate-delay-1000">
                   <Input
                     label="Parent Mobile"
                     name="parentMobile"
-                    value={profile.parentMobile || ''}
+                    value={profile.parentMobile || ""}
                     onChange={handleChange}
                     disabled={!editMode}
                     placeholder="Enter parent's mobile number"
-                    className={editMode ? 'hover-glow' : 'bg-gray-800 border-gray-600'}
+                    className={
+                      editMode ? "hover-glow" : "bg-gray-800 border-gray-600"
+                    }
                   />
                 </div>
               </div>
             </div>
-            
+
             {/* Address Information */}
             <div className="space-y-4 sm:space-y-6">
               <h3 className="text-lg sm:text-xl font-semibold text-white border-b border-gray-700 pb-2 flex items-center">
@@ -331,99 +422,113 @@ const Profile = () => {
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                 <div className="animate-fade-in-up animate-delay-500">
-                  <Input 
-                    label="Flat/House No" 
-                    name="flatHouseNo" 
-                    value={profile.permanentAddress?.flatHouseNo || ''} 
-                    onChange={(e) => handleAddressChange(e, 'permanentAddress')}
+                  <Input
+                    label="Flat/House No"
+                    name="flatHouseNo"
+                    value={profile.permanentAddress?.flatHouseNo || ""}
+                    onChange={(e) => handleAddressChange(e, "permanentAddress")}
                     disabled={!editMode}
                     placeholder="Enter flat/house number"
-                    className={editMode ? 'hover-glow' : 'bg-gray-800 border-gray-600'}
+                    className={
+                      editMode ? "hover-glow" : "bg-gray-800 border-gray-600"
+                    }
                   />
                 </div>
                 <div className="animate-fade-in-up animate-delay-600">
-                  <Input 
-                    label="Street" 
-                    name="street" 
-                    value={profile.permanentAddress?.street || ''} 
-                    onChange={(e) => handleAddressChange(e, 'permanentAddress')}
+                  <Input
+                    label="Street"
+                    name="street"
+                    value={profile.permanentAddress?.street || ""}
+                    onChange={(e) => handleAddressChange(e, "permanentAddress")}
                     disabled={!editMode}
                     placeholder="Enter street name"
-                    className={editMode ? 'hover-glow' : 'bg-gray-800 border-gray-600'}
+                    className={
+                      editMode ? "hover-glow" : "bg-gray-800 border-gray-600"
+                    }
                   />
                 </div>
                 <div className="animate-fade-in-up animate-delay-700">
-                  <Input 
-                    label="PO" 
-                    name="po" 
-                    value={profile.permanentAddress?.po || ''} 
-                    onChange={(e) => handleAddressChange(e, 'permanentAddress')}
+                  <Input
+                    label="PO"
+                    name="po"
+                    value={profile.permanentAddress?.po || ""}
+                    onChange={(e) => handleAddressChange(e, "permanentAddress")}
                     disabled={!editMode}
                     placeholder="Post Office"
-                    className={editMode ? 'hover-glow' : 'bg-gray-800 border-gray-600'}
+                    className={
+                      editMode ? "hover-glow" : "bg-gray-800 border-gray-600"
+                    }
                   />
                 </div>
                 <div className="animate-fade-in-up animate-delay-800">
-                  <Input 
-                    label="PS" 
-                    name="ps" 
-                    value={profile.permanentAddress?.ps || ''} 
-                    onChange={(e) => handleAddressChange(e, 'permanentAddress')}
+                  <Input
+                    label="PS"
+                    name="ps"
+                    value={profile.permanentAddress?.ps || ""}
+                    onChange={(e) => handleAddressChange(e, "permanentAddress")}
                     disabled={!editMode}
                     placeholder="Police Station"
-                    className={editMode ? 'hover-glow' : 'bg-gray-800 border-gray-600'}
+                    className={
+                      editMode ? "hover-glow" : "bg-gray-800 border-gray-600"
+                    }
                   />
                 </div>
                 <div className="animate-fade-in-up animate-delay-900">
-                  <Input 
-                    label="District" 
-                    name="district" 
-                    value={profile.permanentAddress?.district || ''} 
-                    onChange={(e) => handleAddressChange(e, 'permanentAddress')}
+                  <Input
+                    label="District"
+                    name="district"
+                    value={profile.permanentAddress?.district || ""}
+                    onChange={(e) => handleAddressChange(e, "permanentAddress")}
                     disabled={!editMode}
                     placeholder="Enter district"
-                    className={editMode ? 'hover-glow' : 'bg-gray-800 border-gray-600'}
+                    className={
+                      editMode ? "hover-glow" : "bg-gray-800 border-gray-600"
+                    }
                   />
                 </div>
                 <div className="animate-fade-in-up animate-delay-1000">
-                  <Input 
-                    label="State" 
-                    name="state" 
-                    value={profile.permanentAddress?.state || ''} 
-                    onChange={(e) => handleAddressChange(e, 'permanentAddress')}
+                  <Input
+                    label="State"
+                    name="state"
+                    value={profile.permanentAddress?.state || ""}
+                    onChange={(e) => handleAddressChange(e, "permanentAddress")}
                     disabled={!editMode}
                     placeholder="Enter state"
-                    className={editMode ? 'hover-glow' : 'bg-gray-800 border-gray-600'}
+                    className={
+                      editMode ? "hover-glow" : "bg-gray-800 border-gray-600"
+                    }
                   />
                 </div>
                 <div className="animate-fade-in-up animate-delay-1100">
-                  <Input 
-                    label="Pincode" 
-                    name="pincode" 
-                    value={profile.permanentAddress?.pincode || ''} 
-                    onChange={(e) => handleAddressChange(e, 'permanentAddress')}
+                  <Input
+                    label="Pincode"
+                    name="pincode"
+                    value={profile.permanentAddress?.pincode || ""}
+                    onChange={(e) => handleAddressChange(e, "permanentAddress")}
                     disabled={!editMode}
                     placeholder="Enter pincode"
-                    className={editMode ? 'hover-glow' : 'bg-gray-800 border-gray-600'}
+                    className={
+                      editMode ? "hover-glow" : "bg-gray-800 border-gray-600"
+                    }
                   />
                 </div>
               </div>
             </div>
-            
+
             {editMode && (
               <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-700 animate-fade-in-up">
-                <Button 
-                  type="submit" 
-                  loading={loading || uploading} 
+                <Button
+                  type="submit"
+                  loading={updateLoading || uploading}
                   className="flex-1 sm:flex-initial btn-hover-lift"
                   size="lg"
                 >
                   <Save size={18} className="mr-2" />
                   Update Profile
                 </Button>
-                <Button 
+                <Button
                   type="button"
-                  variant="outline" 
+                  variant="outline"
                   onClick={() => setEditMode(false)}
                   className="flex-1 sm:flex-initial"
                   size="lg"
@@ -434,12 +539,9 @@ const Profile = () => {
             )}
           </form>
         </Card>
-
-        
       </div>
     </div>
   );
 };
 
 export default Profile;
-
