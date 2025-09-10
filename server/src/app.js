@@ -46,6 +46,15 @@ app.use(
 const uploadRoutes = require('./routes/upload');
 app.use('/api/upload', uploadRoutes);
 
+// Root endpoint for testing
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'CIT Server is running!', 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
 // Routes
 app.use('/api', routes);
 
