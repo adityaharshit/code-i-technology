@@ -40,12 +40,12 @@ body {
   overflow-x: hidden;
   
   /* Futuristic animated gradient background - now handled by FuturisticBackground component */
-  background: linear-gradient(-45deg, 
+  /* background: linear-gradient(-45deg, 
     #0A0E1A, 
     #1E2A3A, 
     #0F172A, 
     #1E293B
-  );
+  ); */
   background-size: 400% 400%;
   animation: gradientShift 20s ease infinite;
   
