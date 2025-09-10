@@ -11,4 +11,4 @@ export {
   QUALIFICATION_OPTIONS,
   OCCUPATION_OPTIONS,
   DISCOUNT_PERCENTAGE
-} from '../../../shared/constants';
+} from '../../shared/constants';

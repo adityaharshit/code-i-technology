@@ -12,7 +12,11 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: [
+    process.env.FRONTEND_URL,
+    'https://code-i-technology.vercel.app',
+    'http://localhost:5173' // for development
+  ],
   credentials: true,
 }));
 app.use(express.json());

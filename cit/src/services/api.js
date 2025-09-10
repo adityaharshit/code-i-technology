@@ -12,10 +12,9 @@ const api = axios.create({
 // Get environment-specific configuration
 const envConfig = API_CONFIG.getEnvironmentConfig();
 
-// Log the API URL in development for debugging
-// if (envConfig.enableLogging) {
-//   // console.log("API Base URL:", import.meta.env.VITE_API_URL || "http://localhost:5000/api (fallback)");
-// }
+// Log the API URL for debugging
+console.log("API Base URL:", import.meta.env.VITE_API_URL || "http://localhost:5000/api (fallback)");
+console.log("Environment:", import.meta.env.MODE);
 
 // Enhanced request interceptor with dynamic timeout and retry logic
 api.interceptors.request.use(

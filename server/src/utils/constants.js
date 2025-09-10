@@ -4,7 +4,7 @@ const {
   PAYMENT_STATUS,
   PAYMENT_MODES,
   DISCOUNT_PERCENTAGE
-} = require('../../shared/constants.js');
+} = require('../../shared/constants');
 
 module.exports = {
   COURSE_STATUS,

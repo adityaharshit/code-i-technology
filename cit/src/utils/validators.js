@@ -11,4 +11,4 @@ export {
   validateLogin,
   validateCourse,
   validatePayment
-} from '../../../shared/validators.js';
+} from '../../shared/validators.js';
