@@ -37,7 +37,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${
+    <nav className={`fixed top-0 left-0 right-0 z-30 transition-all duration-500 ${
       scrolled 
         ? 'bg-space-900/95 backdrop-blur-xl shadow-glow border-electric-500/20' 
         : 'bg-space-900/80 backdrop-blur-lg border-quantum-600/30'
@@ -100,10 +100,14 @@ const Navbar = () => {
                 </div>
                 
                 {/* User avatar */}
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-electric-500 to-cyber-500 flex items-center justify-center ">
-                  <span className="text-white font-bold text-xs">
-                    {user?.fullName?.charAt(0) || 'U'}
-                  </span>
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-electric-500 to-cyber-500 flex items-center justify-center overflow-hidden">
+                  {user?.photoUrl ? (
+                    <img src={user.photoUrl} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-white font-bold text-xs">
+                      {user?.fullName?.charAt(0) || 'U'}
+                    </span>
+                  )}
                 </div>
                 
                 {user?.type === 'admin' && (
@@ -185,10 +189,14 @@ const Navbar = () => {
               <div className="pt-4 pb-3 border-t border-gray-600 border-opacity-50 space-y-3">
                 <div className="px-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
-                      <span className="text-white font-bold text-sm">
-                        {user?.fullName?.charAt(0) || 'U'}
-                      </span>
+                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center overflow-hidden">
+                      {user?.photoUrl ? (
+                        <img src={user.photoUrl} alt="Profile" className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-white font-bold text-sm">
+                          {user?.fullName?.charAt(0) || 'U'}
+                        </span>
+                      )}
                     </div>
                     <div>
                       <div className="text-sm font-medium text-white">
@@ -248,3 +256,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

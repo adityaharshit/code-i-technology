@@ -272,11 +272,11 @@ const Courses = () => {
           {/* Course statistics */}
           <div className="flex justify-center items-center space-x-8 mt-8">
             <div className="text-center">
-              <div className="text-2xl font-bold text-electric-400 animate-neural-pulse">50+</div>
+              <div className="text-2xl font-bold text-electric-400 animate-neural-pulse">100+</div>
               <div className="text-sm text-gray-400">Courses</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-cyber-400 ">500+</div>
+              <div className="text-2xl font-bold text-cyber-400 ">150+</div>
               <div className="text-sm text-gray-400">Students</div>
             </div>
             <div className="text-center">

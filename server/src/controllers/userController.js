@@ -73,7 +73,8 @@ const updateProfile = async (req, res) => {
       bloodGroup,
       qualification,
       permanentAddress,
-      localAddress
+      localAddress,
+      photoUrl
     } = req.body;
 
     const updatedUser = await prisma.student.update({
@@ -87,7 +88,8 @@ const updateProfile = async (req, res) => {
         bloodGroup,
         qualification,
         permanentAddress,
-        localAddress
+        localAddress,
+        photoUrl
       },
       select: {
         id: true,

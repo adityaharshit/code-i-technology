@@ -1,9 +1,16 @@
 import axios from 'axios';
 
+// Create axios instance with base URL from environment variable
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
   withCredentials: true, // send session cookies
+  timeout: 10000, // 10 second timeout
 });
+
+// Log the API URL in development for debugging
+// if (import.meta.env.DEV) {
+//   console.log('API Base URL:', import.meta.env.VITE_API_URL || 'http://localhost:5000/api (fallback)');
+// }
 
 // Request interceptor (no Bearer token, sessions handle auth)
 api.interceptors.request.use(

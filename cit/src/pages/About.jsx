@@ -57,8 +57,8 @@ const About = () => {
   ];
 
   const stats = [
-    { number: "500+", label: "Students Trained", color: "electric", icon: Users, delay: 100 },
-    { number: "50+", label: "Courses Available", color: "cyber", icon: BookOpen, delay: 200 },
+    { number: "150+", label: "Students Trained", color: "electric", icon: Users, delay: 100 },
+    { number: "100+", label: "Courses Available", color: "cyber", icon: BookOpen, delay: 200 },
     { number: "95%", label: "Success Rate", color: "matrix", icon: TrendingUp, delay: 300 },
     { number: "5+", label: "Years Experience", color: "neural", icon: Award, delay: 400 }
   ];
@@ -221,13 +221,15 @@ const About = () => {
           Why Choose Us?
         </h2>
         <div className="grid-responsive-2">
-          {features.map((feature, index) => (
+          {features.map((feature, index) => {
+            const IconComponent = feature.icon;
+            return (
             <Card 
               key={index}
               className={`p-6 sm:p-8 glass-interactive hover-lift ${isVisible ? `animate-fade-in-up animate-stagger-${index + 1}` : 'opacity-0'}`}
             >
               <div className="text-3xl sm:text-4xl mb-4 text-center">
-                {feature.icon}
+                <IconComponent className={`inline-block text-${feature.color}-400`} />
               </div>
               <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 text-center">
                 {feature.title}
@@ -236,7 +238,7 @@ const About = () => {
                 {feature.description}
               </p>
             </Card>
-          ))}
+          )})}
         </div>
       </div>
 

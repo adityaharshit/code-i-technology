@@ -6,6 +6,7 @@ export const adminAPI = {
   getRecentActivity: () => api.get('/admin/recent-activity'),
   getAllStudents: (search = '') => api.get('/admin/students', { params: { search } }),
   getStudentDetails: (id) => api.get(`/admin/students/${id}/details`),
+  getIdCardInfoForStudent: (studentId) => api.get(`/admin/students/${studentId}/id-card-info`),
   deleteStudent: (id) => api.delete(`/admin/students/${id}`),
   getAllCourses: () => api.get('/admin/courses'),
   createCourse: (courseData) => api.post('/admin/courses', courseData),

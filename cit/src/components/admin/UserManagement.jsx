@@ -1,14 +1,15 @@
 // cit/src/components/admin/UserManagement.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { adminAPI } from '../../services/admin';
 import Button from '../ui/Button';
 import Card from '../ui/Card';
 import Input from '../ui/Input';
 import LoadingSpinner from '../ui/LoadingSpinner';
-import UserDetailModal from './UserDetailModal'; 
-import { Search, Users, UserCheck, UserX, AlertCircle, Eye, Trash2 } from 'lucide-react';
+import UserDetailModal from './UserDetailModal';
+import { Search, Users, UserCheck, UserX, AlertCircle, Eye, Trash2, Badge } from 'lucide-react';
 import toast from 'react-hot-toast';
 import useDebounce from '../../hooks/useDebounce';
+import { generateIDCardPDF } from '../../utils/idCardGeneratorUtil';
 
 const UserManagement = () => {
   const [students, setStudents] = useState([]);
@@ -16,24 +17,26 @@ const UserManagement = () => {
   const [error, setError] = useState('');
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [generatingIdFor, setGeneratingIdFor] = useState(null);
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
-  useEffect(() => {
-    const fetchStudents = async () => {
-      try {
-        setLoading(true);
-        const response = await adminAPI.getAllStudents(debouncedSearchTerm);
-        setStudents(response.data);
-      } catch (error) {
-        setError('Failed to fetch students');
-        console.error('Error fetching students:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchStudents();
+  const fetchStudents = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await adminAPI.getAllStudents(debouncedSearchTerm);
+      setStudents(response.data);
+    } catch (error) {
+      setError('Failed to fetch students');
+      console.error('Error fetching students:', error);
+    } finally {
+      setLoading(false);
+    }
   }, [debouncedSearchTerm]);
+
+  useEffect(() => {
+    fetchStudents();
+  }, [fetchStudents]);
 
   const handleRowClick = async (studentId) => {
     try {
@@ -56,6 +59,32 @@ const UserManagement = () => {
         toast.error('Failed to delete student.');
         console.error('Error deleting student:', error);
       }
+    }
+  };
+
+  const handleGenerateIdCard = async (e, student) => {
+    e.stopPropagation();
+    if (!student.id) return;
+
+    setGeneratingIdFor(student.id);
+    const toastId = toast.loading(`Generating ID for ${student.fullName}...`);
+
+    try {
+      const response = await adminAPI.getIdCardInfoForStudent(student.id);
+      const { user, course, expiryDate } = response.data;
+      
+      if (!user.photoUrl) {
+        toast.error(`${user.fullName} does not have a profile photo.`, { id: toastId });
+        return;
+      }
+      
+      await generateIDCardPDF({ user, course, expiryDate });
+      toast.success('ID Card downloaded!', { id: toastId });
+    } catch (error) {
+      toast.error(error.response?.data?.error || 'Failed to generate ID card.', { id: toastId });
+      console.error('Error generating ID card for admin:', error);
+    } finally {
+      setGeneratingIdFor(null);
     }
   };
 
@@ -224,6 +253,17 @@ const UserManagement = () => {
                         <Trash2 className="w-3 h-3 mr-1" />
                         Delete
                       </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => handleGenerateIdCard(e, student)}
+                        loading={generatingIdFor === student.id}
+                        disabled={generatingIdFor !== null}
+                        className="hover-scale border-cyber-500/50 text-cyber-400 hover:bg-cyber-500/20"
+                      >
+                        <Badge className="w-3 h-3 mr-1" />
+                        ID Card
+                      </Button>
                     </div>
                   </td>
                 </tr>
@@ -286,6 +326,17 @@ const UserManagement = () => {
                 <Eye className="w-3 h-3 mr-1" />
                 View Details
               </Button>
+               <Button
+                variant="outline"
+                size="sm"
+                onClick={(e) => handleGenerateIdCard(e, student)}
+                loading={generatingIdFor === student.id}
+                disabled={generatingIdFor !== null}
+                className="flex-1 sm:flex-none hover-scale border-cyber-500/50 text-cyber-400 hover:bg-cyber-500/20"
+              >
+                <Badge className="w-3 h-3 mr-1" />
+                ID Card
+              </Button>
               <Button
                 variant="secondary"
                 size="sm"
@@ -315,3 +366,4 @@ const UserManagement = () => {
 };
 
 export default UserManagement;
+

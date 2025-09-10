@@ -6,6 +6,8 @@ import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
 import toast from 'react-hot-toast';
 import LoadingSpinner from '../components/ui/LoadingSpinner.jsx';
+import { useAuth } from '../contexts/AuthContext.jsx';
+import useUpload from '../hooks/useUpload.js';
 import { 
   User, 
   Phone, 
@@ -31,6 +33,10 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState('');
+  const { uploadFile, uploading } = useUpload();
+  const { refreshUser } = useAuth();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -63,14 +69,45 @@ const Profile = () => {
     }));
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 500 * 1024) { // 500KB limit
+        toast.error('File size should not exceed 500KB.');
+        return;
+      }
+      setSelectedFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const { id, rollNumber, fullName, email, ...updateData } = profile;
+      let updatedProfileData = { ...profile };
+
+      if (selectedFile) {
+        const uploadedUrl = await uploadFile(selectedFile, 'student-photos');
+        if (uploadedUrl) {
+          updatedProfileData.photoUrl = uploadedUrl;
+        } else {
+          throw new Error('Photo upload failed.');
+        }
+      }
+      
+      const { id, rollNumber, fullName, email, isVerified, createdAt, ...updateData } = updatedProfileData;
+      
       await usersAPI.updateProfile(updateData);
       toast.success('Profile updated successfully!');
       setEditMode(false);
+      setSelectedFile(null);
+      setPreviewUrl('');
+      await refreshUser(); // Refresh user data in AuthContext to update navbar, etc.
     } catch (error) {
       toast.error(error.response?.data?.error || 'Failed to update profile.');
     } finally {
@@ -129,9 +166,21 @@ const Profile = () => {
           <div className="flex flex-col items-center space-y-6">
             {/* Enhanced Avatar */}
             <div className="relative group">
-              <div className="w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-electric-500 to-cyber-500 rounded-3xl flex items-center justify-center text-white text-3xl sm:text-4xl font-display font-bold shadow-glow">
-                {profile.fullName?.charAt(0) || 'U'}
+              <div className="w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-electric-500 to-cyber-500 rounded-3xl flex items-center justify-center text-white text-3xl sm:text-4xl font-display font-bold shadow-glow overflow-hidden">
+                {previewUrl ? (
+                  <img src={previewUrl} alt="New Profile" className="w-full h-full object-cover" />
+                ) : profile.photoUrl ? (
+                  <img src={profile.photoUrl} alt={profile.fullName} className="w-full h-full object-cover" />
+                ) : (
+                  profile.fullName?.charAt(0) || 'U'
+                )}
               </div>
+              {editMode && (
+                <label htmlFor="photo-upload" className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white cursor-pointer rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <Camera className="w-8 h-8" />
+                  <input id="photo-upload" type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+                </label>
+              )}
               {/* Status indicator */}
               <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-matrix-500 rounded-2xl border-4 border-quantum-800 flex items-center justify-center group-hover:">
                 <CheckCircle className="w-4 h-4 text-white" />
@@ -365,7 +414,7 @@ const Profile = () => {
               <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-700 animate-fade-in-up">
                 <Button 
                   type="submit" 
-                  loading={loading} 
+                  loading={loading || uploading} 
                   className="flex-1 sm:flex-initial btn-hover-lift"
                   size="lg"
                 >
@@ -393,3 +442,4 @@ const Profile = () => {
 };
 
 export default Profile;
+

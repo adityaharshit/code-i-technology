@@ -86,7 +86,7 @@ const Home = () => {
                 </>
               ) : (
                 <Link to="/dashboard" className="w-full sm:w-auto">
-                  <Button size="lg" glow neural className="w-full sm:w-auto">
+                  <Button size="lg" className="w-full sm:w-auto">
                     <Cpu className="w-5 h-5 mr-2" />
                     Go to Dashboard
                   </Button>

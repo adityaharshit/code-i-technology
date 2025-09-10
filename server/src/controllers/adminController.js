@@ -176,6 +176,68 @@ module.exports = {
   createManualTransactionAndInvoice,
 };
 
+
+const getStudentIdCardInfo = async (req, res) => {
+  try {
+    const studentId = parseInt(req.params.id);
+    const student = await prisma.student.findUnique({
+      where: { id: studentId },
+      include: {
+        enrollments: {
+          orderBy: {
+            enrolledAt: 'desc',
+          },
+          take: 1,
+          include: {
+            course: true,
+          },
+        },
+      },
+    });
+
+    if (!student) {
+      return res.status(404).json({ error: 'Student not found' });
+    }
+
+    let expiryDate = new Date(student.createdAt);
+    expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+    let course = { title: 'General Studies', duration: 12, startDate: student.createdAt }; // Default course
+
+    if (student.enrollments.length > 0) {
+      const latestEnrollment = student.enrollments[0];
+      expiryDate = new Date(latestEnrollment.enrolledAt);
+      expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+      course = latestEnrollment.course;
+    }
+
+    const expiryDateString = expiryDate.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).replace(' ', ' ');
+
+    res.json({
+      user: {
+        fullName: student.fullName,
+        rollNumber: student.rollNumber,
+        photoUrl: student.photoUrl,
+        gender: student.gender,
+        studentMobile: student.studentMobile,
+        parentMobile: student.parentMobile,
+        bloodGroup: student.bloodGroup,
+        dob: student.dob,
+      },
+      course: { // Course is needed for QR code data
+        title: course.title,
+        duration: course.duration,
+        startDate: course.startDate
+      },
+      expiryDate: expiryDateString,
+    });
+  } catch (error) {
+    console.error('Failed to get student ID card info:', error);
+    res.status(500).json({ error: 'Failed to fetch student data for ID card' });
+  }
+};
+
+
+
 const getRecentActivity = async (req, res) => {
   try {
     const recentRegistrations = await prisma.student.findMany({
@@ -241,5 +303,6 @@ module.exports = {
   getStudentDetails,
   createManualTransactionAndInvoice,
   getRecentActivity,
+  getStudentIdCardInfo
 };
 

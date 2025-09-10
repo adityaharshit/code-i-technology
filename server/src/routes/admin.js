@@ -11,7 +11,8 @@ router.get('/recent-activity', requireAdmin, adminController.getRecentActivity);
 
 // Student management
 router.get('/students', requireAdmin, adminController.getAllStudents);
-router.get('/students/:id/details', requireAdmin, adminController.getStudentDetails); // New route for details
+router.get('/students/:id/details', requireAdmin, adminController.getStudentDetails); 
+router.get('/students/:id/id-card-info', requireAdmin, adminController.getStudentIdCardInfo);
 router.delete('/students/:id', requireAdmin, adminController.deleteStudent);
 
 // Manual Invoice Generation
