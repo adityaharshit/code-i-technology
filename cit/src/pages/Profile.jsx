@@ -1,5 +1,5 @@
 // Enhanced Futuristic Profile Page
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { usersAPI } from "../services/users.js";
 import Card from "../components/ui/Card";
 import Input from "../components/ui/Input";
@@ -36,60 +36,55 @@ const Profile = () => {
   const [previewUrl, setPreviewUrl] = useState("");
   const { uploadFile, uploading } = useUpload();
   const { user: authUser, refreshUser, isAuthenticated } = useAuth();
+  const [pageLoading, setPageLoading] = useState(true);
 
-
-
-  // Enhanced API call handling with better timeout and error management
-  const { loading: pageLoading, execute: fetchProfileData } = useApiCall({
-    showErrorToast: true,
-    loadingMessage: "Loading your profile...",
-    onSuccess: (data) => {
-      setProfile(data);
-    },
-    onError: (error) => {
-      console.error("Failed to fetch profile:", error);
-    },
-  });
-
+  // API call for UPDATING the profile
   const { loading: updateLoading, execute: updateProfileData } = useApiCall({
     showSuccessToast: true,
     showErrorToast: true,
     successMessage: "Profile updated successfully!",
     loadingMessage: "Updating your profile...",
-    onSuccess: async () => {
+    onSuccess: async (updatedData) => {
       setEditMode(false);
-      await refreshUser();
-      // Refresh profile data
-      await fetchProfileData(() => usersAPI.getProfile());
+      setProfile(updatedData); // Immediately update UI with response
+      await refreshUser();    // Refresh global user context
+      setSelectedFile(null);
+      setPreviewUrl("");
     },
   });
 
-  // Fetch profile data when component mounts
+  // Fetch profile data ONCE when the component mounts and user is authenticated
   useEffect(() => {
-
-    // Try direct API call as fallback
-    const directFetch = async () => {
-      try {
-        const response = await usersAPI.getProfile();
-        setProfile(response.data);
-      } catch (error) {
-        // If direct call fails, try with useApiCall hook
-        fetchProfileData(() => usersAPI.getProfile());
+    const fetchProfile = async () => {
+      if (isAuthenticated && authUser) {
+        try {
+          setPageLoading(true);
+          const response = await usersAPI.getProfile();
+          setProfile(response.data);
+        } catch (error) {
+          console.error("Failed to fetch profile:", error);
+          toast.error("Could not load your profile data.");
+        } finally {
+          setPageLoading(false);
+        }
+      } else if (!isAuthenticated) {
+        // Handle case where auth check is complete but user is not logged in
+        setPageLoading(false);
       }
     };
 
-    // Only fetch if user is authenticated
-    if (isAuthenticated && authUser) {
-      directFetch();
-    }
-  }, [isAuthenticated, authUser, fetchProfileData]);
+    fetchProfile();
+  }, [isAuthenticated, authUser]); // This effect now runs only when auth state changes.
+
 
   const handleChange = (e) => {
+// ... existing code ...
     const { name, value } = e.target;
     setProfile((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleAddressChange = (e, addressType) => {
+// ... existing code ...
     const { name, value } = e.target;
     setProfile((prev) => ({
       ...prev,
@@ -101,6 +96,7 @@ const Profile = () => {
   };
 
   const handleFileChange = (e) => {
+// ... existing code ...
     const file = e.target.files[0];
     if (file) {
       if (file.size > 500 * 1024) {
@@ -120,16 +116,23 @@ const Profile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      let updatedProfileData = { ...profile };
+    let updatedProfileData = { ...profile };
 
+    // Use a separate state for the toast ID to manage it properly
+    const toastId = toast.loading("Uploading photo...");
+
+    try {
       if (selectedFile) {
         const uploadedUrl = await uploadFile(selectedFile, "student-photos");
         if (uploadedUrl) {
           updatedProfileData.photoUrl = uploadedUrl;
+          toast.success("Photo uploaded!", { id: toastId });
         } else {
-          throw new Error("Photo upload failed.");
+          toast.error("Photo upload failed.", { id: toastId });
+          return; // Stop submission if photo upload fails
         }
+      } else {
+        toast.dismiss(toastId); // Dismiss if no file was selected
       }
 
       const {
@@ -142,17 +145,15 @@ const Profile = () => {
         ...updateData
       } = updatedProfileData;
 
-      // Use the enhanced API call
       await updateProfileData(() => usersAPI.updateProfile(updateData));
 
-      setSelectedFile(null);
-      setPreviewUrl("");
     } catch (error) {
-      toast.error(error.response?.data?.error || "Failed to update profile.");
+      toast.error(error.response?.data?.error || "Failed to update profile.", { id: toastId });
     }
   };
 
   if (pageLoading) {
+// ... existing code ...
     return (
       <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner size="lg" text="Loading your profile..." />
@@ -161,6 +162,7 @@ const Profile = () => {
   }
 
   if (!profile) {
+// ... existing code ...
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card
@@ -195,6 +197,7 @@ const Profile = () => {
   }
 
   return (
+// ... existing code ...
     <div className="min-h-screen py-4 sm:py-8 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Floating particles */}
       <div className="absolute inset-0 pointer-events-none">
