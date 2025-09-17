@@ -5,7 +5,7 @@ require('dotenv').config();
 const transporter = nodemailer.createTransport({
   // You can uncomment the 'service' property for well-known providers like Gmail
   // This often handles host, port, and security settings for you.
-  // service: 'gmail',
+  service: 'gmail',
   host: process.env.SMTP_HOST, // e.g., 'smtp.gmail.com' for Gmail
   port: parseInt(process.env.SMTP_PORT || '587', 10), // 465 for SSL, 587 for TLS/STARTTLS
   secure: process.env.SMTP_PORT === '465', // `true` for port 465, `false` for all other ports
