@@ -21,7 +21,6 @@ import {
 import toast from 'react-hot-toast';
 import idCardFrontTemplate from '../../assets/id_card_front.jpg';
 import idCardBackTemplate from '../../assets/id_card_back.jpg';
-import logo from '../../images/logo.png';
 
 const IDCardGenerator = ({ isOpen, onClose, course, user }) => {
   const { refreshUser } = useAuth();
@@ -60,6 +59,9 @@ const IDCardGenerator = ({ isOpen, onClose, course, user }) => {
       dob: user.dob ? new Date(user.dob).toLocaleDateString('en-CA') : 'N/A',
       bloodGroup: user.bloodGroup || 'N/A',
       gender: user.gender || 'N/A',
+      email: user.email || 'NA',
+      studentId: user.rollNumber,
+      contact: user.studentMobile || user.parentMobile || 'N/A',
       expiryDate: expiryDate,
     });
   };
@@ -100,12 +102,12 @@ const IDCardGenerator = ({ isOpen, onClose, course, user }) => {
       const cardWidth = 53.98;
       const cardHeight = 85.6;
 
-      const [frontTemplate, backTemplate, userPhoto, qrCodeImage, logoImage] = await Promise.all([
+      const [frontTemplate, backTemplate, userPhoto, qrCodeImage] = await Promise.all([
         loadImageAsBase64(idCardFrontTemplate).catch(e => { toast.error("Failed to load ID card front template."); throw e; }),
         loadImageAsBase64(idCardBackTemplate).catch(e => { toast.error("Failed to load ID card back template."); throw e; }),
         loadImageAsBase64(user.photoUrl).catch(e => { toast.error("Failed to load your profile photo."); throw e; }),
         QRCode.toDataURL(generateQRData(), { width: 200, margin: 1 }).catch(e => { toast.error("Failed to generate QR code."); throw e; }),
-        loadImageAsBase64(logo).catch(e => { console.warn("Could not load logo."); return null; })
+        
       ]);
 
       // FRONT SIDE

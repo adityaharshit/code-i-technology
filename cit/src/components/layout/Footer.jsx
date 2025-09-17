@@ -187,13 +187,13 @@ const Footer = () => {
                 <span>in India</span>
               </div>
               
-              <div className="flex items-center space-x-2">
+              {/* <div className="flex items-center space-x-2">
                 <span className="text-gray-400">by</span>
                 <span className="bg-gradient-to-r from-electric-400 to-cyber-500 bg-clip-text text-transparent font-semibold">
                   Harshit Aditya
                 </span>
                 <div className="w-1 h-1 bg-electric-400 rounded-full " />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

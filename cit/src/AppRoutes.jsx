@@ -2,6 +2,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './components/layout/ProtectedRoute';
+import ScrollToTop from './components/layout/ScrollToTop'; 
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -21,6 +22,8 @@ import About from './pages/About';
 
 const AppRoutes = () => {
   return (
+    <>
+    <ScrollToTop />
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
@@ -44,6 +47,7 @@ const AppRoutes = () => {
       <Route path="/admin/course/add" element={<ProtectedRoute adminOnly={true}><AddEditCourse /></ProtectedRoute>} />
       <Route path="/admin/course/edit/:id" element={<ProtectedRoute adminOnly={true}><AddEditCourse /></ProtectedRoute>} />
     </Routes>
+    </>
   );
 };
 

@@ -374,7 +374,7 @@ const Login = () => {
                     className="text-electric-400 hover:text-cyber-400 transition-colors duration-300 font-semibold group"
                   >
                     Sign up now
-                    <Sparkles className="inline w-3 h-3 ml-1 group-hover:animate-spin" />
+                    <Sparkles className="inline w-3 h-3 ml-1" />
                   </Link>
                 </div>
                 <div className="text-xs text-gray-400">

@@ -199,7 +199,7 @@ const getStudentIdCardInfo = async (req, res) => {
       return res.status(404).json({ error: 'Student not found' });
     }
 
-    let expiryDate = new Date(student.createdAt);
+    let expiryDate = new Date();
     expiryDate.setFullYear(expiryDate.getFullYear() + 1);
     let course = { title: 'General Studies', duration: 12, startDate: student.createdAt }; // Default course
 
@@ -222,6 +222,7 @@ const getStudentIdCardInfo = async (req, res) => {
         parentMobile: student.parentMobile,
         bloodGroup: student.bloodGroup,
         dob: student.dob,
+        email: student.email,
       },
       course: { // Course is needed for QR code data
         title: course.title,

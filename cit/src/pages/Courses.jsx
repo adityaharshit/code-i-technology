@@ -102,7 +102,7 @@ const Courses = () => {
         <div className="absolute -top-2 -right-2 z-10">
           <div className={`inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transform rotate-3 group-hover:rotate-0 transition-all duration-300 ${getStatusBadgeColor(course.status)}`}>
             {getStatusIcon(course.status)}
-            {course.status}
+            {course.status == 'cantenroll' ? 'live' : course.status}
           </div>
         </div>
 
@@ -189,7 +189,7 @@ const Courses = () => {
         <div className="shrink-0">
           <div className={`inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider ${getStatusBadgeColor(course.status)}`}>
             {getStatusIcon(course.status)}
-            {course.status}
+            {course.status == 'cantenroll' ? 'live' : course.status}
           </div>
         </div>
 
@@ -413,7 +413,7 @@ const Courses = () => {
             <div className="max-w-md mx-auto space-y-6">
               {/* Enhanced empty state icon */}
               <div className="relative">
-                <div className="w-20 h-20 mx-auto bg-gradient-to-br from-electric-500/20 to-cyber-500/20 rounded-2xl flex items-center justify-center animate-float">
+                <div className="w-20 h-20 mx-auto bg-gradient-to-br from-electric-500/20 to-cyber-500/20 rounded-2xl flex items-center justify-center">
                   <Search className="w-10 h-10 text-electric-400" />
                 </div>
                 {/* Floating particles around icon */}

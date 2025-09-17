@@ -318,28 +318,7 @@ const PaymentForm = ({ course }) => {
                 </ol>
               </div>
               
-              <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center hover:border-secondary transition-colors duration-200">
-                <div className="space-y-4">
-                  <UploadCloud className="text-gray-400 mx-auto" size={32} />
-                  <div>
-                    <label 
-                      htmlFor="paymentProof" 
-                      className="cursor-pointer bg-secondary hover:bg-opacity-90 text-white font-medium py-2 px-4 rounded-lg inline-flex items-center transition-all duration-200"
-                    >
-                      <UploadCloud className="mr-2" size={16}/>
-                      {values.paymentProof ? values.paymentProof.name : 'Upload Receipt'}
-                      <input 
-                        id="paymentProof" 
-                        name="paymentProof" 
-                        type="file" 
-                        className="sr-only" 
-                        onChange={handleFileChange} 
-                        accept="image/*,application/pdf" 
-                      />
-                    </label>
-                  </div>
-                </div>
-              </div>
+              
               
               {errors.paymentProof && (
                 <p className="text-ternary1 text-sm">{errors.paymentProof}</p>

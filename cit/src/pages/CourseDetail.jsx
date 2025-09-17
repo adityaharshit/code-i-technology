@@ -81,6 +81,16 @@ const CourseDetail = () => {
           pulse: true,
           variant: 'matrix'
         };
+      case 'cantenroll':
+        return {
+          color: 'from-matrix-500 to-matrix-600',
+          bgColor: 'bg-matrix-500/20',
+          textColor: 'text-matrix-400',
+          icon: Zap,
+          text: 'LIVE NOW',
+          pulse: true,
+          variant: 'matrix'
+        };
       case 'upcoming':
         return {
           color: 'from-electric-500 to-electric-600',
@@ -185,6 +195,15 @@ const CourseDetail = () => {
       );
     }
     
+    if (course.status === 'cantenroll') {
+      return (
+        <Button size="lg" variant="success" className="w-full sm:w-auto cursor-not-allowed" disabled>
+          <Award className="w-5 h-5 mr-2" />
+          Can't Enroll
+        </Button>
+      );
+    }
+
     if (course.status === 'live' || course.status === 'upcoming') {
       return (
         <Button 
@@ -256,7 +275,7 @@ const CourseDetail = () => {
 
                 {/* Course Highlights */}
                 <div className="flex flex-wrap gap-3">
-                  {['Hands-on Projects', 'Certificate'].map((highlight, index) => (
+                  {['Hands-on Projects', 'Certificate', 'Lifetime access', '1 Week Free Demo'].map((highlight, index) => (
                     <div 
                       key={highlight}
                       className="px-3 py-1.5 bg-electric-500/20 border border-electric-400/30 rounded-lg text-sm text-electric-300 animate-fade-in-up"
@@ -332,7 +351,7 @@ const CourseDetail = () => {
 
           <div className="lg:col-span-1 space-y-8">
             {/* Enhanced Pricing Card */}
-            <Card variant="hologram" neural className="sticky top-24 p-6 sm:p-8 backdrop-blur-xl animate-fade-in-right">
+            <Card variant="hologram" neural className="top-0 p-6 sm:p-8 backdrop-blur-xl animate-fade-in-right">
               <div className="text-center space-y-6">
                 {/* Enhanced Pricing Display */}
                 <div className="space-y-3">

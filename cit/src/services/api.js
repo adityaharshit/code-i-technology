@@ -6,7 +6,7 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
   withCredentials: true, // send session cookies
   timeout: API_CONFIG.TIMEOUTS.DEFAULT,
-  headers: API_CONFIG.HEADERS,
+  // headers: API_CONFIG.HEADERS,
 });
 
 // Get environment-specific configuration
