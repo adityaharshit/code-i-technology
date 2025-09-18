@@ -135,11 +135,11 @@ const FuturisticBackground = ({ variant = 'default', intensity = 'medium' }) => 
       <div className="absolute inset-0 bg-neural-network opacity-10" />
       
       {/* Particle system canvas */}
-      <canvas
+      {/* <canvas
         ref={canvasRef}
         className="absolute inset-0 pointer-events-none"
         style={{ mixBlendMode: 'screen' }}
-      />
+      /> */}
       
       {/* Floating code elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
