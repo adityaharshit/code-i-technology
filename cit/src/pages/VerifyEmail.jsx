@@ -213,9 +213,8 @@ const VerifyEmail = () => {
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up animate-delay-700">
           {status === "success" && (
+            <Link to="/login" className="w-full sm:w-auto">
             <Button
-              as={Link}
-              to="/login"
               size="lg"
               className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 group"
             >
@@ -223,6 +222,7 @@ const VerifyEmail = () => {
               Continue to Login
               <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
             </Button>
+            </Link>
           )}
 
           {(status === "error" || status === "no-token") && (
@@ -249,7 +249,14 @@ const VerifyEmail = () => {
             </>
           )}
 
-          <Button
+          <Link to="/" className="w-full sm:w-auto">
+                              <Button variant="outline" size="lg" className="w-full sm:w-auto">
+                                <Home className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
+                                Go Home
+                              </Button>
+                            </Link>
+
+          {/* <Button
             as={Link}
             to="/"
             variant="outline"
@@ -258,7 +265,7 @@ const VerifyEmail = () => {
           >
             <Home className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
             Go Home
-          </Button>
+          </Button> */}
         </div>
 
         {/* Help Section */}
