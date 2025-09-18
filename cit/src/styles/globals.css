@@ -46,6 +46,10 @@ body {
   background-size: 400% 400%;
   animation: gradientShift 15s ease infinite;
   
+
+  /* Solid fallback to reduce color differences */
+  background-color: #0A0E1A;
+
   /* Overlay pattern for depth */
   position: relative;
 }

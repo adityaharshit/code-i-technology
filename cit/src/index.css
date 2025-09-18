@@ -54,6 +54,9 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   
+
+    /* Solid fallback background */
+  background-color: #0A0E1A;
   /* Futuristic animated gradient background - now handled by FuturisticBackground component */
   /* background: linear-gradient(-45deg, 
     #0A0E1A, 
@@ -1189,7 +1192,8 @@ html {
   right: 0;
   z-index: 40;
   background: rgba(30, 41, 59, 0.95);
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(51, 65, 85, 0.5);
   padding: 1rem;
 }

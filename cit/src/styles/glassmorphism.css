@@ -188,6 +188,11 @@
 
 /* Performance optimization for mobile */
 @media (max-width: 768px) {
+  .glass-card {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  
   .glass-card:hover {
     transform: none;
     background: rgba(30, 41, 59, 0.6);
@@ -197,6 +202,21 @@
   .glass-interactive:hover {
     transform: none;
     background: rgba(51, 65, 85, 0.7);
+  }
+  
+  .glass-intense {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  
+  .glass-admin-card {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  
+  .glass-admin-modal {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
 }
 
