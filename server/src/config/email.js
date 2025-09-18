@@ -25,7 +25,7 @@ const transporter = nodemailer.createTransport({
 const sendEmail = async (to, subject, html, replyTo = null) => {
   try {
     const mailOptions = {
-      from: `"${process.env.EMAIL_FROM_NAME || 'Code i Technology'}" <${process.env.EMAIL_FROM_ADDRESS}>`,
+      from: process.env.SMTP_FROM || 'infocodeitechnology@gmail.com',
       to,
       subject,
       html,
