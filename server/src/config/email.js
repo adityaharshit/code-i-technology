@@ -4,7 +4,7 @@ require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST, // e.g., 'smtp.gmail.com' for Gmail
-  port: parseInt(process.env.SMTP_PORT || '587', 10), // 465 for SSL, 587 for TLS/STARTTLS
+  port: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT) : 587,
   secure: process.env.SMTP_PORT === '465', // `true` for port 465, `false` for all other ports
   auth: {
     user: process.env.SMTP_USER,
