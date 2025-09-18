@@ -112,8 +112,8 @@ const FuturisticBackground = ({ variant = 'default', intensity = 'medium' }) => 
     switch (variant) {
       case 'neural':
         return 'bg-gradient-to-br from-space-900 via-neural-900/20 to-space-900';
-      case 'matrix':
-        return 'bg-gradient-to-br from-space-900 via-matrix-900/20 to-space-900';
+      // case 'matrix':
+      //   return 'bg-gradient-to-br from-space-900 via-matrix-900/20 to-space-900';
       case 'cyber':
         return 'bg-gradient-to-br from-space-900 via-cyber-900/20 to-space-900';
       case 'quantum':
@@ -129,7 +129,7 @@ const FuturisticBackground = ({ variant = 'default', intensity = 'medium' }) => 
       <div className={`absolute inset-0 ${getBackgroundClass()} animate-quantum-shift`} />
       
       {/* Circuit pattern overlay */}
-      <div className="absolute inset-0 bg-circuit-pattern opacity-20 animate-circuit-flow" />
+      {/* <div className="absolute inset-0 bg-circuit-pattern opacity-20 animate-circuit-flow" /> */}
       
       {/* Neural network pattern */}
       <div className="absolute inset-0 bg-neural-network opacity-10" />
@@ -154,15 +154,15 @@ const FuturisticBackground = ({ variant = 'default', intensity = 'medium' }) => 
               animationDuration: `${8 + Math.random() * 4}s`
             }}
           >
-            {['React', 'Node.js', 'Python', 'JavaScript', 'CSS', 'HTML'][i]}
+            {['Java', 'MySQL', 'CSS', 'C', 'C++', 'HTML' ,'JavaScript'][i]}
           </div>
         ))}
       </div>
       
       {/* Scan lines effect */}
-      <div className="absolute inset-0 pointer-events-none">
+      {/* <div className="absolute inset-0 pointer-events-none">
         <div className="absolute w-full h-px bg-gradient-to-r from-transparent via-electric-500/30 to-transparent animate-scan-line" />
-      </div>
+      </div> */}
       
       {/* Holographic overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-transparent via-electric-500/5 to-transparent animate-hologram pointer-events-none" />

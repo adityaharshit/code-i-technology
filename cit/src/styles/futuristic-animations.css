@@ -423,9 +423,9 @@
   animation: morph 6s ease-in-out infinite;
 }
 
-.animate-scan-line {
+/* .animate-scan-line {
   animation: scanLine 2s linear infinite;
-}
+} */
 
 .animate-energy-flow {
   animation: energyFlow 3s ease-in-out infinite;

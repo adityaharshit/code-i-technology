@@ -19,7 +19,7 @@ const getCourseStatus = (course) => {
   if (now < startDate) {
     return 'upcoming';
   } else if (now >= startDate && now <= endDate) {
-    if( now.getMonth() >= startDate.getMonth()+1) return "cantenroll";
+    if( (now - startDate) >= (31 * 24 * 60 * 60 * 1000)) return "cantenroll";
     return 'live';
   } else {
     return 'completed';

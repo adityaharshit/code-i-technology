@@ -39,7 +39,7 @@ coverage/
 # Prisma
 .prisma/
 */prisma/.prisma/
-
+./server/prisma/seed.js
 # IDE
 .vscode/
 .idea/

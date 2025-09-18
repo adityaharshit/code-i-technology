@@ -385,14 +385,14 @@ const MyCourses = () => {
                         </div>
 
                         {/* Second row - Generate ID Card */}
-                        <Button 
+                        {/* <Button 
                           onClick={() => handleGenerateIDCard(course)}
                           className="w-full bg-gradient-to-r from-electric-500 to-cyber-500 hover:from-cyber-500 hover:to-matrix-500 text-white transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-electric-500/25 group/id relative overflow-hidden"
                         >
                           <Badge className="w-4 h-4 mr-2 group-hover/id:scale-110 transition-transform duration-300" />
                           Generate ID Card
                           <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover/id:translate-x-full transition-transform duration-700"></div>
-                        </Button>
+                        </Button> */}
                       </div>
                     </div>
 
