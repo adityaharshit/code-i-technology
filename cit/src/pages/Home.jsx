@@ -5,6 +5,8 @@ import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import { Code, Cpu, Zap, Users, BookOpen, Trophy } from 'lucide-react';
 
+
+
 const Home = () => {
   const { isAuthenticated } = useAuth();
   const [isVisible, setIsVisible] = useState(false);
