@@ -41,6 +41,7 @@ coverage/
 */prisma/.prisma/
 ./server/prisma/seed.js
 # IDE
+.kiro/
 .vscode/
 .idea/
 *.swp
