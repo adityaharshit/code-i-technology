@@ -247,9 +247,9 @@ const Login = () => {
               {/* Mobile Header */}
               <div className="text-center mb-8 lg:hidden relative z-10">
                 <h1 className="text-2xl font-display font-bold bg-gradient-to-r from-electric-400 to-cyber-500 bg-clip-text text-transparent mb-2">
-                  Code i Technology
+                  Sign In
                 </h1>
-                <p className="text-gray-300">Sign in to continue learning</p>
+                
                 <div className="w-16 h-1 bg-gradient-to-r from-electric-500 to-cyber-500 rounded-full mx-auto mt-3 animate-energy-flow" />
               </div>
 
@@ -261,7 +261,6 @@ const Login = () => {
                     Sign In
                   </h1>
                 </div>
-                <p className="text-gray-300">to your account</p>
                 <div className="w-20 h-1 bg-gradient-to-r from-electric-500 to-cyber-500 rounded-full mx-auto mt-3 animate-energy-flow" />
               </div>
 
