@@ -431,6 +431,7 @@ const Register = () => {
           required
           className="form-input-responsive"
         />
+        
         <div>
           <label className="form-label-responsive">
             Photo

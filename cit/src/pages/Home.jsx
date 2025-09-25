@@ -48,9 +48,9 @@ const Home = () => {
             <div className={`transition-all duration-1000 ${
               isVisible ? 'animate-fade-in-up opacity-100' : 'opacity-0'
             }`}>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold mb-4 sm:mb-6 md:mb-8">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold mb-4 sm:mb-6 md:mb-8 leading-tight">
                 Welcome to{' '}
-                <span className="block mt-2 bg-gradient-to-r from-electric-400 via-cyber-500 to-matrix-400 bg-clip-text text-transparent">
+                <span className="block mt-2 bg-gradient-to-r from-electric-400 via-cyber-500 to-matrix-400 bg-clip-text text-transparent leading-tight">
                   {typedText}
                   <span className="animate-pulse">|</span>
                 </span>

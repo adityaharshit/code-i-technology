@@ -1416,3 +1416,8 @@ html {
     color: black !important;
   }
 }
+
+
+.leading-tight{
+  line-height: 1.45 !important;
+}

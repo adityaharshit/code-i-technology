@@ -143,7 +143,7 @@ const Login = () => {
               <h2 className="text-3xl xl:text-4xl font-display font-bold text-white mb-4">
                 Welcome Back to
               </h2>
-              <h2 className="text-4xl xl:text-6xl font-display font-bold bg-gradient-to-r from-electric-400 via-cyber-500 to-matrix-400 bg-clip-text text-transparent mb-6 ">
+              <h2 className="text-4xl xl:text-6xl font-display font-bold bg-gradient-to-r from-electric-400 via-cyber-500 to-matrix-400 bg-clip-text text-transparent mb-6 leading-tight">
                 Code i Technology
               </h2>
               <p className="text-lg xl:text-xl text-gray-300 leading-relaxed max-w-lg">
@@ -196,7 +196,7 @@ const Login = () => {
               <div className="grid grid-cols-3 gap-6 text-center">
                 <div className="group">
                   <div className="text-2xl xl:text-3xl font-display font-bold bg-gradient-to-r from-electric-400 to-cyber-500 bg-clip-text text-transparent group-hover:">
-                    500+
+                    150+
                   </div>
                   <div className="text-xs xl:text-sm text-gray-300 font-medium">
                     Students
@@ -246,7 +246,7 @@ const Login = () => {
 
               {/* Mobile Header */}
               <div className="text-center mb-8 lg:hidden relative z-10">
-                <h1 className="text-2xl font-display font-bold bg-gradient-to-r from-electric-400 to-cyber-500 bg-clip-text text-transparent mb-2">
+                <h1 className="text-2xl font-display font-bold bg-gradient-to-r from-electric-400 to-cyber-500 bg-clip-text text-transparent mb-2 leading-tight">
                   Sign In
                 </h1>
                 
@@ -257,7 +257,7 @@ const Login = () => {
               <div className="text-center mb-8 hidden lg:block relative z-10">
                 <div className="flex items-center justify-center mb-4">
                   <Shield className="w-8 h-8 text-electric-400 mr-3 " />
-                  <h1 className="text-2xl xl:text-3xl font-display font-bold bg-gradient-to-r from-electric-400 to-cyber-500 bg-clip-text text-transparent">
+                  <h1 className="text-2xl xl:text-3xl font-display font-bold bg-gradient-to-r from-electric-400 to-cyber-500 bg-clip-text text-transparent leading-tight">
                     Sign In
                   </h1>
                 </div>
