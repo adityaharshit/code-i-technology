@@ -453,6 +453,7 @@ const Register = () => {
         <Input
           label="Student Mobile *"
           name="studentMobile"
+          type = "number"
           value={formData.studentMobile}
           onChange={handleChange}
           maxLength="10"
@@ -464,6 +465,7 @@ const Register = () => {
         <Input
           label="Parent Mobile *"
           name="parentMobile"
+          type = "number"
           value={formData.parentMobile}
           onChange={handleChange}
           maxLength="10"
@@ -659,6 +661,7 @@ const Register = () => {
         </div>
         <Input
           label="Pin Code *"
+          type = "number"
           name={`${addressType}.pinCode`}
           value={formData[addressType].pinCode}
           onChange={handleChange}

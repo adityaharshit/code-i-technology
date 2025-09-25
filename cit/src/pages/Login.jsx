@@ -140,9 +140,9 @@ const Login = () => {
             }`}
           >
             <div className="text-center lg:text-left">
-              <h1 className="text-3xl xl:text-4xl font-display font-bold text-white mb-4">
+              <h2 className="text-3xl xl:text-4xl font-display font-bold text-white mb-4">
                 Welcome Back to
-              </h1>
+              </h2>
               <h2 className="text-4xl xl:text-6xl font-display font-bold bg-gradient-to-r from-electric-400 via-cyber-500 to-matrix-400 bg-clip-text text-transparent mb-6 ">
                 Code i Technology
               </h2>
@@ -258,10 +258,10 @@ const Login = () => {
                 <div className="flex items-center justify-center mb-4">
                   <Shield className="w-8 h-8 text-electric-400 mr-3 " />
                   <h1 className="text-2xl xl:text-3xl font-display font-bold bg-gradient-to-r from-electric-400 to-cyber-500 bg-clip-text text-transparent">
-                    Welcome Back
+                    Sign In
                   </h1>
                 </div>
-                <p className="text-gray-300">Sign in to your account</p>
+                <p className="text-gray-300">to your account</p>
                 <div className="w-20 h-1 bg-gradient-to-r from-electric-500 to-cyber-500 rounded-full mx-auto mt-3 animate-energy-flow" />
               </div>
 
