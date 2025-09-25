@@ -249,26 +249,26 @@ const Home = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {[
               {
-                name: 'Sarah Johnson',
-                role: 'Full Stack Developer',
-                content: 'CIT transformed my career completely. The hands-on approach and expert guidance helped me land my dream job.',
-                avatar: 'SJ',
+                name: 'Bhumi Kumari',
+                role: 'Student',
+                content: 'Excellent coaching institute with passionate teachers, providing detailed explanations and clarifying doubts. Highly recommended for tech enthusiasts!',
+                avatar: 'BK',
                 color: 'electric',
                 delay: '2400'
               },
               {
-                name: 'Mike Chen',
-                role: 'Software Engineer',
-                content: 'The instructors are amazing and the curriculum is perfectly designed for real-world applications.',
-                avatar: 'MC',
+                name: 'Prabhat Kumar',
+                role: 'Student',
+                content: 'This institute is a wonderful support for all students any one who want to do better in his/her coding journey and build strong foundation to go ahead in IT sector.',
+                avatar: 'PK',
                 color: 'cyber',
                 delay: '2600'
               },
               {
-                name: 'Emily Davis',
-                role: 'Frontend Developer',
-                content: 'I went from zero coding knowledge to building full applications in just 6 months. Highly recommended!',
-                avatar: 'ED',
+                name: 'Sachin Kumar',
+                role: 'Student',
+                content: 'It would not be believed that such good level of coding education is given even in Aurangabad Bihar. If you are from Aurangabad and want to learn coding, BCA, Bsc IT, MCA, Digital marketing, or any programming language, that too at the level of cities like Bangalore and Hyderabad, so this place is the best place.',
+                avatar: 'SK',
                 color: 'matrix',
                 delay: '2800'
               }
