@@ -19,8 +19,11 @@ app.set('trust proxy', 1);
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   'https://code-i-technology.vercel.app',
+  "https://www.codeitechnology.in", // Production domain
   'http://localhost:5173' // For local development
 ];
+
+
 
 const corsOptions = {
   // Use a function to dynamically check the origin
