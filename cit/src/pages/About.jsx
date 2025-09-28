@@ -89,7 +89,7 @@ const About = () => {
 
             {/* Enhanced Title */}
             <div className="space-y-4">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold bg-gradient-to-r from-electric-400 via-cyber-500 to-matrix-400 bg-clip-text text-transparent ">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold bg-gradient-to-r from-electric-400 via-cyber-500 to-matrix-400 bg-clip-text text-transparent leading-tight">
                 About Code i Technology
               </h1>
               <p className="text-lg sm:text-xl text-gray-300 max-w-4xl leading-relaxed">

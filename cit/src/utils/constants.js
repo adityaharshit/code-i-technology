@@ -12,3 +12,9 @@ export {
   OCCUPATION_OPTIONS,
   DISCOUNT_PERCENTAGE
 } from '../../shared/constants';
+
+export const COURSE_TYPE_OPTIONS = [
+    { value: 1, label: 'Coding' },
+    { value: 2, label: 'Non-coding' },
+    { value: 3, label: 'Typing' },
+];

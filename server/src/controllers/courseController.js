@@ -182,7 +182,7 @@ const createCourse = async (req, res) => {
   try {
     const { 
         title, description, duration, startDate, feePerMonth, discountPercentage, 
-        whatYouWillLearn, courseIncludes, skillLevel, language, instructorName, instructorDetails 
+        whatYouWillLearn, courseIncludes, skillLevel, language, instructorName, instructorDetails, courseType 
     } = req.body;
 
     let qrCodeUrl = req.body.qrCodeUrl || '';
@@ -206,6 +206,7 @@ const createCourse = async (req, res) => {
         language,
         instructorName,
         instructorDetails,
+        courseType: courseType ? parseInt(courseType) : null,
       }
     });
     
@@ -220,7 +221,7 @@ const updateCourse = async (req, res) => {
   try {
     const { 
         title, description, duration, startDate, feePerMonth, discountPercentage,
-        whatYouWillLearn, courseIncludes, skillLevel, language, instructorName, instructorDetails 
+        whatYouWillLearn, courseIncludes, skillLevel, language, instructorName, instructorDetails, courseType 
     } = req.body;
 
     let qrCodeUrl = req.body.qrCodeUrl || '';
@@ -245,6 +246,7 @@ const updateCourse = async (req, res) => {
         language,
         instructorName,
         instructorDetails,
+        courseType: courseType ? parseInt(courseType) : null,
       }
     });
     

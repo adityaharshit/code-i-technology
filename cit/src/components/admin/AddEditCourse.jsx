@@ -9,6 +9,7 @@ import Button from '../../components/ui/Button';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import toast from 'react-hot-toast';
 import { ArrowLeft, ArrowRight, BookOpen, Plus, Trash2, CheckCircle, Info, Tag, User, Briefcase, FileText } from 'lucide-react';
+import { COURSE_TYPE_OPTIONS } from '../../utils/constants';
 
 const defaultLearnings = [
   'Comprehensive understanding of core concepts',
@@ -52,6 +53,7 @@ const AddEditCourse = () => {
     instructorName: 'John Doe',
     instructorDetails: 'Expert instructor with 10+ years of industry experience and a passion for teaching.',
     qrCodeFile: null,
+    courseType: '',
   });
 
   useEffect(() => {
@@ -74,7 +76,8 @@ const AddEditCourse = () => {
             language: data.language || 'English',
             instructorName: data.instructorName || 'John Doe',
             instructorDetails: data.instructorDetails || 'Expert instructor with 10+ years of industry experience...',
-            qrCodeFile: null
+            qrCodeFile: null,
+            courseType: data.courseType || ''
           });
           setLoading(false);
         })
@@ -213,6 +216,15 @@ const AddEditCourse = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Input label="Start Date" name="startDate" type="date" value={formData.startDate} onChange={handleChange} />
               <Input label="Discount %" name="discountPercentage" type="number" value={formData.discountPercentage} onChange={handleChange} />
+            </div>
+            <div>
+              <label className="form-label-responsive">Course Type</label>
+              <select name="courseType" value={formData.courseType} onChange={handleChange} className="form-input-responsive w-full">
+                <option value="">Select a type</option>
+                {COURSE_TYPE_OPTIONS.map(option => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
             </div>
           </div>
         )}

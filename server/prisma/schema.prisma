@@ -65,6 +65,7 @@ model Course {
   language           String?        @db.VarChar(50)
   instructorName     String?        @db.VarChar(100)
   instructorDetails  String?
+  courseType         Int?
 
   enrollments        Enrollment[]
   transactions       Transaction[]
