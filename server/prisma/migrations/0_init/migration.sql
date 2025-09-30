@@ -48,9 +48,16 @@ CREATE TABLE "courses" (
     "startDate" TIMESTAMP(3),
     "feePerMonth" DOUBLE PRECISION NOT NULL,
     "qrCodeUrl" VARCHAR(500),
-    "status" TEXT NOT NULL DEFAULT 'upcoming',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "discountPercentage" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "courseIncludes" JSONB,
+    "instructorDetails" TEXT,
+    "instructorName" VARCHAR(100),
+    "language" VARCHAR(50),
+    "skillLevel" VARCHAR(50),
+    "whatYouWillLearn" JSONB,
+    "courseType" INTEGER,
 
     CONSTRAINT "courses_pkey" PRIMARY KEY ("id")
 );
@@ -84,10 +91,26 @@ CREATE TABLE "transactions" (
 );
 
 -- CreateTable
+CREATE TABLE "RollNumberSequence" (
+    "year" INTEGER NOT NULL,
+    "lastId" INTEGER NOT NULL,
+
+    CONSTRAINT "RollNumberSequence_pkey" PRIMARY KEY ("year")
+);
+
+-- CreateTable
+CREATE TABLE "BillNumberSequence" (
+    "id" TEXT NOT NULL,
+    "lastId" INTEGER NOT NULL,
+
+    CONSTRAINT "BillNumberSequence_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "session" (
-    "sid" TEXT NOT NULL,
-    "sess" JSONB NOT NULL,
-    "expire" TIMESTAMP(3) NOT NULL,
+    "sid" VARCHAR NOT NULL,
+    "sess" JSON NOT NULL,
+    "expire" TIMESTAMP(6) NOT NULL,
 
     CONSTRAINT "session_pkey" PRIMARY KEY ("sid")
 );
@@ -114,16 +137,17 @@ CREATE UNIQUE INDEX "enrollments_studentId_courseId_key" ON "enrollments"("stude
 CREATE UNIQUE INDEX "transactions_billNo_key" ON "transactions"("billNo");
 
 -- CreateIndex
-CREATE INDEX "session_expire_idx" ON "session"("expire");
-
--- AddForeignKey
-ALTER TABLE "enrollments" ADD CONSTRAINT "enrollments_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+CREATE INDEX "IDX_session_expire" ON "session"("expire");
 
 -- AddForeignKey
 ALTER TABLE "enrollments" ADD CONSTRAINT "enrollments_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "courses"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "transactions" ADD CONSTRAINT "transactions_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "enrollments" ADD CONSTRAINT "enrollments_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "transactions" ADD CONSTRAINT "transactions_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "courses"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "transactions" ADD CONSTRAINT "transactions_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+

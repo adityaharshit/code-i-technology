@@ -1,4 +1,3 @@
-// /cit/src/services/admin.js
 import api from './api';
 
 export const adminAPI = {
@@ -17,5 +16,8 @@ export const adminAPI = {
   generateManualInvoice: (invoiceData) => api.post('/admin/invoices/manual', invoiceData, {
     responseType: 'text', // Important to get HTML response
   }),
+  getCertificateInfo: (studentId, courseId) => api.get(`/admin/students/${studentId}/courses/${courseId}/certificate-info`),
+  generateCertificate: (studentId, courseId, data) => api.post(`/admin/students/${studentId}/courses/${courseId}/certificate`, data),
+  getMarksheetInfo: (studentId, courseId) => api.get(`/admin/students/${studentId}/courses/${courseId}/marksheet-info`),
+  generateMarksheet: (studentId, courseId, data) => api.post(`/admin/students/${studentId}/courses/${courseId}/marksheet`, data),
 };
-

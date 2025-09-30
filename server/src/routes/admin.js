@@ -18,8 +18,16 @@ router.delete('/students/:id', requireAdmin, adminController.deleteStudent);
 // Manual Invoice Generation
 router.post('/invoices/manual', requireAdmin, adminController.createManualTransactionAndInvoice);
 
+// Certificate Management
+router.post('/students/:studentId/courses/:courseId/certificate', requireAdmin, adminController.generateOrUpdateCertificate);
+router.get('/students/:studentId/courses/:courseId/certificate-info', requireAdmin, adminController.getCertificateInfo);
+
+//Marksheet Management
+router.get('/students/:studentId/courses/:courseId/marksheet-info', requireAdmin, adminController.getMarksheetInfo);
+router.post('/students/:studentId/courses/:courseId/marksheet', requireAdmin, adminController.generateOrUpdateMarksheet);
+
+
 // Course management (handled in courses.js but protected here)
 // Payment management (handled in payments.js but protected here)
 
 module.exports = router;
-

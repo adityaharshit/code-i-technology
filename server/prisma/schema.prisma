@@ -32,6 +32,8 @@ model Student {
   verificationToken String?   @db.VarChar(255)
   enrollments       Enrollment[]
   transactions      Transaction[]
+  certificates      Certificate[] // Relation to Certificate model
+  marksheets        Marksheet[]
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
@@ -66,9 +68,10 @@ model Course {
   instructorName     String?        @db.VarChar(100)
   instructorDetails  String?
   courseType         Int?
-
   enrollments        Enrollment[]
   transactions       Transaction[]
+  certificates       Certificate[] // Relation to Certificate model
+  marksheets         Marksheet[]
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
 
@@ -114,4 +117,69 @@ model RollNumberSequence {
 model BillNumberSequence {
   id     String @id // Format: "YYYY-MM"
   lastId Int
+}
+
+// New model for storing certificate details
+model Certificate {
+  id                Int      @id @default(autoincrement())
+  certificateNumber String   @unique
+  student           Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId         Int
+  course            Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId          Int
+  studentName       String
+  courseName        String
+  startDate         DateTime
+  endDate           DateTime
+  instructorName    String
+  
+  issueDate         DateTime @default(now())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  speedHindi        Int?
+  speedEnglish      Int?
+  courseType        Int?
+
+  @@unique([studentId, courseId]) // One certificate per student per course
+  @@map("certificates")
+}
+
+model Marksheet{
+  id                Int @id @default(autoincrement())
+  marksheetNumber   String @unique
+  studentId         Int
+  student           Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  courseId          Int
+  course            Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  studentName       String
+  dob               DateTime
+  cfMarks           Int?
+  msOfficeMarks     Int?
+  tallyMarks        Int?
+  photoshopMarks    Int?
+  ihnMarks          Int?
+  photoUrl          String?   @db.VarChar(500)
+  issueDate         DateTime @default(now())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([studentId, courseId]) // One certificate per student per course
+  @@map("marksheets")
+}
+
+
+// New model for certificate number sequence
+model CertificateNumberSequence {
+  id      Int @id @default(1)
+  lastId  Int
+}
+
+
+model session {
+  sid    String   @id @db.VarChar
+  sess   Json     @db.Json
+  expire DateTime @db.Timestamp(6)
+
+  @@index([expire], map: "IDX_session_expire")
+  @@ignore
 }

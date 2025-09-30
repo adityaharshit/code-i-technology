@@ -29,6 +29,14 @@ const generateBillNumber = async () => {
   return `CIT/${year}/${month}/${sequence.lastId.toString().padStart(4, '0')}`;
 };
 
+const generateCertificateNumber = async () => {
+    const sequence = await prisma.certificateNumberSequence.findUnique({
+        where: { id: 1 }
+    });
+    const nextId = 10000000 + sequence.lastId;
+    return `2021/CIT/${nextId.toString().substring(1)}`;
+};
+
 const generateVerificationToken = () => {
   return require('crypto').randomBytes(32).toString('hex');
 };
@@ -53,6 +61,7 @@ const calculatePayment = (feePerMonth, months, duration, discountPercentage = 0)
 module.exports = {
   generateRollNumber,
   generateBillNumber,
+  generateCertificateNumber,
   generateVerificationToken,
   calculatePayment
 };

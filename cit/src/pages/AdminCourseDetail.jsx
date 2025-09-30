@@ -4,11 +4,15 @@ import { useParams, Link } from "react-router-dom";
 import { coursesAPI } from "../services/courses";
 import { paymentsAPI } from "../services/payments";
 import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import TransactionDetailModal from "../components/admin/TransactionDetailModal";
+import CertificateModal from "../components/admin/CertificateModal";
+import MarksheetModal from "../components/admin/MarksheetModal";
 import { formatCurrency, formatDate } from "../utils/formatters";
 import {
+  Award,
   Users,
   BarChart2,
   ArrowLeft,
@@ -38,6 +42,15 @@ const AdminCourseDetail = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
+  const [studentsWithCertificates, setStudentWithCertificates] = useState([]);
+  const [studentsWithMarksheets, setStudentWithMarksheets] = useState([]);
+   // State for the new certificate modal
+  const [isCertificateModalOpen, setIsCertificateModalOpen] = useState(false);
+  const [selectedStudentForCert, setSelectedStudentForCert] = useState(null);
+  
+  // State for the new certificate modal
+ const [isMarksheetModalOpen, setIsMarksheetModalOpen] = useState(false);
+ const [selectedStudentForMark, setSelectedStudentForMark] = useState(null);
 
   const fetchCourseDetails = useCallback(async () => {
     try {
@@ -48,6 +61,14 @@ const AdminCourseDetail = () => {
         statusFilter
       );
       setCourseDetails(response.data);
+      const studentsCertificates = response.data.certificates.map( (student)=>
+        student.studentId
+      );
+      setStudentWithCertificates( studentsCertificates);
+      const studentsMarksheets = response.data.marksheets.map( (student)=>
+        student.studentId
+      );
+      setStudentWithMarksheets( studentsMarksheets);
     } catch (err) {
       setError("Failed to fetch course details.");
       console.error("Error fetching course details:", err);
@@ -69,6 +90,16 @@ const AdminCourseDetail = () => {
     } catch (err) {
       toast.error("Failed to update transaction status.");
     }
+  };
+
+  const handleOpenCertificateModal = (student) => {
+    setSelectedStudentForCert(student);
+    setIsCertificateModalOpen(true);
+  };
+
+  const handleOpenMarksheetModal = (student) => {
+    setSelectedStudentForMark(student);
+    setIsMarksheetModalOpen(true);
   };
 
   const getStatusColor = (status) => {
@@ -136,6 +167,7 @@ const AdminCourseDetail = () => {
     totalRevenue,
     enrolledStudents,
     transactions,
+    certificates,
   } = courseDetails;
 
   return (
@@ -307,32 +339,37 @@ const AdminCourseDetail = () => {
                       </p>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
+                    <div className="flex items-center gap-2">
+                      {/* Certificate Button */}
+                      <Button
+                        variant={ studentsWithCertificates.includes(student.id) ? `success` : 'outline'}
+                        size="sm"
+                        onClick={() => handleOpenCertificateModal(student)}
+                      >
+                        <Award size={14} className="mr-2" />
+                        Certificate
+                      </Button>
+
+                      {/* Marksheet Button */}
+                      {course.courseType == 2 && (
+
+                        <Button
+                        variant={ studentsWithMarksheets.includes(student.id) ? `success` : 'outline'}
+                        size="sm"
+                        onClick={() => handleOpenMarksheetModal(student)}
+                      >
+                        <Award size={14} className="mr-2" />
+                        Marksheet
+                      </Button>
+                      )}
+
                       <div className="text-right">
                         <p className="text-xs sm:text-sm text-white font-medium">
                           Progress: {student.monthsPaid} / {course.duration}{" "}
                           months
                         </p>
-                        <p className="text-xs text-gray-400">
-                          {Math.round(
-                            (student.monthsPaid / course.duration) * 100
-                          )}
-                          % Complete
-                        </p>
                       </div>
-
-                      <div className="w-full sm:w-32">
-                        <div className="w-full bg-gray-700 rounded-full h-2">
-                          <div
-                            className="bg-gradient-to-r from-secondary to-primary h-2 rounded-full transition-all duration-1000 ease-out animate-progress-fill"
-                            style={{
-                              width: `${
-                                (student.monthsPaid / course.duration) * 100
-                              }%`,
-                            }}
-                          />
-                        </div>
-                      </div>
+                      
                     </div>
                   </div>
                 ))}
@@ -499,6 +536,20 @@ const AdminCourseDetail = () => {
           onClose={() => setSelectedTransaction(null)}
           transaction={selectedTransaction}
           onStatusUpdate={handleStatusUpdate}
+        />
+
+        <CertificateModal
+          isOpen={isCertificateModalOpen}
+          onClose={() => setIsCertificateModalOpen(false)}
+          student={selectedStudentForCert}
+          course={course}
+        />
+
+        <MarksheetModal
+          isOpen={isMarksheetModalOpen}
+          onClose={() => setIsMarksheetModalOpen(false)}
+          student={selectedStudentForMark}
+          course={course}
         />
       </div>
     </div>

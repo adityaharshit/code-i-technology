@@ -1,6 +1,6 @@
 // /server/src/controllers/adminController.js
 const prisma = require('../config/database');
-const { generateBillNumber } = require('../utils/generators');
+const { generateBillNumber, generateCertificateNumber } = require('../utils/generators');
 const { generateInvoiceHTML } = require('../utils/invoiceUtils');
 
 const getStudentDetails = async (req, res) => {
@@ -168,12 +168,209 @@ const createManualTransactionAndInvoice = async (req, res) => {
   }
 };
 
-module.exports = {
-  getAllStudents,
-  deleteStudent,
-  getDashboardStats,
-  getStudentDetails,
-  createManualTransactionAndInvoice,
+const getCertificateInfo = async (req, res) => {
+    try {
+        const { studentId, courseId } = req.params;
+
+        const existingCertificate = await prisma.certificate.findUnique({
+            where: { studentId_courseId: { studentId: parseInt(studentId), courseId: parseInt(courseId) } }
+        });
+
+        if (existingCertificate) {
+            return res.json({ ...existingCertificate, isNew: false });
+        }
+
+        const student = await prisma.student.findUnique({ where: { id: parseInt(studentId) } });
+        const course = await prisma.course.findUnique({ where: { id: parseInt(courseId) } });
+
+        if (!student || !course) {
+            return res.status(404).json({ error: 'Student or Course not found.' });
+        }
+
+        const startDate = course.startDate || new Date();
+        const endDate = new Date(startDate);
+        endDate.setMonth(endDate.getMonth() + course.duration);
+
+        const newCertificateNumber = await generateCertificateNumber();
+        console.log(course.courseType);
+        console.log("Hello");
+        res.json({
+            isNew: true,
+            certificateNumber: newCertificateNumber,
+            studentName: student.fullName,
+            courseName: course.title,
+            courseType: course.courseType,
+            startDate,
+            endDate,
+            instructorName: course.instructorName || 'CODE I TECHNOLOGY',
+            issueDate: new Date(),
+            speedEnglish: 0,
+            speedHindi: 0
+        });
+
+    } catch (error) {
+        console.error('Error fetching certificate info:', error);
+        res.status(500).json({ error: 'Failed to fetch certificate info.' });
+    }
+};
+
+const generateOrUpdateCertificate = async (req, res) => {
+    try {
+        const { studentId, courseId } = req.params;
+        const data = req.body;
+        
+        const certificate = await prisma.certificate.upsert({
+            where: {
+                studentId_courseId: {
+                    studentId: parseInt(studentId),
+                    courseId: parseInt(courseId),
+                },
+            },
+            update: {
+                studentName: data.studentName,
+                courseName: data.courseName,
+                startDate: new Date(data.startDate),
+                endDate: new Date(data.endDate),
+                instructorName: data.instructorName,
+                issueDate: new Date(data.issueDate),
+                speedEnglish: parseInt(data.speedEnglish) || 0,
+                speedHindi: parseInt(data.speedHindi) || 0,
+                courseType: data.courseType
+            },
+            create: {
+                studentId: parseInt(studentId),
+                courseId: parseInt(courseId),
+                certificateNumber: data.certificateNumber,
+                studentName: data.studentName,
+                courseName: data.courseName,
+                startDate: new Date(data.startDate),
+                endDate: new Date(data.endDate),
+                instructorName: data.instructorName,
+                issueDate: new Date(data.issueDate),
+                speedEnglish: parseInt(data.speedEnglish) || 0,
+                speedHindi: parseInt(data.speedHindi) || 0,
+                courseType: data.courseType
+            },
+        });
+        if(data.isNew){
+          const sequence = await prisma.certificateNumberSequence.upsert({
+            where: {id: 1},
+            update:{
+              lastId: {increment: 1}
+            },
+            create: {id: 1,
+              lastId : 101
+            }
+          });
+        }
+        res.status(200).json(certificate);
+    } catch (error) {
+        console.error('Error saving certificate data:', error);
+        res.status(500).json({ error: 'Failed to save certificate data.' });
+    }
+};
+
+
+const getMarksheetInfo = async (req, res) => {
+    try {
+        const { studentId, courseId } = req.params;
+
+        const existingMarksheet = await prisma.marksheet.findUnique({
+            where: { studentId_courseId: { studentId: parseInt(studentId), courseId: parseInt(courseId) } }
+        });
+
+        if (existingMarksheet) {
+            return res.json({ ...existingMarksheet, isNew: false });
+        }
+
+        const student = await prisma.student.findUnique({ where: { id: parseInt(studentId) } });
+        const course = await prisma.course.findUnique({ where: { id: parseInt(courseId) } });
+
+        if (!student || !course) {
+            return res.status(404).json({ error: 'Student or Course not found.' });
+        }
+
+        const dob = course.dob || new Date();
+
+        const newMarksheetNumber = await generateCertificateNumber();
+        
+        console.log("Hello");
+        res.json({
+            isNew: true,
+            marksheetNumber: newMarksheetNumber,
+            studentName: student.fullName,
+            courseName: course.title,
+            dob: new Date(dob),
+            issueDate: new Date(),
+            photoUrl: student.photoUrl,
+            cfMarks: 0,
+            msOfficeMarks: 0,
+            tallyMarks: 0,
+            photoshopMarks: 0,
+            ihnMarks: 0
+        });
+
+    } catch (error) {
+        console.error('Error fetching Marksheet info:', error);
+        res.status(500).json({ error: 'Failed to fetch Marksheet info.' });
+    }
+};
+
+const generateOrUpdateMarksheet = async (req, res) => {
+    try {
+        const { studentId, courseId } = req.params;
+        const data = req.body;
+        
+        const certificate = await prisma.marksheet.upsert({
+            where: {
+                studentId_courseId: {
+                    studentId: parseInt(studentId),
+                    courseId: parseInt(courseId),
+                },
+            },
+            update: {
+                studentName: data.studentName,
+                studentName: data.studentName,
+                dob: new Date(data.dob),
+                cfMarks: parseInt(data.cfMarks),
+                msOfficeMarks: parseInt(data.msOfficeMarks),
+                tallyMarks: parseInt(data.tallyMarks),
+                photoshopMarks: parseInt(data.photoshopMarks),
+                ihnMarks: parseInt(data.ihnMarks),
+                issueDate: new Date(data.issueDate),
+                photoUrl: data.photoUrl
+            },
+            create: {
+                studentId: parseInt(studentId),
+                courseId: parseInt(courseId),
+                marksheetNumber: data.marksheetNumber,
+                studentName: data.studentName,
+                dob: new Date(data.dob),
+                cfMarks: parseInt(data.cfMarks),
+                msOfficeMarks: parseInt(data.msOfficeMarks),
+                tallyMarks: parseInt(data.tallyMarks),
+                photoshopMarks: parseInt(data.photoshopMarks),
+                ihnMarks: parseInt(data.ihnMarks),
+                issueDate: new Date(data.issueDate),
+                photoUrl: data.photoUrl
+            },
+        });
+        if(data.isNew){
+          const sequence = await prisma.certificateNumberSequence.upsert({
+            where: {id: 1},
+            update:{
+              lastId: {increment: 1}
+            },
+            create: {id: 1,
+              lastId : 101
+            }
+          });
+        }
+        res.status(200).json(certificate);
+    } catch (error) {
+        console.error('Error saving certificate data:', error);
+        res.status(500).json({ error: 'Failed to save certificate data.' });
+    }
 };
 
 
@@ -304,6 +501,9 @@ module.exports = {
   getStudentDetails,
   createManualTransactionAndInvoice,
   getRecentActivity,
-  getStudentIdCardInfo
+  getStudentIdCardInfo,
+  getCertificateInfo,
+  generateOrUpdateCertificate,
+  getMarksheetInfo,
+  generateOrUpdateMarksheet
 };
-

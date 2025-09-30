@@ -18,7 +18,8 @@ const Navbar = () => {
       { name: 'Transactions', href: '/transactions' },
       { name: 'Profile', href: '/profile' }
     ] : []),
-    { name: 'Contact', href: '/contact' }
+    { name: 'Contact', href: '/contact' },
+    { name: 'Certificate Verification', href: '/verify-certificate'}
   ];
 
   useEffect(() => {

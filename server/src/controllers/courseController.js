@@ -19,7 +19,7 @@ const getCourseStatus = (course) => {
   if (now < startDate) {
     return 'upcoming';
   } else if (now >= startDate && now <= endDate) {
-    if( (now - startDate) >= (31 * 24 * 60 * 60 * 1000)) return "cantenroll";
+    if( (now - startDate) >= (31 * 24 * 60 * 60 * 1000*2)) return "cantenroll";
     return 'live';
   } else {
     return 'completed';
@@ -90,7 +90,17 @@ const getCourseDetailsForAdmin = async (req, res) => {
       })
     );
 
-    res.json({ course, totalStudents, totalRevenue, enrolledStudents, transactions });
+    const certificates = await prisma.certificate.findMany({
+      select: {studentId: true},
+      where : {courseId: courseId},
+    });
+    
+    const marksheets = await prisma.certificate.findMany({
+      select: {studentId: true},
+      where : {courseId: courseId},
+    });
+
+    res.json({ course, totalStudents, totalRevenue, enrolledStudents, transactions, certificates, marksheets });
   } catch (error) {
     console.error('Failed to get course details for admin:', error);
     res.status(500).json({ error: 'Failed to fetch course details' });

@@ -9,6 +9,7 @@ const paymentRoutes = require("./payments");
 const adminRoutes = require("./admin");
 const userRoutes = require("./users");
 const contactRoutes = require("./contact");
+const verifyCertificateRoutes = require("./verifyCertificate");
 
 // Use routes
 router.use("/auth", authRoutes);
@@ -17,6 +18,7 @@ router.use("/payments", paymentRoutes);
 router.use("/admin", adminRoutes);
 router.use("/users", userRoutes);
 router.use("/contact", contactRoutes);
+router.use("/verifyCertificate", verifyCertificateRoutes);
 
 // Health check endpoint
 router.get("/health", (req, res) => {
