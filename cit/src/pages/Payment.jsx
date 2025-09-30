@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { coursesAPI } from '../services/courses';
+import { paymentsAPI } from '../services/payments';
 import Card from '../components/ui/Card';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import PaymentForm from '../components/payments/PaymentForm';
@@ -22,6 +23,7 @@ import toast from 'react-hot-toast';
 const Payment = () => {
   const { courseId } = useParams();
   const [course, setCourse] = useState(null);
+  const [lastPaymentStatus, setLastPaymentStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -31,6 +33,12 @@ const Payment = () => {
         setLoading(true);
         const response = await coursesAPI.getById(courseId);
         setCourse(response.data);
+
+        // Fetch the last transaction for this course
+        const lastTransactionResponse = await paymentsAPI.getLastTransactionForCourse(courseId);
+        if (lastTransactionResponse.data) {
+          setLastPaymentStatus(lastTransactionResponse.data.status);
+        }
         setIsVisible(true);
       } catch (error) {
         toast.error('Failed to fetch course details.');
@@ -76,6 +84,8 @@ const Payment = () => {
       </div>
     );
   }
+
+  
 
   if (!course) {
     return (
@@ -133,6 +143,61 @@ const Payment = () => {
                   <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
                   My Courses
                 </Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // New: If last payment is pending, show a message
+  if (lastPaymentStatus === 'pending approval') {
+    return (
+      <div className="min-h-screen py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-2xl mx-auto">
+          <Card variant="neural" className="p-8 sm:p-12 text-center animate-fade-in-up">
+            <div className="space-y-6">
+              <div className="relative">
+                <div className="w-20 h-20 mx-auto bg-yellow-500/20 rounded-full flex items-center justify-center">
+                  <Clock className="w-10 h-10 text-yellow-400 animate-pulse" />
+                </div>
+              </div>
+              <div className="space-y-4">
+                <h2 className="text-2xl sm:text-3xl font-display font-bold text-white">
+                  Payment Pending Approval
+                </h2>
+                <p className="text-gray-300 text-lg">
+                  Your previous payment for this course is still being reviewed.
+                </p>
+                <p className="text-gray-400">
+                  Please wait for the admin to approve your payment before attempting to make a new one. You can check the status on your transactions page.
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                <Link to="/transactions">
+                  <Button 
+                    as={Link}
+                    to="/transactions"
+                    size="lg"
+                    className="bg-gradient-to-r from-cyber-500 to-electric-500 hover:from-electric-500 hover:to-matrix-500 group"
+                  >
+                    <BookOpen className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
+                    View Transactions
+                  </Button>
+                </Link>
+                <Link to="/my-courses">
+                  <Button 
+                    as={Link}
+                    to="/my-courses"
+                    variant="outline"
+                    size="lg"
+                    className="group"
+                  >
+                    <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
+                    My Courses
+                  </Button>
+                </Link>
               </div>
             </div>
           </Card>

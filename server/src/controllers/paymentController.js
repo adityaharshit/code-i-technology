@@ -169,10 +169,32 @@ const getTransactionInvoice = async (req, res) => {
     }
 };
 
+const getLastTransactionForCourse = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const studentId = parseInt(req.session.userId, 10);
+
+    const lastTransaction = await prisma.transaction.findFirst({
+      where: {
+        studentId: studentId,
+        courseId: parseInt(courseId),
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    res.json(lastTransaction);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch last transaction' });
+  }
+};
+
 module.exports = {
   createTransaction,
   getStudentTransactions,
   getAllTransactions,
   updateTransactionStatus,
-  getTransactionInvoice
+  getTransactionInvoice,
+  getLastTransactionForCourse
 };

@@ -10,6 +10,7 @@ const { paymentLimiter } = require('../middleware/rateLimit');
 router.post('/', requireAuth, requireStudent, paymentLimiter, upload.single('paymentProof'), validatePayment, paymentController.createTransaction);
 router.get('/my-transactions', requireAuth, requireStudent, paymentController.getStudentTransactions);
 router.get('/invoice/:id', requireAuth, paymentController.getTransactionInvoice);
+router.get('/course/:courseId/last-transaction', requireAuth, requireStudent, paymentController.getLastTransactionForCourse);
 
 // Admin routes
 router.get('/',requireAuth, paymentController.getAllTransactions);
