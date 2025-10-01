@@ -123,10 +123,10 @@ model BillNumberSequence {
 model Certificate {
   id                Int      @id @default(autoincrement())
   certificateNumber String   @unique
-  student           Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  studentId         Int
-  course            Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  courseId          Int
+  student           Student?  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId         Int?
+  course            Course?   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId          Int?
   studentName       String
   courseName        String
   startDate         DateTime
