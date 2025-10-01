@@ -11,9 +11,12 @@ const CertificateVerification = () => {
     const [certificateNumber, setCertificateNumber] = useState('');
     const [certificateData, setCertificateData] = useState(null);
 
-    const formatDate = (dateStr) =>
-            new Date(dateStr).toLocaleDateString("en-GB");
-
+   const formatDate= (dateStr) => {
+        if (!dateStr) return '';
+        // The API returns a full ISO string (e.g., "2023-03-25T00:00:00.000Z").
+        // We only need the first 10 characters for the "yyyy-MM-dd" format.
+        return dateStr.slice(0, 10);
+    };
     const handleChange = async(e) =>{
         setCertificateNumber(e.target.value);
     }
