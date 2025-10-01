@@ -55,7 +55,7 @@ export const generateMarksheetPDF = async (data) => {
         });
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
-        console.log(`${pdfWidth} ${pdfHeight}`);
+        // console.log(`${pdfWidth} ${pdfHeight}`);
         pdf.addImage(templateDataURL, "JPEG", 0, 0, pdfWidth, pdfHeight);
         
         pdf.addImage(photoDataURL, "PNG", 164, 34.5, 32.5, 45);

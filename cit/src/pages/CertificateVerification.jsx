@@ -35,7 +35,7 @@ const CertificateVerification = () => {
             }else{
                 toast.success("Certificate verified!");
             }
-            console.log(response.data);
+            // console.log(response.data);
         }catch(error){
             console.error("Failed to fetch certificate data", error);
             toast.error("Could not load certificate data");
