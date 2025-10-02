@@ -46,7 +46,7 @@ export const generateMarksheetPDF = async (data) => {
                             toast.error("Failed to load profile photo.");
                             throw e;
         });
-        // console.log(`${width} ${height}`);
+        
         
         const pdf = new jsPDF({
             orientation: "portrait",
@@ -55,7 +55,7 @@ export const generateMarksheetPDF = async (data) => {
         });
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
-        // console.log(`${pdfWidth} ${pdfHeight}`);
+        
         pdf.addImage(templateDataURL, "JPEG", 0, 0, pdfWidth, pdfHeight);
         
         pdf.addImage(photoDataURL, "PNG", 164, 34.5, 32.5, 45);

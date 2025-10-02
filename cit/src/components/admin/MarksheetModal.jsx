@@ -20,7 +20,7 @@ const MarksheetModal = ({ isOpen, onClose, student, course }) => {
         try {
             const response = await adminAPI.getMarksheetInfo(student.id, course.id);
             setData(response.data);
-            // console.log(response.data);
+            
         } catch (error) {
             toast.error("Failed to fetch certificate data.");
             onClose();
@@ -31,7 +31,7 @@ const MarksheetModal = ({ isOpen, onClose, student, course }) => {
 
     useEffect(() => {
         if (isOpen) {
-            // console.log("Hey");
+            
             fetchMarksheetData();
         }
     }, [isOpen, fetchMarksheetData]);

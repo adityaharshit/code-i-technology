@@ -79,12 +79,13 @@ model Course {
 }
 
 model Enrollment {
-  id        Int      @id @default(autoincrement())
-  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  studentId Int
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  courseId  Int
-  enrolledAt DateTime @default(now())
+  id                Int      @id @default(autoincrement())
+  student           Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId         Int
+  course            Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId          Int
+  enrolledAt        DateTime @default(now())
+  remainingAmount   Float    @default(0)
 
   @@unique([studentId, courseId])
   @@map("enrollments")
@@ -97,7 +98,7 @@ model Transaction {
   studentId       Int
   course          Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseId        Int
-  months          Int
+  months          Int?
   amount          Float
   discount        Float     @default(0)
   netPayable      Float

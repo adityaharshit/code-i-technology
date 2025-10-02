@@ -178,6 +178,22 @@ const getCourseById = async (req, res) => {
                 select: { months: true }
             });
             courseWithDetails.monthsPaid = paidTransactions.reduce((acc, tx) => acc + tx.months, 0);
+
+            const enrollment = await prisma.enrollment.findUnique({
+              where: {
+                studentId_courseId: {
+                  studentId:studentId, 
+                  courseId:courseId
+              }},
+              select: {remainingAmount: true}
+            });
+            
+            if (enrollment) {
+              courseWithDetails.remainingAmount = enrollment.remainingAmount;
+            } else {
+              // Handle case where student is not enrolled
+              courseWithDetails.remainingAmount = null; 
+            }
         }
     }
     
@@ -283,10 +299,23 @@ const enrollInCourse = async (req, res) => {
   try {
     const { courseId } = req.body;
     
+    const amountDetails = await prisma.course.findUnique({
+      where:{
+        id: parseInt(courseId),
+      },
+      select: {
+        duration: true,
+        feePerMonth: true,
+      }
+    })
+
+    const totalAmount = amountDetails.duration* amountDetails.feePerMonth;
+
     const enrollment = await prisma.enrollment.create({
       data: {
         studentId: parseInt(req.session.userId, 10),
-        courseId: parseInt(courseId)
+        courseId: parseInt(courseId),
+        remainingAmount: totalAmount
       },
       include: {
         course: true
@@ -304,16 +333,12 @@ const enrollInCourse = async (req, res) => {
 
 const getStudentCourses = async (req, res) => {
   try {
-    const studentId = parseInt(req.session.userId, 10);
+        const studentId = parseInt(req.session.userId, 10);
 
-    const enrollments = await prisma.enrollment.findMany({
+        const enrollments = await prisma.enrollment.findMany({
       where: { studentId },
-      include: { course: true }
+      include: { course: true },
     });
-
-    if (!enrollments.length) {
-      return res.json([]);
-    }
 
     const paidTransactions = await prisma.transaction.findMany({
       where: { studentId, status: 'paid' },
@@ -325,16 +350,20 @@ const getStudentCourses = async (req, res) => {
       return acc;
     }, {});
 
-    const coursesWithDetails = enrollments.map(({ course }) => {
+    const coursesWithDetails = enrollments.map(({ course, remainingAmount }) => {
       const monthsPaid = monthsPaidMap[course.id] || 0;
+      const totalFee = course.feePerMonth * course.duration;
       return {
         ...course,
         status: getCourseStatus(course),
         monthsPaid,
+        remainingAmount, // ✅ from Enrollment, not Course
+        totalAmountPaid: totalFee - remainingAmount,
       };
     });
 
     res.json(coursesWithDetails);
+
   } catch (error) {
     console.error("Error fetching student courses:", error);
     res.status(500).json({ error: 'Failed to fetch student courses' });

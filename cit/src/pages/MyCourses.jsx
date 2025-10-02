@@ -43,6 +43,7 @@ const MyCourses = () => {
       try {
         const response = await coursesAPI.getMyCourses();
         setCourses(response.data);
+        
       } catch (error) {
         console.error('Failed to fetch my courses:', error);
       } finally {
@@ -332,7 +333,7 @@ const MyCourses = () => {
                                 {monthsRemaining} month(s) remaining
                               </span>
                               <span className="text-gray-400">
-                                ₹{course.feePerMonth * monthsRemaining} due
+                                ₹{course.remainingAmount} due
                               </span>
                             </>
                           ) : (

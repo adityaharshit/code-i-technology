@@ -1,5 +1,5 @@
 // cit/src/components/payments/PaymentForm.jsx
-import React from 'react';
+import React, {useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import useForm from '../../hooks/useForm';
 import { useToast } from '../../contexts/ToastContext';
@@ -9,6 +9,7 @@ import Button from '../ui/Button';
 import PaymentSummary from './PaymentSummary';
 import { UploadCloud, Calendar, CreditCard, Clock, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import Input from '../ui/Input';
 
 const PaymentForm = ({ course }) => {
   const { values, errors, isSubmitting, handleChange, setValues } = useForm(
@@ -16,9 +17,13 @@ const PaymentForm = ({ course }) => {
       months: 1,
       modeOfPayment: 'online',
       paymentProof: null,
+      amountToPay: 0,
+      amountSelection: "payByMonths"
     },
     validatePayment
   );
+
+  const [isDisabled, setIsDisabled] = useState(false);
 
   const { showSuccess, showError } = useToast();
   const navigate = useNavigate();
@@ -54,16 +59,70 @@ const PaymentForm = ({ course }) => {
     }
   };
 
+  const handlePaymentChange = (e) =>{
+    const paymentAmount = parseInt(e.target.value, 10) || 0;
+    if(paymentAmount<0 || paymentAmount > course.remainingAmount){
+      setIsDisabled(true)
+    }
+    setValues(prev => ({...prev, amountToPay: paymentAmount}))
+  }
+
   const handleSubmit = async () => {
     const formData = new FormData();
+    const totalAmount = course.duration*course.feePerMonth;
+    if(values.amountToPay > course.remainingAmount || values.amountToPay < 0){ 
+      toast.error("Invalid amount");
+      return;
+    }
     formData.append('courseId', course.id);
-    formData.append('months', values.months);
     formData.append('modeOfPayment', values.modeOfPayment);
-    
     if (values.paymentProof) {
       formData.append('paymentProof', values.paymentProof);
     }
+    // formData.append('amountToPay', values.amountToPay);
+    
+    let calculatedDiscount = 0;
+    let calculatedAmount = 0;
+    // Safely handle discount percentage, defaulting to 0 if it's not a valid number
+    const actualDiscountPercentage = Number(course.discountPercentage) || 0;
 
+    // Apply discount only if paying for the full course duration in one go
+    if(values.amountSelection === "payByMonths"){
+       calculatedAmount = course.feePerMonth * values.months;
+      if (values.months === course.courseDuration && actualDiscountPercentage > 0) {
+        calculatedDiscount = calculatedAmount * (actualDiscountPercentage / 100);
+      }
+    }else{
+      calculatedAmount = parseInt(values.amountToPay) || 0;
+      if(calculatedAmount == totalAmount && actualDiscountPercentage > 0){
+        calculatedDiscount = calculatedAmount * (actualDiscountPercentage / 100);
+      }
+    }
+    
+    const calculatedNetPayable = calculatedAmount - calculatedDiscount;
+
+
+
+    if(values.amountSelection=== "partialPayment"){
+      let months = 0;
+      if(values.amountToPay == course.remainingAmount){
+        months = monthsRemaining;
+      }else{
+        months = Math.floor(values.amountToPay / course.feePerMonth);
+      }
+      formData.append('months', months);
+      
+    }else{
+      formData.append('months', values.months);
+    }
+    formData.append('amount', calculatedAmount);
+    formData.append('netPayable', calculatedNetPayable);
+    formData.append('discount', calculatedDiscount);
+    formData.append('remainingAmount', course.remainingAmount);
+    if(calculatedAmount > course.remainingAmount){
+      toast.error("Amount to be paid can not be greater than remaining amount");
+      return;
+    }
     try {
       await paymentsAPI.create(formData);
       showSuccess('Payment submitted for approval!');
@@ -111,36 +170,7 @@ const PaymentForm = ({ course }) => {
           </h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-            <div className="space-y-2">
-              <label htmlFor="months" className="block text-sm font-medium text-gray-300">
-                Number of Months to Pay
-              </label>
-              <select
-                id="months"
-                name="months"
-                value={values.months}
-                onChange={handleMonthsChange}
-                className="input-field w-full hover-glow transition-all duration-200"
-                disabled={monthsRemaining <= 0}
-              >
-                {monthsRemaining > 0 ? (
-                  monthOptions.map(option => (
-                    <option key={option.value} value={option.value} className="bg-gray-800">
-                      {option.label}
-                    </option>
-                  ))
-                ) : (
-                  <option className="bg-gray-800">Fully Paid</option>
-                )}
-              </select>
-              {monthsRemaining <= 0 && (
-                <p className="text-xs text-green-400 flex items-center">
-                  <CheckCircle size={12} className="mr-1" />
-                  Course fully paid!
-                </p>
-              )}
-            </div>
-            
+
             <div className="space-y-2">
               <label htmlFor="modeOfPayment" className="block text-sm font-medium text-gray-300">
                 Mode of Payment
@@ -162,6 +192,74 @@ const PaymentForm = ({ course }) => {
                 }
               </p>
             </div>
+
+            <div className="space-y-2">
+              <label htmlFor="amountSelection" className="block text-sm font-medium text-gray-300">
+                Amount selection
+              </label>
+              <select
+                id="amountSelection"
+                name="amountSelection"
+                value={values.amountSelection}
+                onChange={handleChange}
+                className="input-field w-full hover-glow transition-all duration-200"
+              >
+                <option value="payByMonths" className="bg-gray-800">Pay by Months</option>
+                <option value="partialPayment" className="bg-gray-800">Partial payment</option>
+              </select>
+              <p className="text-xs text-gray-500">
+                {values.amountSelection === 'payByMonths' 
+                  ? 'Select the number of months to pay for'
+                  : 'Enter the amount to be paid in textbox'
+                }
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="months" className="block text-sm font-medium text-gray-300">
+                Number of Months to Pay
+              </label>
+              <select
+                id="months"
+                name="months"
+                value={values.months}
+                onChange={handleMonthsChange}
+                className="input-field w-full hover-glow transition-all duration-200"
+                disabled={(monthsRemaining <= 0) || (values.amountSelection === "partialPayment")}
+              >
+                {monthsRemaining > 0 ? (
+                  monthOptions.map(option => (
+                    <option key={option.value} value={option.value} className="bg-gray-800">
+                      {option.label}
+                    </option>
+                  ))
+                ) : (
+                  <option className="bg-gray-800">Fully Paid</option>
+                )}
+              </select>
+              {monthsRemaining <= 0 && (
+                <p className="text-xs text-green-400 flex items-center">
+                  <CheckCircle size={12} className="mr-1" />
+                  Course fully paid!
+                </p>
+              )}
+            </div>
+            
+            
+            <div className="space-y-2">
+              <Input 
+                id="amountToPay" 
+                name="amountToPay" 
+                value={values.amountToPay} 
+                onChange={handlePaymentChange} 
+                label={"Amount to Pay"} 
+                disabled = {(values.amountSelection === "payByMonths")}
+              />
+              <p className="text-xs text-gray-500">
+                Remaining Amount: {course.remainingAmount}
+              </p>
+            </div>
+
           </div>
         </div>
         
@@ -171,7 +269,10 @@ const PaymentForm = ({ course }) => {
             feePerMonth={course.feePerMonth}
             months={parseInt(values.months, 10)}
             courseDuration={course.duration} 
-            discountPercentage={course.discountPercentage} 
+            discountPercentage={course.discountPercentage}
+            amountSelection = {values.amountSelection}
+            amountToPay = {values.amountToPay}
+            remainingAmount = {course.remainingAmount}
           />
         </div>
 
@@ -334,7 +435,7 @@ const PaymentForm = ({ course }) => {
             loading={isSubmitting} 
             className="flex-1 sm:flex-initial btn-hover-lift text-base sm:text-lg py-3 px-6 sm:px-8" 
             size="lg"
-            disabled={monthsRemaining <= 0}
+            disabled={isDisabled}
           >
             {isSubmitting ? 'Submitting...' : 'Submit Payment'}
           </Button>

@@ -3,17 +3,25 @@ import React, { useMemo } from 'react';
 import { formatCurrency } from '../../utils/formatters';
 import { Calculator, Tag, CreditCard, TrendingDown } from 'lucide-react';
 
-const PaymentSummary = ({ feePerMonth, months, courseDuration, discountPercentage }) => {
+const PaymentSummary = ({ feePerMonth, months, courseDuration, discountPercentage, amountSelection, amountToPay, remainingAmount }) => {
   const { amount, discount, netPayable } = useMemo(() => {
-    const calculatedAmount = feePerMonth * months;
+    const totalAmount = feePerMonth*courseDuration;
     let calculatedDiscount = 0;
-
+    let calculatedAmount = 0;
     // Safely handle discount percentage, defaulting to 0 if it's not a valid number
     const actualDiscountPercentage = Number(discountPercentage) || 0;
 
     // Apply discount only if paying for the full course duration in one go
-    if (months === courseDuration && actualDiscountPercentage > 0) {
-      calculatedDiscount = calculatedAmount * (actualDiscountPercentage / 100);
+    if(amountSelection === "payByMonths"){
+       calculatedAmount = feePerMonth * months;
+      if (months === courseDuration && actualDiscountPercentage > 0) {
+        calculatedDiscount = calculatedAmount * (actualDiscountPercentage / 100);
+      }
+    }else{
+      calculatedAmount = parseInt(amountToPay) || 0;
+      if(amountToPay == totalAmount && actualDiscountPercentage > 0){
+        calculatedDiscount = parseInt(amountToPay) * (actualDiscountPercentage / 100);
+      }
     }
     
     const calculatedNetPayable = calculatedAmount - calculatedDiscount;
@@ -23,7 +31,7 @@ const PaymentSummary = ({ feePerMonth, months, courseDuration, discountPercentag
         discount: calculatedDiscount, 
         netPayable: calculatedNetPayable 
     };
-  }, [feePerMonth, months, courseDuration, discountPercentage]);
+  }, [feePerMonth, months, courseDuration, discountPercentage, amountSelection, amountToPay, remainingAmount]);
 
   return (
     <div className="glass-card p-4 sm:p-6 lg:p-8 rounded-xl border border-gray-700 space-y-4 sm:space-y-6 animate-fade-in-up">
@@ -42,6 +50,29 @@ const PaymentSummary = ({ feePerMonth, months, courseDuration, discountPercentag
 
       <div className="space-y-3 sm:space-y-4">
         {/* Base Amount */}
+        
+
+        {(amountSelection==="partialPayment") ? (
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-gray-600 transition-colors duration-200">
+          <div className="flex items-center space-x-2 mb-2 sm:mb-0">
+            <CreditCard size={16} className="text-blue-400 flex-shrink-0" />
+            <div>
+              <span className="text-gray-300 font-medium">
+                Entered Amount
+              </span>
+              <div className="text-xs text-gray-500 sm:hidden">
+                ₹{feePerMonth} × {months}
+              </div>
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="font-semibold text-white text-base sm:text-lg">
+              {formatCurrency(amount)}
+            </div>
+            
+          </div>
+        </div>
+        ) : (
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-gray-600 transition-colors duration-200">
           <div className="flex items-center space-x-2 mb-2 sm:mb-0">
             <CreditCard size={16} className="text-blue-400 flex-shrink-0" />
@@ -63,6 +94,7 @@ const PaymentSummary = ({ feePerMonth, months, courseDuration, discountPercentag
             </div>
           </div>
         </div>
+        )}
 
         {/* Discount Row */}
         {discount > 0 && (

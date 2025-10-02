@@ -7,7 +7,7 @@ const { generateInvoiceHTML } = require('../utils/invoiceUtils');
 
 const createTransaction = async (req, res) => {
   try {
-    const { courseId, months, modeOfPayment } = req.body;
+    const { courseId, months, amount, modeOfPayment, discount, netPayable, remainingAmount } = req.body;
     const studentId = parseInt(req.session.userId, 10);
     
     let paymentProofUrl = null;
@@ -26,15 +26,7 @@ const createTransaction = async (req, res) => {
       return res.status(404).json({ error: 'Course not found' });
     }
     
-    const amount = course.feePerMonth * parseInt(months);
-    let discount = 0;
     
-    // Apply discount only if paying for the full duration in one single transaction
-    if (parseInt(months, 10) === course.duration) {
-      discount = amount * (course.discountPercentage / 100);
-    }
-    
-    const netPayable = amount - discount;
     const billNo = await generateBillNumber();
     
     const transaction = await prisma.transaction.create({
@@ -43,9 +35,9 @@ const createTransaction = async (req, res) => {
         studentId: studentId,
         courseId: parseInt(courseId),
         months: parseInt(months),
-        amount,
-        discount,
-        netPayable,
+        amount: parseFloat(amount),
+        discount: parseFloat(discount),
+        netPayable: parseFloat(netPayable),
         modeOfPayment,
         paymentProofUrl // Save the Cloudinary URL
       },
@@ -54,7 +46,9 @@ const createTransaction = async (req, res) => {
         student: true
       }
     });
+
     
+
     res.status(201).json(transaction);
   } catch (error) {
     console.error("Transaction creation error:", error);
@@ -138,6 +132,31 @@ const updateTransactionStatus = async (req, res) => {
       data: { status }
     });
     
+    const studentCourseId = await prisma.transaction.findUnique({
+      where : {
+        tid: parseInt(req.params.id)
+      },
+      select:{
+        studentId: true,
+        courseId: true,
+        netPayable: true,
+      }
+    })
+
+    const updatedEnrollment = await prisma.enrollment.update({
+      where: {
+        studentId_courseId: {
+          studentId: studentCourseId.studentId,
+          courseId: parseInt(studentCourseId.courseId)
+        }
+      },
+      data: {
+        remainingAmount: {
+          decrement: parseFloat(studentCourseId.netPayable)
+        }
+      }
+    });
+
     res.json(transaction);
   } catch (error) {
     res.status(500).json({ error: 'Failed to update transaction' });

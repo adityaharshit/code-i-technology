@@ -33,7 +33,7 @@ const Payment = () => {
         setLoading(true);
         const response = await coursesAPI.getById(courseId);
         setCourse(response.data);
-
+        
         // Fetch the last transaction for this course
         const lastTransactionResponse = await paymentsAPI.getLastTransactionForCourse(courseId);
         if (lastTransactionResponse.data) {

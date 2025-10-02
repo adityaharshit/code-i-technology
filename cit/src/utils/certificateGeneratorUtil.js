@@ -102,7 +102,7 @@ export const generateCertificatePDF = async (data) => {
             toast.success("Certificate Downloaded!", { id: toastId });
         }else{
             // Typing course certificate
-            // console.log(data);
+            
             const { dataURL, width, height } = await loadImageAsBase64(
                 typingCertificateTemplate
             );
