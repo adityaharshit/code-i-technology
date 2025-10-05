@@ -20,6 +20,7 @@ const AdminCourseDetail = lazy(() => import('./pages/AdminCourseDetail'));
 const AddEditCourse = lazy(() => import('./components/admin/AddEditCourse'));
 const VerifyEmail = lazy(() => import('./pages/VerifyEmail'));
 const Contact = lazy(() => import('./pages/Contact'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 const About = lazy(() => import('./pages/About'));
 const CertificateVerification = lazy(() => import ('./pages/CertificateVerification'))
 
@@ -38,6 +39,7 @@ const AppRoutes = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/about" element={<About />} />
           <Route path = "/verify-certificate" element={<CertificateVerification />} />
+          <Route path = "/*" element={<NotFound />} />
 
           {/* Student Protected Routes */}
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
